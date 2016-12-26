@@ -1,0 +1,18 @@
+# Outline
+When you have a Supervisor and you have identified a topic for your project, the next step is to write a Proposal. You should have one or two meetings with your Supervisor in order to clarify your ideas and determine a precise description of your project. The project proposal should demonstrate that you know what problem the project will address and that you know how you are going to solve, and evaluate it. It should include a timetable showing different phases of the development and when they will be completed, and should give details of the resources that you will require. For software development projects, it should give details of the hardware and software that you will use. 
+
+As part of your project proposal, you should make a feasibility study to make sure that the hardware and software necessary for your project are indeed available in the School. Discuss this with your Supervisor. Note that the School may be prepared to purchase special purpose equipment if this is necessary for your project. You should apply for this through your Supervisor as soon as possible (to allow for ordering/commissioning delays).
+
+Your project proposal should be ambitious and imaginative, but it should also provide several fall-back positions in case you cannot realise all of it in the available time. Make sure you have specified a substantial and self-contained core, together with several extras which you will do if time permits. 
+
+Once your project proposal is completed you must submit it to the School's online submission system, Canvas, for approval by your Supervisor.
+
+You might have to deviate from your project proposal as your project progresses, because things may not turn out exactly as you planned. This is perfectly acceptable, provided you are quite clear about the reasons for the change. Discuss these reasons and the possible reactions to them with your Supervisor. If they entail a substantial change to your project proposal, you should rewrite it. 
+
+# Project Proposal
+Existing electronic voting systems all suffer from a serious design flaw: They are centralized by design, meaning there is a single supplier that controls the code base, the database and the system outputs while also supplying the monitoring tools to verify the result. The lack of an independently verifiable system means that, once voters mark their ballot choice, they must place their trust in the organization that their vote is recorded and counted as intended. The lack of an independently verifiable output makes it difficult for these centralized systems to acquire the trustworthiness required by voters, thus potentially limiting voter participation, or cast doubt upon the published output of an election.
+
+To provide an immutable, verifiable and secure online voting system I intend to leverage the availability of the Bitcoin Blockchain as a secure transaction database. From this public ledger, voters will be able to independently audit the inclusion of their vote, and the outcome of the election as a whole, while being sure that the results cannot be changed due to the immutability of the Blockchain.
+
+I expect the majority of the projects time to be dedicated to be creating the voting system which will be a non-trivial undertaking. Creating an independently verifiable system while retaining voter anonymity will be difficult as there is a need to restrict votes to only those who are eligible. There are potential additions to the system which could be explored after the core software has been developed such as; increasing ease of access to encourage more people to vote, allowing voters to rank candidates rather than having a singular vote for a particular candidate or allowing voters to entrust their vote to a third party.
+
