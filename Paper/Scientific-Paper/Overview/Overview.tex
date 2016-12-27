@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{enumitem}
+\usepackage[normalem]{ulem}
+\usepackage{color}
+\usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage[top=2cm,bottom=2cm,left=3cm,right=3cm]{geometry}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{csquotes}
+
+%Used for bibliography
+\usepackage[british]{babel}
+\usepackage[%
+  autolang=other,
+  backend=bibtex      % biber or bibtex
+%,style=authoryear    % Alphabeticalsch
+ ,style=numeric-comp  % numerical-compressed
+ ,sorting=none        % no sorting
+ ,sortcites=true      % some other example options ...
+ ,block=none
+ ,indexing=false
+ ,citereset=none
+ ,isbn=true
+ ,url=true
+ ,doi=true            % prints doi
+ ,natbib=true         % if you need natbib functions
+]{biblatex}
+\addbibresource{../Bibliography/Bibliography}
+
+
+
+\begin{document}
+
+    \section{The three ``B's'' of Bitcoin }
+    When discussing Bitcoin, it is important to distinguish exactly which technology we are referring to. When broken down to its most primitive level, Bitcoin can be viewed as three separate innovations; The Big ``B'', the ``Blockchain'' and the Little ``b'' \cite{9_kaye_scholer_2016}\cite{10_itbit_2015}.
+    
+    \subsection{The Big ``B''}
+   
+
+\printbibliography
+\end{document}
