@@ -1,6 +1,8 @@
 \documentclass{article}
 \usepackage{enumitem}
+\usepackage{gensymb}
 \usepackage[normalem]{ulem}
+\usepackage{fixltx2e}
 \usepackage{color}
 \usepackage[hidelinks]{hyperref}
 \usepackage{graphicx}
@@ -27,7 +29,7 @@
  ,doi=true            % prints doi
  ,natbib=true         % if you need natbib functions
 ]{biblatex}
-\addbibresource{../Bibliography/Bibliography}
+%\addbibresource{../Bibliography/Bibliography}
 
 
 
@@ -74,5 +76,5 @@ Transactions typically include a payment of nominal amount of bitcoins as a ``mi
 
 Transactions will propagate across the Bitcoin network and be visible (in an unconfirmed state) in a matter of seconds. However, transactions may not be included in the next available block in a number of situations. The transaction may not have been received by the miner that solves the block, the block may have already been filled with other, higher priority unconfirmed transactions or the miner may have elected not to include the unconfirmed transaction \citep{9_kaye_scholer_2016}.
 
-\printbibliography
+% \printbibliography
 \end{document}

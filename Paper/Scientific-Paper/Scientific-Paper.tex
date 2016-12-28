@@ -1,0 +1,93 @@
+\documentclass[]{article}
+\usepackage{standalone}
+\usepackage[a4paper]{geometry}
+\usepackage{longtable}
+
+\usepackage{enumitem}
+\usepackage{gensymb}
+\usepackage[normalem]{ulem}
+\usepackage{fixltx2e}
+\usepackage{color}
+\usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{csquotes}
+
+\usepackage{array}
+\usepackage{ragged2e}
+\newcolumntype{P}[1]{>{\RaggedRight\hspace{0pt}}p{#1}}
+
+\usepackage[parfill]{parskip}
+\usepackage{supertabular,booktabs}
+\usepackage{listings}
+\usepackage{booktabs}
+\newcommand{\bftab}{\fontseries{b}\selectfont}
+
+%Paths for graphics locations
+\graphicspath{ {./}{../../}{../}{TitlePage/}{LiteratureReview/}{ExperimentalResults/}}
+\usepackage{caption}
+
+%Used for bibliography
+\usepackage[british]{babel}
+\usepackage[%
+  autolang=other,
+  backend=bibtex      % biber or bibtex
+%,style=authoryear    % Alphabeticalsch
+ ,style=numeric-comp  % numerical-compressed
+ ,sorting=none        % no sorting
+ ,sortcites=true      % some other example options ...
+ ,block=none
+ ,indexing=false
+ ,citereset=none
+ ,isbn=true
+ ,url=true
+ ,doi=true            % prints doi
+ ,natbib=true         % if you need natbib functions
+]{biblatex}
+\addbibresource{Bibliography/Bibliography}
+
+\begin{document}
+
+	%Insert title page
+	\input{TitlePage/TitlePage}
+	
+	%Insert the abstract
+    \pagenumbering{arabic}
+    \setcounter{page}{2}
+	
+	%table of contents
+	%\newgeometry{bottom=2cm}
+	%\tableofcontents
+	%\newpage
+
+	%adjust page width for sections
+
+	\newgeometry{left=1.5cm,right=1.5cm,bottom=2cm,top=1.5cm}
+
+	\begin{multicols}{2}
+		\input{Abstract/Abstract}
+		\begin{center}
+		\hrulefill
+		\end{center}
+		\input{Overview/Overview}
+		\begin{center}
+		\hrulefill
+		\end{center}
+		\input{DeeperDive/DeeperDive1}
+	\end{multicols}
+	\cleardoublepage
+		\input{DeeperDive/DeeperDiveTable}
+	\begin{multicols}{2}
+		\input{DeeperDive/DeeperDive2}
+		\begin{center}
+		\hrulefill
+		\end{center}
+		\input{Voting/Voting}
+	\end{multicols}
+	
+	\cleardoublepage
+	\printbibliography
+
+\end{document}
