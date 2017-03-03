@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Start geth (add the --fast parameter if this is the initial download)
+echo "Starting geth in Screen. Output to .ethereun/testnet/geth.log"
+screen -dmS geth_daemon bash -c '/usr/bin/geth --fast --cache=2048 2> /home/mattie432/.ethereum/geth.log'
+
+# Tail the log file
+gnome-terminal -e "bash -c \"tail -f /home/mattie432/.ethereum/geth.log\""
+
+sleep 5
+
+# Attach to the console
+geth --preload "/home/mattie432/Programming/Blockchain-Voting-System/Programming/HelperScripts/gethload.js" attach ipc:/home/mattie432/.ethereum/geth.ipc

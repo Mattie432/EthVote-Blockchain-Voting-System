@@ -1,0 +1,3 @@
+#!/bin/bash
+
+geth --preload "/home/mattie432/Programming/Blockchain-Voting-System/Programming/HelperScripts/gethload.js" attach ipc:/home/mattie432/.ethereum/testnet/geth.ipc
