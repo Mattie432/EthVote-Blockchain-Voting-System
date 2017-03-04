@@ -33,4 +33,5 @@ RUN pip3 install .
 EXPOSE 80
 
 # Run django migrate command to setup database migration, then start the server.
-CMD . ./bin/docker_entrypoint
+#CMD . ./bin/docker_entrypoint
+ENTRYPOINT [ "./bin/docker_entrypoint" ]
