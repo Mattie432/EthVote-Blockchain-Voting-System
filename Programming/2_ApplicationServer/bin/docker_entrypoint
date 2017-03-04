@@ -1,0 +1,16 @@
+#!/bin/bash
+
+##################################################
+# 
+# This script is the entry point for docker to start
+# our server.
+#
+##################################################
+
+# Run the Django migrate command to setup database migrations
+echo "[docker_entrypoint] Running database migrations.."
+python3 manage.py migrate
+
+# Run the Django server.
+ecxho "[docker_entrypoint] Starting server.."
+python3 manage.py runserver 0.0.0.0:80

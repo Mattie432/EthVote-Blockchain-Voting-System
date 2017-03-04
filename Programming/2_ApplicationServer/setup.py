@@ -8,10 +8,9 @@ setup(
     description='',
     url='https://github.com/Mattie432/Blockchain-Voting-System',
     packages=[
-        'ApplicationServer_FrontEnd',
-        'ApplicationServer_BackEnd'
+        'applicationserver'
     ],
     install_requires=[
-        'Django'
+        'Django>=1.10.0'
     ]
 )
