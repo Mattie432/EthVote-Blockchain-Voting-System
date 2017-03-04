@@ -178,3 +178,12 @@ TSWLatexianTemp*
 
 # KBibTeX
 *~[0-9]*
+
+# pycharm folders
+*.idea*
+
+# Dont commit database
+*.sqlite3
+
+# Dont commit pycache
+*__pycache__*
