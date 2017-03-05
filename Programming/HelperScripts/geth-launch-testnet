@@ -7,7 +7,7 @@ screen -dmS geth_daemon bash -c '/usr/bin/geth --testnet --fast --cache=2048 2> 
 # Tail the log file
 gnome-terminal -e "bash -c \"tail -f /home/mattie432/.ethereum/testnet/geth.log\""
 
-sleep 5
+sleep 10
 
 # Attach to the console
 geth --preload "/home/mattie432/Programming/Blockchain-Voting-System/Programming/HelperScripts/gethload.js" attach ipc:/home/mattie432/.ethereum/testnet/geth.ipc
