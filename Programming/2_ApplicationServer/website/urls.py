@@ -1,4 +1,5 @@
-"""applicationserver URL Configuration
+"""
+website URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.10/topics/http/urls/
@@ -14,9 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
-from django.contrib import admin
+from website.views import (Login)
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^', include('website.urls')),
+    url(r'^login/$', Login.as_view()),
 ]
