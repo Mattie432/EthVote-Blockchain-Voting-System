@@ -2,34 +2,20 @@ from django.contrib.auth.forms import AuthenticationForm
 from django import forms
 from django.forms import ValidationError
 
-
 class LoginForm(AuthenticationForm):
+    """
+    Basic form for our user login view
+    """
     username = forms.CharField(label="Username", max_length=30,
                                widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'username'}))
     password = forms.CharField(label="Password", max_length=30,
                                widget=forms.PasswordInput(attrs={'class': 'form-control', 'name': 'password'}))
 
-
-# class InitialLogin(PasswordChangeForm):
-#     error_css_class = 'has-error'
-#     old_password = forms.CharField(required=True, label='Συνθηματικό',
-#                   widget=forms.PasswordInput(attrs={
-#                     'class': 'form-control'}),
-#                   error_messages={
-#                     'required': 'Το συνθηματικό δε μπορεί να είναι κενό'})
-#
-#     new_password1 = forms.CharField(required=True, label='Συνθηματικό',
-#                   widget=forms.PasswordInput(attrs={
-#                     'class': 'form-control'}),
-#                   error_messages={
-#                     'required': 'Το συνθηματικό δε μπορεί να είναι κενό'})
-#     new_password2 = forms.CharField(required=True, label='Συνθηματικό (Επαναλάβατε)',
-#                   widget=forms.PasswordInput(attrs={
-#                     'class': 'form-control'}),
-#                   error_messages={
-#                     'required': 'Το συνθηματικό δε μπορεί να είναι κενό'})
-
 class InitialLogin(forms.Form):
+    """
+    Form for the initial login information request view. Here the user
+    should enter all required information about themselves.
+    """
 
     def __init__(self, user, *args, **kwargs):
         self.user = user

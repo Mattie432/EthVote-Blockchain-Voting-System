@@ -1,36 +1,27 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}ETH Vote | Initial Login{% endblock %}
-{% block header %}ETH Vote | Initial Login{% endblock %}
+{% block title %}ETH Vote | Login{% endblock %}
+{% block header %}ETH Vote | User Login{% endblock %}
 
 {% block content %}
-    {% if next %}
-        {% if user.is_authenticated %}
-            <p>Your account doesn't have access to this page. To proceed,
-                please login with an account that has access.</p>
-                {% else %}
-
-            <p>Please login to see this page.</p>
-        {% endif %}
-    {% endif %}
 
     <div class="container">
         <div class="row">
             <div class="col-md-4 col-md-offset-4">
                 <div class="login-panel panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Enter your details</h3>
+                        <h3 class="panel-title">Please Sign In</h3>
                     </div>
                     <div class="panel-body">
                         <form method="post" > {% csrf_token %}
                             <p class="bs-component">
                                 <table>
-                                {{ form.as_table }}
+                                    {{ form.as_table }}
                                 </table>
                             </p>
                             <p class="bs-component">
                                 <center>
-                                    <input class="btn btn-success btn-sm" type="submit" value="Submit" />
+                                    <input class="btn btn-success btn-sm" type="submit" value="login" />
                                 </center>
                             </p>
                             <input type="hidden" name="next" value="{{ next }}" />
