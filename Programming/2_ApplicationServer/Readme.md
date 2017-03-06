@@ -6,7 +6,7 @@ The application server is the web interface for the voter to interact with the v
 - [ ] Receive login credentials from `External Voter Registration`
 
 ### Online Registration
-- [ ] Accept login from registered voters
+- [x] Accept login from registered voters
 - [ ] Generate a blind token
 - [ ] Extract signed blind token & generate voter keys
 - [ ] Register voterAddress with `Online Account Verifier`
