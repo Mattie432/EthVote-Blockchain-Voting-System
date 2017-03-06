@@ -17,9 +17,11 @@ Including another URLconf
 from django.conf.urls import include, url
 from accounts.forms import LoginForm
 from django.contrib.auth import views
-from accounts.views import custom_login
+from accounts.views import custom_login, initial_login
 
 urlpatterns = [
+
+    url(r'^initial_login/$', initial_login),
 
     url(r'^login/$',    custom_login,       {'template_name': 'login.html', 'authentication_form': LoginForm}, name="login"),
     url(r'^logout/$',   views.logout,       {'next_page' : '/'},                name="logout"),

@@ -23,16 +23,26 @@ class InitialLoginChangeMiddleware(object):
         a subset of the pages.
         """
         if request.user.is_authenticated() and \
+            request.user.getForceEnterDetails() and \
             re.match(r'^/?', request.path) and \
-            not re.match(r'^/password_change/?', request.path) and \
+            not re.match(r'^/initial_login/?', request.path) and \
             not re.match(r'^/logout/?', request.path) and \
             not re.match(r'^/login/?', request.path):
 
-            # Retrieve whether the user has entered the extended details.
-            requireMoreDetails = request.user.getForceEnterDetails()
-            if requireMoreDetails == False:
                 # Redirect to the page to enter more details
-                return HttpResponseRedirect('/password_change/')
+                return HttpResponseRedirect('/initial_login/')
+
+        """
+        If the user does not have the force_enterDetails flag set,
+        then dont allow access to the initial login page.
+        """
+        if request.user.is_authenticated() and \
+            not request.user.getForceEnterDetails() and \
+            re.match(r'^/initial_login/?', request.path):
+
+                # Redirect to the page to enter more details
+                return HttpResponseRedirect('/')
+
 
         # Call the view
 
