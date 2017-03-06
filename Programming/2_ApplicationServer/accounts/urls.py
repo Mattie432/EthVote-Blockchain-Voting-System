@@ -1,4 +1,5 @@
-"""applicationserver URL Configuration
+"""
+website URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.10/topics/http/urls/
@@ -14,10 +15,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
-from django.contrib import admin
+from accounts.forms import LoginForm
+from django.contrib.auth import views
+from accounts.views import custom_login
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^', include('website.urls')),
-    url(r'^', include('accounts.urls')),
+
+    url(r'^login/$',    custom_login,       {'template_name': 'login.html', 'authentication_form': LoginForm}, name="login"),
+    url(r'^logout/$',   views.logout,       {'next_page' : '/'},                name="logout"),
+    url(r'^logout_then_login/$', views.logout_then_login, name="logout-then-login"),
+
+    # NOTE: default urls should be last because we override some of them above.
+    url('^', include('django.contrib.auth.urls')),
 ]

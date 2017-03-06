@@ -15,8 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
-from website.views import (Login)
+from django.contrib.auth import views as auth_views
+from website.views import (Dashboard, HomepageRedirect)
 
 urlpatterns = [
-    url(r'^login/$', Login.as_view()),
+
+    url(r'^dashboard/$',    Dashboard.as_view(),  name="applicationserver"),
+    url(r'^$',    HomepageRedirect.as_view(), name="applicationserver"),
+    #url(r'^accounts/', include('accounts.urls', namespace='accounts')),
 ]
