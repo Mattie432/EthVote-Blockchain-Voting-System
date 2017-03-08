@@ -8,4 +8,31 @@
 ##################################################
 
 # Run the Django migrate command to setup database migrations
-echo "[docker_entrypoint] Nothing to do here....
+echo "[docker_entrypoint] Should probably do some database stuff..."
+
+if [ ! -s /usr/src/onlineaccountverifier/postgresDB ]; then
+
+    # Create the database folder in the docker container
+    mkdir /usr/src/onlineaccountverifier/postgresDB
+    chown postgres:postgres /usr/src/onlineaccountverifier/postgresDB
+
+    # Create the new database.
+    su postgres --command "/usr/lib/postgresql/9.4/bin/initdb -D /usr/src/onlineaccountverifier/postgresDB/"
+    su postgres --command "/usr/lib/postgresql/9.4/bin/postgres -D /usr/src/onlineaccountverifier/postgresDB/" &
+
+    # Create a postgres user
+    psql -U postgres -c "CREATE USER docker PASSWORD 'docker' CREATEDB CREATEROLE CREATEUSER;"
+    su postgres --command 'createdb -O docker onlineaccountverifier'
+
+else
+    echo "[docker_entrypoint] Database folder already exists... skipping..."
+fi
+
+# Setup our database
+python3 database/initialSetup.py
+
+
+# Start the server
+echo "[docker_entrypoint] Starting onlineaccountverifier server."
+
+sleep 100000

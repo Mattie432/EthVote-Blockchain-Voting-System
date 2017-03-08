@@ -20,6 +20,12 @@ done
 # Build docker image.
 if [[ -z $PARAMS || ( $PARAMS  && ( $BUILD || $build ) ) ]];
 then
+
+    if [ -s ~/Programming/Blockchain-Voting-System/Programming/3_OnlineAccountVerifier/postgresDB ]; then
+        echo "postgresDB folder found.. deleting."
+        su --command "rm -rf /home/mattie432/Programming/Blockchain-Voting-System/Programming/3_OnlineAccountVerifier/postgresDB"
+    fi
+
     echo "Building docker container."
     docker build -t onlineaccountverifier ~/Programming/Blockchain-Voting-System/Programming/3_OnlineAccountVerifier/
 fi

@@ -25,7 +25,8 @@ RUN apt-get update && \
         libpq-dev \
         libffi-dev \
         libssl-dev \
-        libyaml-dev
+        libyaml-dev \
+        postgresql-9.4
 
 # Install our server via pip
 RUN pip3 install .
@@ -33,6 +34,5 @@ RUN pip3 install .
 # Expose our ports
 EXPOSE 5432
 
-# Run django migrate command to setup database migration, then start the server.
-#CMD . ./bin/docker_entrypoint
+# Run load our entrypoint
 ENTRYPOINT [ "./bin/docker_entrypoint" ]

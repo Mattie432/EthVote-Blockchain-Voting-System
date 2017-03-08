@@ -11,6 +11,7 @@ setup(
         'onlineaccountverifier'
     ],
     install_requires=[
-        'Twisted>=17.1.0'
+        'Twisted>=17.1.0',
+        'psycopg2'
     ]
 )
