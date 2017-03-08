@@ -1,0 +1,32 @@
+#!/bin/bash
+
+##################################################
+#
+# Parses the parameters and sets variables equal to
+# their names to 'true'.
+#
+# Expected params:
+#   run || RUN
+#   build || BUILD
+#
+##################################################
+for arg in "$@"
+do
+    PARAMS=true
+    echo "Argument '$arg'"
+    eval $arg=true
+done
+
+# Build docker image.
+if [[ -z $PARAMS || ( $PARAMS  && ( $BUILD || $build ) ) ]];
+then
+    echo "Building docker container."
+    docker build -t onlineaccountverifier ~/Programming/Blockchain-Voting-System/Programming/3_OnlineAccountVerifier/
+fi
+
+if [[ -z $PARAMS || ( $PARAMS  && ( $RUN || $run ) ) ]];
+then
+    echo "Running docker container"
+    # Run the docker image. Expose port 80. Use volume for our webapp so we dont have to rebuild for all changes.
+    docker run -t -i -p 5432:5432 -v ~/Programming/Blockchain-Voting-System/Programming/3_OnlineAccountVerifier/:/usr/src/onlineaccountverifier/ onlineaccountverifier
+fi
