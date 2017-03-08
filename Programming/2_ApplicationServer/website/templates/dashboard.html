@@ -4,5 +4,24 @@
 {% block header %}ETH Vote | User Dashboard{% endblock %}
 
 {% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Dashboard info</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form method="post" > {% csrf_token %}
+                            <p class="bs-component">
     <p>This is the dashboard. Must be logged in to see.</p>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
