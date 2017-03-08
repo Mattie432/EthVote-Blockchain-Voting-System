@@ -1,0 +1,23 @@
+#!/bin/bash
+
+##################################################
+#
+# Cleans up built images.
+#
+##################################################
+
+# Kill *ALL* images
+docker kill $(docker ps -q)
+
+# removing stopped containers
+docker rm $(docker ps --filter=status=exited --filter=status=created -q)
+
+# Delete all images
+docker rmi $(docker images -a -q)
+
+echo .
+echo "#####################################################"
+echo "#"
+echo "# All images cleaned."
+echo "#"
+echo "#####################################################"
