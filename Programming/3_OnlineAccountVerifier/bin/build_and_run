@@ -34,5 +34,5 @@ if [[ -z $PARAMS || ( $PARAMS  && ( $RUN || $run ) ) ]];
 then
     echo "Running docker container"
     # Run the docker image. Expose port 80. Use volume for our webapp so we dont have to rebuild for all changes.
-    docker run -t -i -p 5432:5432 -v ~/Programming/Blockchain-Voting-System/Programming/3_OnlineAccountVerifier/:/usr/src/onlineaccountverifier/ onlineaccountverifier
+    docker run -t -i -p 5432:5432 -v ~/Programming/Blockchain-Voting-System/Programming/3_OnlineAccountVerifier/:/usr/src/onlineaccountverifier/ --env-file=/home/mattie432//Programming/Blockchain-Voting-System/Programming/3_OnlineAccountVerifier/bin/Variables.env onlineaccountverifier
 fi

@@ -25,7 +25,8 @@ if [ ! -s /usr/src/onlineaccountverifier/postgresDB ]; then
     su postgres --command 'createdb -O docker onlineaccountverifier'
 
 else
-    echo "[docker_entrypoint] Database folder already exists... skipping..."
+    echo "[docker_entrypoint] Database folder already exists... skipping creation..."
+    su postgres --command "/usr/lib/postgresql/9.4/bin/postgres -D /usr/src/onlineaccountverifier/postgresDB/" &
 fi
 
 # Setup our database
