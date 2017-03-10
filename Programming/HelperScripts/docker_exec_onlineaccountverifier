@@ -9,4 +9,4 @@
 
 APPLICATIONSERVER_NAME=$(docker ps | grep onlineaccountverifier | grep -oE '[^ ]+$')
 
-docker exec -i -t $APPLICATIONSERVER_NAME $@
+docker exec -i -t $APPLICATIONSERVER_NAME "$@"
