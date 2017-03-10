@@ -1,0 +1,12 @@
+#!/bin/bash
+
+##################################################
+#
+# Retrieve the name of the docker application server
+# and send it the parameters as a command.
+#
+##################################################
+
+APPLICATIONSERVER_NAME=$(docker ps | grep onlineballotregulator | grep -oE '[^ ]+$')
+
+docker kill $APPLICATIONSERVER_NAME
