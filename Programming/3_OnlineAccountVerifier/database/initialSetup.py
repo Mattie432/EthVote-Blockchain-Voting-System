@@ -1,5 +1,6 @@
 import psycopg2, os
 
+# Import postgres credentials from environment
 postgres_database   = os.environ[ 'POSTGRES_DATABASE' ]
 postgres_user       = os.environ[ 'POSTGRES_USER' ]
 postgres_password   = os.environ[ 'POSTGRES_PASS' ]
