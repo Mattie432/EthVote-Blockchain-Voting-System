@@ -32,10 +32,9 @@ fi
 # Setup our database
 python3 database/initialSetup.py
 
-
 # Start the server
 echo "[docker_entrypoint] Starting onlineaccountverifier server."
-python3 onlineaccountverifier/main.py
+python3 main.py
 
 # Shutdown postgres
 su postgres --command "pkill postgres"
