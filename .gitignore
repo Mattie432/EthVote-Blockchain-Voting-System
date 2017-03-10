@@ -187,3 +187,6 @@ TSWLatexianTemp*
 
 # Dont commit pycache
 *__pycache__*
+
+# Ignore example folders
+examples/
