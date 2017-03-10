@@ -1,0 +1,40 @@
+#!/bin/bash
+
+##################################################
+# 
+# This script is the entry point for docker to start
+# our server.
+#
+##################################################
+
+# Run the Django migrate command to setup database migrations
+echo "[docker_entrypoint] Should probably do some database stuff..."
+
+if [ ! -s /usr/src/onlineaccountverifier/postgresDB ]; then
+
+    # Create the database folder in the docker container
+    mkdir /usr/src/onlineballotregulator/postgresDB
+    chown postgres:postgres /usr/src/onlineballotregulator/postgresDB
+
+    # Create the new database.
+    su postgres --command "/usr/lib/postgresql/9.4/bin/initdb -D /usr/src/onlineballotregulator/postgresDB/"
+    su postgres --command "/usr/lib/postgresql/9.4/bin/postgres -D /usr/src/onlineballotregulator/postgresDB/" &
+
+    # Create a postgres user
+    psql -U postgres -c "CREATE USER docker PASSWORD 'docker' CREATEDB CREATEROLE CREATEUSER;"
+    su postgres --command 'createdb -O docker onlineballotregulator'
+
+else
+    echo "[docker_entrypoint] Database folder already exists... skipping creation..."
+    su postgres --command "/usr/lib/postgresql/9.4/bin/postgres -D /usr/src/onlineballotregulator/postgresDB/" &
+fi
+
+# Setup our database
+python3 database/initial_setup.py
+
+# Start the server
+echo "[docker_entrypoint] Starting onlineballotregulator server."
+python3 main.py
+
+# Shutdown postgres
+su postgres --command "pkill postgres"
