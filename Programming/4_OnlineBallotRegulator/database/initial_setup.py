@@ -24,7 +24,8 @@ def main():
                         "ballot_register_id serial UNIQUE PRIMARY KEY, "
                         "user_id integer NOT NULL, "
                         "ballot_id integer NOT NULL, "
-                        "created_on timestamp NOT NULL"
+                        "created_on timestamp DEFAULT CURRENT_TIMESTAMP, "
+                        "UNIQUE (user_id, ballot_id)"
                     ");")
 
     connection.commit()
