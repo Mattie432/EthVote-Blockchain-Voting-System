@@ -10,7 +10,7 @@
 # Run the Django migrate command to setup database migrations
 echo "[docker_entrypoint] Should probably do some database stuff..."
 
-if [ ! -s /usr/src/onlineaccountverifier/postgresDB ]; then
+if [ ! -s /usr/src/onlineballotregulator/postgresDB ]; then
 
     # Create the database folder in the docker container
     mkdir /usr/src/onlineballotregulator/postgresDB

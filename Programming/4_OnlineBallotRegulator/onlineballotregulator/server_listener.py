@@ -1,7 +1,8 @@
 import psycopg2, os
 from twisted.internet import reactor, protocol
 from twisted.internet.protocol import Factory
-from database.network_request import NetworkRequest
+# noinspection PyUnresolvedReferences
+from database.network_request import MyServerFactory
 
 
 class ServerListener():
@@ -31,12 +32,9 @@ class ServerListener():
         self.connection.close()
 
     def start(self):
-        request = NetworkRequest(self.cursor)
-        protocol_factory = Factory()
-        protocol_factory.protocol = request.RequestHandler
+        protocol_factory = MyServerFactory(self.cursor)
 
         reactor.listenTCP(self.twisted_port, protocol_factory)
-        print('started')
         reactor.run()
 
 
