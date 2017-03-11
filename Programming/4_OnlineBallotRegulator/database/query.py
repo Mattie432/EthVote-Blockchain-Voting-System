@@ -76,14 +76,14 @@ class DatabaseQuery:
 
     def register_userid_ballotid(self, user_id, ballot_id):
 
-        #TODO fix me
         """
-
+        Request to register a user for a ballot in the ballot_register table. Will return
+        True on sucsess or raise an exception on failure which will be passed back to the client.
         :param user_id:
         :return:
         """
 
-        def onSuccess(results):
+        def onSuccess():
             print ("[DatabaseQuery - register_userid_ballotid] - Insert sucsess:")
             return {'ok' : True}
 
