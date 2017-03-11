@@ -7,3 +7,7 @@ The Online Ballot Regulator deals with adding *verified* voter addresses to the 
 
 ## Voting
 - [ ] Upon request, retrieves the ballot contract asocoiated with a voterID
+
+
+# TODO
+- [ ] SSL twisted connections

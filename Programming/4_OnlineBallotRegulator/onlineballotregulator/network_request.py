@@ -7,15 +7,22 @@ class RequestHandler(amp.AMP):
 
     @Request_RegisterUser.responder
     def request_register_user(self, user_id, ballot_id):
-        print('[RequestHandler - request_register_user] Received request : %d, %d' % (user_id, ballot_id))
+        print('[RequestHandler - request_register_user] Received request : user_id:%d, ballot_id:%d' % (user_id, ballot_id))
 
         databasequery = self.factory.get_databasequery()
 
-        deferred = databasequery.search_userid(user_id)
-        # print("ENd")
-        # test = Request_RegisterUser.makeResponse({'ok' : True}, None)
-        # print(test)
-        # print( " --------------------------------------------------------- \n\n\n\n\n")
+        deferred = databasequery.register_userid_ballotid(user_id, ballot_id)
+
+
+        return deferred
+
+    @Request_RetrieveBallots.responder
+    def request_retrieve_ballots(self, user_id):
+        print('[RequestHandler - request_retrieve_ballots] Received request : user_id:%d ' % (user_id))
+
+        databasequery = self.factory.get_databasequery()
+
+        deferred = databasequery.retrieve_ballots(user_id)
 
 
         return deferred
