@@ -26,3 +26,6 @@ The application server is the web interface for the voter to interact with the v
 1. Ensure docker is running with `sudo service docker start`.
 2. Build the docker image with `docker build -t applicationserver .` while in the *2_ApplicationServer* directory.
 3. Run the docker image with `docker run -p 80:80 applicationserver` and map the internal port 80 to the localhost port 80.
+
+# Notes
+* Using `crochet` for twisted reactor handling and startup.
