@@ -46,7 +46,7 @@ class Dashboard(LoginRequiredMixin, View):
         """
 
         # NOTE: using inline callbacks here so we dont have to write/wait for callbacks.
-        destination_deferred = yield TCP4ClientEndpoint(reactor, '172.17.0.2', self.ballotregulator_port)
+        destination_deferred = yield TCP4ClientEndpoint(reactor, self.ballotregulator_ip, self.ballotregulator_port)
         connection_deferred = yield connectProtocol(destination_deferred, AMP())
         result_deferred = yield connection_deferred.callRemote(Request_RetrieveBallots, user_id=user_id)
 
@@ -76,6 +76,8 @@ class Dashboard(LoginRequiredMixin, View):
     def get(self, request):
 
         #TODO catch errors http://crochet.readthedocs.io/en/latest/api.html#run-in-reactor-asynchronous-results
+
+        #TODO get user_id from session
         registerd_ballots_list = self.searchUser(1234).wait(5)
 
         return render(request, 'dashboard.html', { 'registerd_ballots_list' : registerd_ballots_list })
