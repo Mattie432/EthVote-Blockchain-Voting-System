@@ -66,7 +66,18 @@ class DatabaseQuery:
             pprint.pprint(failure.value)
             raise failure.raiseException()
 
-        query = "SELECT * FROM ballot_register WHERE user_id=%s;" % user_id
+        query = "SELECT " \
+                    "ballot_register.user_id," \
+                    "ballot_register.ballot_id," \
+                    "ballot_register.created_on," \
+                    "available_ballots.ballot_name," \
+                    "available_ballots.ballot_address " \
+                "FROM " \
+                    "available_ballots, " \
+                    "ballot_register " \
+                "WHERE " \
+                    "ballot_register.user_id=%s AND " \
+                    "ballot_register.ballot_id=available_ballots.ballot_id;" % user_id
         deferred = self.dbConnection.runQuery(query)
         deferred.addCallback(onSuccess)
         deferred.addErrback(onError)

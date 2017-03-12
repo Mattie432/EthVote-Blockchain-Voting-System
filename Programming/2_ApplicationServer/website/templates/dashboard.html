@@ -7,7 +7,7 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-md-8 col-md-offset-2">
+            <div class="col-md-13 col-md-offset-0">
                 <div class="login-panel panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Available Ballots</h3>
@@ -18,12 +18,16 @@
                                 <th>User ID</th>
                                 <th>Ballot ID</th>
                                 <th>Time Registered</th>
+                                <th>Ballot Name</th>
+                                <th>Ballot Address</th>
                             </tr>
                             {% for row in registerd_ballots_list %}
                             <tr>
                                 <td> {{ row.user_id }}</td>
                                 <td> {{ row.ballot_id }}</td>
                                 <td> {{ row.timestamp }}</td>
+                                <td> {{ row.ballot_name }}</td>
+                                <td> {{ row.ballot_address }}</td>
                             </tr>
                             {% endfor %}
                         </table>

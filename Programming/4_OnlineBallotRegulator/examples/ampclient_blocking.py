@@ -33,10 +33,11 @@ def searchUser(user_id):
         record_list = []
         for record in result:
             mapper = {}
-            mapper['id'] = int(record[0])
-            mapper['user_id'] = record[1]
-            mapper['ballot_id'] = record[2]
-            mapper['timestamp'] = record[3]
+            mapper['user_id'] = record[0]
+            mapper['ballot_id'] = record[1]
+            mapper['timestamp'] = record[2]
+            mapper['ballot_name'] = record[3]
+            mapper['ballot_address'] = record[4]
             # Append each row's dictionary to a list
             record_list.append(mapper)
 
