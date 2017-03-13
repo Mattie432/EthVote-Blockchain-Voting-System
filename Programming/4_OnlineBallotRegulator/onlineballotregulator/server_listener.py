@@ -1,4 +1,4 @@
-import psycopg2, os
+import psycopg2, os, socket
 from twisted.internet import reactor, protocol
 from twisted.internet.protocol import Factory
 # noinspection PyUnresolvedReferences
@@ -21,6 +21,8 @@ class ServerListener():
         self.databasequery.connect()
 
         protocol_factory = MyServerFactory(self.databasequery)
+
+        print("[ServerListener] Starting server : port=%s, ip=%s" % (self.twisted_port, socket.gethostbyname(socket.gethostname())))
 
         reactor.listenTCP(self.twisted_port, protocol_factory)
         reactor.run()

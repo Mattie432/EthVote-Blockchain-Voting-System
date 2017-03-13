@@ -39,18 +39,21 @@ def main():
     connection.commit()
 
     #TODO remove test data
+    try:
+        cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address) VALUES (4321, 'Selly Oak Regional', '0xd12cd8a37f074e7eafae618c986ff825666198bd');")
+        cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address) VALUES (5432, 'Birmigham City Council', '0x2910543af39aba0cd09dbb2d50200b3e800a63d2');")
+        cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address) VALUES (6543, 'London', '0xfa52274dd61e1643d2205169732f29114bc240b3');")
+        connection.commit()
+    except:
+        print( "[initialSetup] Error inserting test data in available_ballots." )
 
-    cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address) VALUES (4321, 'Selly Oak Regional', '0xd12cd8a37f074e7eafae618c986ff825666198bd');")
-    cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address) VALUES (5432, 'Birmigham City Council', '0x2910543af39aba0cd09dbb2d50200b3e800a63d2');")
-    cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address) VALUES (6543, 'London', '0xfa52274dd61e1643d2205169732f29114bc240b3');")
-
-    connection.commit()
-
-    cursor.execute("INSERT INTO ballot_register (user_id, ballot_id) VALUES (1234, 4321);")
-    cursor.execute("INSERT INTO ballot_register (user_id, ballot_id) VALUES (1234, 5432);")
-    cursor.execute("INSERT INTO ballot_register (user_id, ballot_id) VALUES (2345, 5432);")
-
-    connection.commit()
+    try:
+        cursor.execute("INSERT INTO ballot_register (user_id, ballot_id) VALUES (1234, 4321);")
+        cursor.execute("INSERT INTO ballot_register (user_id, ballot_id) VALUES (1234, 5432);")
+        cursor.execute("INSERT INTO ballot_register (user_id, ballot_id) VALUES (2345, 5432);")
+        connection.commit()
+    except:
+        print( "[initialSetup] Error inserting test data in ballot_register." )
 
     cursor.close()
     connection.close()
