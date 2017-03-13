@@ -24,7 +24,7 @@ def main(attempt=0):
     server.start()
 
     # Finally call shutdown method.
-    server.database_shutdown()
+    server.shutdown()
 
 if __name__ == "__main__":
     main()

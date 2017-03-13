@@ -17,13 +17,6 @@ def main():
     connection = psycopg2.connect(database=postgres_database, user=postgres_user, host=postgres_host, password=postgres_password)
     cursor = connection.cursor()
 
-
-    # cursor.execute( "CREATE TABLE IF NOT EXISTS users ("
-    #                     "user_id integer PRIMARY KEY, "
-    #                     "ballot_id varchar(10) NOT NULL, "
-    #                     "created_on timestamp NOT NULL"
-    #                 ");")
-
     print( "[initialSetup] Creating tables if they do not exist." )
 
     # Table to hold token request information
@@ -31,7 +24,8 @@ def main():
                         "blind_token varchar(50) UNIQUE PRIMARY KEY, "
                         "user_id integer NOT NULL, "
                         "ballot_id integer NOT NULL, "
-                        "created_on timestamp NOT NULL"
+                        "created_on timestamp DEFAULT CURRENT_TIMESTAMP, "
+                        "UNIQUE (user_id, ballot_id)"
                     ");")
 
     # Table to hold token registration information
@@ -39,10 +33,23 @@ def main():
                         "signed_token varchar(50) UNIQUE PRIMARY KEY, "
                         "voter_address varchar(10) NOT NULL, "
                         "ballot_id integer NOT NULL, "
-                        "created_on timestamp NOT NULL"
+                        "created_on timestamp DEFAULT CURRENT_TIMESTAMP, "
+                        "UNIQUE (user_id, ballot_id)"
                     ");")
 
     connection.commit()
+
+
+    #TODO remove testing data
+
+    try:
+        cursor.execute("INSERT INTO token_request (user_id, ballot_id, blind_token) VALUES (1234, 5432, 'ThisIsABlineToken_1234_5432');")
+        cursor.execute("INSERT INTO token_request (user_id, ballot_id, blind_token) VALUES (2345, 5432, 'ThisIsABlineToken_2345_5432');")
+
+        connection.commit()
+    except:
+        print( "[initialSetup] Error inserting test data." )
+
 
     cursor.close()
     connection.close()

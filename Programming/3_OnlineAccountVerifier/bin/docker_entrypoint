@@ -30,7 +30,7 @@ else
 fi
 
 # Setup our database
-python3 database/initialSetup.py
+python3 database/initial_setup.py
 
 # Start the server
 echo "[docker_entrypoint] Starting onlineaccountverifier server."

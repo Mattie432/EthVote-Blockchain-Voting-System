@@ -32,7 +32,7 @@ RUN apt-get update && \
 RUN pip3 install .
 
 # Expose our ports
-EXPOSE 5432
+EXPOSE 5435
 
 # Run load our entrypoint
 ENTRYPOINT [ "./bin/docker_entrypoint" ]
