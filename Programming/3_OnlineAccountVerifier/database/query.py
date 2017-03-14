@@ -40,6 +40,31 @@ class DatabaseQuery:
         else:
             raise ConnectionError
 
+    def register_token_request(self, blind_token, user_id, ballot_id):
+
+        """
+        Register a token signiture request in the database.
+        :return:
+        """
+
+        def onSuccess(result):
+            print ("[DatabaseQuery - register_token_request] - Insert sucsess:")
+            return {'ok' : True}
+
+        def onError(failure):
+            print ("[DatabaseQuery - register_token_request] - Insert error:")
+            pprint.pprint(failure.value)
+            raise failure.raiseException()
+
+        def _insert(cursor, user_id, ballot_id):
+            statement = "INSERT INTO token_request (blind_token_hash, user_id, ballot_id) VALUES (%s, %s, %s);"
+            cursor.execute(statement, (blind_token, user_id, ballot_id))
+
+        deferred = self.dbConnection.runInteraction(_insert, user_id, ballot_id)
+        deferred.addCallback(onSuccess)
+        deferred.addErrback(onError)
+
+        return deferred
 
     def retrieve_request_sign(self, user_id):
 

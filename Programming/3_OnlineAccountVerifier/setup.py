@@ -8,10 +8,12 @@ setup(
     description='',
     url='https://github.com/Mattie432/Blockchain-Voting-System',
     packages=[
-        'onlineballotregulator'
+        'onlineaccountverifier'
     ],
     install_requires=[
         'Twisted>=17.1.0',
-        'psycopg2'
+        'psycopg2',
+        'crochet',
+        'pycrypto'
     ]
 )

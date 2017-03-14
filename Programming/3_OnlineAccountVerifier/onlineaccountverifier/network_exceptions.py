@@ -18,3 +18,29 @@ class UserAlreadySubmittedTokenForThisBallot(Exception):
         self.user_id=user_id
         self.ballot_id=ballot_id
         self.blind_token=blind_token
+
+class CannotSigningBlindToken(Exception):
+    '''Raised when requesting token signiture and the user cannot register for a ballot'''
+    def __init__(self, ballot_id, blind_token, msg=None):
+        if msg is None:
+            msg = "Error signing token '%s' for ballot '%s'" % (blind_token, ballot_id)
+        super(CannotSigningBlindToken, self).__init__(msg)
+        self.ballot_id=ballot_id
+        self.blind_token=blind_token
+
+class BadSignitureFromSignedToken(Exception):
+    def __init__(self, signed_token, token, ballot_id, msg=None):
+        if msg is None:
+            msg = "Error checking signiture for token '%s' for ballot '%s'" % (token, ballot_id)
+        super(BadSignitureFromSignedToken, self).__init__(msg)
+        self.ballot_id=ballot_id
+        self.signed_token=signed_token
+        self.token=token
+
+class BallotNotAvailable(Exception):
+    def __init__(self, ballot_id, msg=None):
+        if msg is None:
+            msg = "Requested ballot '%s' was not available on the 'onlineballotregulator' host." % (ballot_id)
+        super(BadSignitureFromSignedToken, self).__init__(msg)
+        self.ballot_id=ballot_id
+

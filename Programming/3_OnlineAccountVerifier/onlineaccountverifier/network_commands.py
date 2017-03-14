@@ -17,22 +17,46 @@ class Request_SignBlindToken(Command):
     arguments = [
         (b'user_id',            amp.Integer()),
         (b'ballot_id',          amp.Integer()),
-        (b'blind_token',        amp.Unicode())
+        (b'blind_token',        amp.String())
     ]
     response = [
-        (b'ok', amp.Boolean())
+        (b'ok', amp.String())
     ]
     errors = {
-        # psycopg2.IntegrityError : b'IntegrityError',
-        # psycopg2.ProgrammingError : b'ProgrammingError'
-        # Exception : b'Exc'
-        # Exception : b'UserBallotError'
+        psycopg2.IntegrityError : b'IntegrityError',
+        psycopg2.ProgrammingError : b'ProgrammingError',
+        UserNotRegisterdForBallot : b'NotRegistered',
+        Exception : b'Request_SignBlindToken'
     }
 
+class Request_RegisterAddressToBallot(Command):
+    arguments = [
+        (b'ballot_id',              amp.Integer()),
+        (b'pickled_signed_token',   amp.String()),
+        (b'pickled_token',          amp.String()),
+        (b'pickled_voter_address',  amp.String())
+    ]
+    response = [
+        (b'ok',                 amp.Boolean())
+    ]
+    errors = {
+
+    }
 
 class Request_RetrieveBallots(Command):
     arguments = [
         (b'user_id',    amp.Integer())
+    ]
+    response = [
+        (b'ok',         amp.String())
+    ]
+    errors = {
+        psycopg2.ProgrammingError : b'ProgrammingError'
+    }
+
+
+class Request_RetrieveAllBallots(Command):
+    arguments = [
     ]
     response = [
         (b'ok',         amp.String())
