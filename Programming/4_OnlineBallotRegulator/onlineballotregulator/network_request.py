@@ -16,13 +16,13 @@ class RequestHandler(amp.AMP):
 
         return deferred
 
-    @Request_RetrieveBallots.responder
-    def request_retrieve_ballots(self, user_id):
+    @Request_RetrieveUserBallots.responder
+    def request_retrieve_user_ballots(self, user_id):
         print('[RequestHandler - request_retrieve_ballots] Received request : user_id:%d ' % (user_id))
 
         databasequery = self.factory.get_databasequery()
 
-        deferred = databasequery.retrieve_ballots(user_id)
+        deferred = databasequery.retrieve_user_ballots(user_id)
 
 
         return deferred
@@ -35,6 +35,16 @@ class RequestHandler(amp.AMP):
         databasequery = self.factory.get_databasequery()
 
         deferred = databasequery.retrieve_all_ballots()
+
+        return deferred
+
+    @Request_RetrieveRegisteredUserBallots.responder
+    def request_retrieve_registered_user_ballots(self, user_id):
+        print('[RequestHandler - request_retrieve_registered_user] Received request for user_id=\'%s\' ballots' % user_id)
+
+        databasequery = self.factory.get_databasequery()
+
+        deferred = databasequery.retrieve_userid_registered_ballots(user_id)
 
         return deferred
 

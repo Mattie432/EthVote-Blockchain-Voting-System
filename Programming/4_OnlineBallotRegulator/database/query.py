@@ -41,7 +41,7 @@ class DatabaseQuery:
             raise ConnectionError
 
 
-    def retrieve_ballots(self, user_id):
+    def retrieve_user_ballots(self, user_id):
 
         """
         Requests all rows ascociated with a user_id from the ballot_register table. Will
@@ -116,7 +116,6 @@ class DatabaseQuery:
 
         return deferred
 
-
     def register_userid_ballotid(self, user_id, ballot_id):
 
         """
@@ -140,6 +139,36 @@ class DatabaseQuery:
             cursor.execute(statement)
 
         deferred = self.dbConnection.runInteraction(_insert, user_id, ballot_id)
+        deferred.addCallback(onSuccess)
+        deferred.addErrback(onError)
+
+        return deferred
+
+    def retrieve_userid_registered_ballots(self, user_id):
+
+        """
+        Requests all rows from the ballot_register table which are for a user_id. Will return
+        either a dictionary (onSucsess) or raise an exception (onError) to be passed back to the client.
+
+        :return:
+        """
+
+        def onSuccess(results):
+            print ("[DatabaseQuery - retrieve_userid_registered_ballots] - Query sucsess:")
+            pprint.pprint(results, indent=4)
+
+            # Convert list of results to bytes for transport
+            encoded_results = pickle.dumps(results)
+
+            return {'ok' : encoded_results}
+
+        def onError(failure):
+            print ("[DatabaseQuery - retrieve_userid_registered_ballots] - Query error:")
+            pprint.pprint(failure.value)
+            raise failure.raiseException()
+
+        query = "SELECT * FROM ballot_register WHERE user_id='%s';" % user_id
+        deferred = self.dbConnection.runQuery(query)
         deferred.addCallback(onSuccess)
         deferred.addErrback(onError)
 
