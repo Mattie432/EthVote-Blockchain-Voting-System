@@ -36,3 +36,13 @@ class Request_RetrieveBallots(Command):
     errors = {
         psycopg2.ProgrammingError : b'ProgrammingError'
     }
+
+class Request_RetrieveAllBallots(Command):
+    arguments = [
+    ]
+    response = [
+        (b'ok',         amp.String())
+    ]
+    errors = {
+        psycopg2.ProgrammingError : b'ProgrammingError'
+    }

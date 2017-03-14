@@ -85,6 +85,38 @@ class DatabaseQuery:
         return deferred
 
 
+
+    def retrieve_all_ballots(self):
+
+        """
+        Requests all rows from the ballot_register table. Will return either a dictionary
+        (onSucsess) or raise an exception (onError) to be passed back to the client.
+
+        :return:
+        """
+
+        def onSuccess(results):
+            print ("[DatabaseQuery - retrieve_all_ballots] - Query sucsess:")
+            pprint.pprint(results, indent=4)
+
+            # Convert list of results to bytes for transport
+            encoded_results = pickle.dumps(results)
+
+            return {'ok' : encoded_results}
+
+        def onError(failure):
+            print ("[DatabaseQuery - retrieve_all_ballots] - Query error:")
+            pprint.pprint(failure.value)
+            raise failure.raiseException()
+
+        query = "SELECT * FROM available_ballots;"
+        deferred = self.dbConnection.runQuery(query)
+        deferred.addCallback(onSuccess)
+        deferred.addErrback(onError)
+
+        return deferred
+
+
     def register_userid_ballotid(self, user_id, ballot_id):
 
         """

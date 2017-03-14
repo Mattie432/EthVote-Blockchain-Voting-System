@@ -28,6 +28,17 @@ class RequestHandler(amp.AMP):
         return deferred
 
 
+    @Request_RetrieveAllBallots.responder
+    def request_retrieve_all_ballots(self):
+        print('[RequestHandler - request_retrieve_all_ballots] Received request for all ballots')
+
+        databasequery = self.factory.get_databasequery()
+
+        deferred = databasequery.retrieve_all_ballots()
+
+        return deferred
+
+
 
 class MyServerFactory(Factory):
     protocol = RequestHandler
