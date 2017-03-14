@@ -190,3 +190,9 @@ TSWLatexianTemp*
 
 # Ignore example folders
 examples/
+
+# Ignore Keys folders
+keys/
+
+# Ignore pem files
+*.pem
