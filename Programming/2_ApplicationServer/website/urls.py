@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib.auth import views as auth_views
-from website.views import (Dashboard, HomepageRedirect)
+from website.views import (Dashboard, HomepageRedirect, RegisterForBallot)
 
 urlpatterns = [
 
     url(r'^dashboard/$',    Dashboard.as_view(),  name="applicationserver"),
     url(r'^$',    HomepageRedirect.as_view(), name="applicationserver"),
+    url(r'^register_for_ballot/(\d{2,5})/$',    RegisterForBallot.as_view(), name="applicationserver"),
     #url(r'^accounts/', include('accounts.urls', namespace='accounts')),
 ]

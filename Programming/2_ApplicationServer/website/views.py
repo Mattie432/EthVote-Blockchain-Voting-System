@@ -1,4 +1,7 @@
 import time
+
+from django.http import Http404
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 from django.shortcuts import render
@@ -22,6 +25,25 @@ class HomepageRedirect(View):
     """
     def get(self, request):
         return HttpResponseRedirect('/dashboard/')
+
+
+class RegisterForBallot(LoginRequiredMixin, View):
+
+    def get(self, request, ballot_id):
+        try:
+            offset = int(ballot_id)
+        except ValueError:
+            raise Http404("Coudnt cast ballot_id to int")
+
+
+
+
+
+
+        html = "Request for ballot id='%s'" % ballot_id
+        return HttpResponse(html)
+
+
 
 class Dashboard(LoginRequiredMixin, View):
     """

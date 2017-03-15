@@ -35,11 +35,13 @@
                                     <td>
                                         {% if row.registered == False %}
                                         <div style="line-height:50%">
-                                            <input class="btn btn-primary btn-sm " type="button" id="register" name="hid" value="Register"/>
+                                            <form action="/register_for_ballot/{{ row.ballot_id }}">
+                                            <input  class="btn btn-primary btn-sm " type="submit" value="Register" />
+                                        </form>
                                         </div>
                                         {% else %}
                                         <div style="line-height:50%">
-                                            <input class="btn btn-primary btn-sm " type="button" id="vote" name="hid" value="Vote"/>
+                                            <input class="btn btn-primary btn-sm " type="button" value="Vote"/>
                                         </div>
                                         {% endif %}
                                     </td>
