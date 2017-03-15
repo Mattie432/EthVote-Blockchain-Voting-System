@@ -18,8 +18,8 @@ class RequestHandler(amp.AMP):
         self.twisted_ballotregulator_port = int(os.environ['TWISTED_BALLOTREGULATOR_PORT'])
         self.twisted_ballotregulator_ip = str(os.environ['TWISTED_BALLOTREGULATOR_IP'])
 
-    @Request_SignBlindToken.responder
-    def request_sign_blind_token(self, user_id, ballot_id, blind_token):
+    @OnlineAccountVerifier_SignBlindToken.responder
+    def sign_blind_token(self, user_id, ballot_id, blind_token):
         """
         http://twistedmatrix.com/documents/12.1.0/core/howto/defer.html#class
 
@@ -35,7 +35,7 @@ class RequestHandler(amp.AMP):
         # First we need to query the OnlineBallotRegulator for the 'user_id'
 
         def searchuser_onconected(ampProto):
-            return ampProto.callRemote(Request_RetrieveRegisteredUserBallots, user_id=user_id)
+            return ampProto.callRemote(OnlineBallotRegulator_SearchBallotRegisterForUserId, user_id=user_id)
 
         def searchuser_callremote_errback(failure):
             print("There was an error in the remote call", type(failure))
@@ -104,7 +104,7 @@ class RequestHandler(amp.AMP):
 
         def checkfirsttime_userid_ballotid(userid_found_in_onlineballotregulator):
 
-            query = databasequery.retrieve_request_sign(user_id)
+            query = databasequery.search_token_request_for_user_id(user_id)
 
             def checkReturnedQuery(pickled_result):
                 # First unpickle the results.
@@ -172,7 +172,7 @@ class RequestHandler(amp.AMP):
             hash.update(str(blind_token).encode())
             blind_token_hash = hash.hexdigest()
 
-            defer = databasequery.register_token_request(blind_token_hash, user_id, ballot_id)
+            defer = databasequery.insert_into_register_token_blind_token_hash_user_id_ballot_id(blind_token_hash, user_id, ballot_id)
 
             # Cool, saving worked. Return singed token to user.
 
@@ -202,14 +202,14 @@ class RequestHandler(amp.AMP):
         return save_token_request
 
 
-    @Request_RetrieveSignBlindTokenForUser.responder
-    def request_retrieve_SignBlindToken_by_userid(self, user_id):
+    @OnlineAccountVerifier_SearchTokenRequestForUserId.responder
+    def search_token_request_for_user_id(self, user_id):
         databasequery = self.factory.get_databasequery()
 
-        return databasequery.retrieve_request_sign(user_id)
+        return databasequery.search_token_request_for_user_id(user_id)
 
 
-    @Request_PublicKeyForBallot.responder
+    @OnlineAccountVerifier_GetPublicKeyForBallot.responder
     def request_public_key_for_ballot(self, ballot_id):
 
         d = defer.Deferred()
@@ -229,8 +229,8 @@ class RequestHandler(amp.AMP):
         return d
 
 
-    @Request_RegisterAddressToBallot.responder
-    def request_register_address_to_ballot(self, ballot_id, pickled_signed_token, pickled_token, pickled_voter_address):
+    @OnlineAccountVerifier_RegisterAddressToBallot.responder
+    def register_address_to_ballot(self, ballot_id, pickled_signed_token, pickled_token, pickled_voter_address):
         """
         Called after obtaining a signed_blind_token from `request_sign_blind_token`. This will allow you to
         register an ethereum address to vote on a ballot contract.
@@ -247,7 +247,7 @@ class RequestHandler(amp.AMP):
         token = pickle.loads(pickled_token)
         voter_address = pickle.loads(pickled_voter_address)
 
-        print('[RequestHandler - request_register_address_to_ballot] Received request : ballot_id:%d, token:%s, signed_token:%s...' % (ballot_id, token, str(signed_token)[0:20]))
+        print('[RequestHandler - register_address_to_ballot] Received request : ballot_id:%d, token:%s, signed_token:%s...' % (ballot_id, token, str(signed_token)[0:20]))
 
         databasequery = self.factory.get_databasequery()
 
@@ -263,13 +263,13 @@ class RequestHandler(amp.AMP):
 
         top_defer = defer.Deferred()
         check_token_signed_for_ballot_result = top_defer.addCallback(check_token_signed_for_ballot).addErrback(check_token_signed_for_ballot_errback)
-        top_defer.callback(None) # Start our defered calls
+        top_defer.callback(None) # Start our deferred calls
 
         # Next we need to check that this is the first time we are seeing this token + (voter_address & ballot_id)
 
         def check_first_time_seeing_token_ballotid_voteraddress(prev_result):
 
-            query = databasequery.retrieve_request_register(ballot_id, voter_address)
+            query = databasequery.search_ballot_register_for_ballot_id(ballot_id, voter_address)
 
             def checkReturnedQuery(pickled_result):
                 # First unpickle the results.
@@ -312,7 +312,7 @@ class RequestHandler(amp.AMP):
             requestsearchuser_deferred = connectProtocol(destination, AMP())
 
             def requestsearchuser_connected(ampProto):
-                return ampProto.callRemote(Request_RetrieveAllBallots)
+                return ampProto.callRemote(OnlineBallotRegulator_SearchBallotsAvailableForAllBallots)
             requestsearchuser_deferred.addCallback(requestsearchuser_connected)
 
             def done(result):
@@ -358,6 +358,7 @@ class RequestHandler(amp.AMP):
         # Register on the ethereum contract.
 
         def register_voteraddress_ethereumcontract(prev_result):
+            # TODO
             pass
 
         def register_voteraddress_ethereumcontract_errback(failure):
@@ -375,14 +376,13 @@ class RequestHandler(amp.AMP):
             hash.update(str(signed_token).encode())
             signed_token_hash = hash.hexdigest()
 
-            return databasequery.register_vote_request(signed_token_hash, voter_address, ballot_id)
+            return databasequery.insert_into_register_vote_signed_token_hash_voter_address_ballot_id(signed_token_hash, voter_address, ballot_id)
 
         def save_vote_registration_errback(failure):
             print("[RequestHandler - request_sign_blind_token - save_vote_registration_errback] There was an error saving the vote registration.")
             raise failure.raiseException()
 
         save_vote_registration_result = register_voteraddress_ethereumcontract_result.addCallback(save_vote_registration).addErrback(save_vote_registration_errback)
-
 
         def return_results_to_client(res):
             print("[RequestHandler - request_sign_blind_token - return_results_to_client] Returning 'ok' to client.")

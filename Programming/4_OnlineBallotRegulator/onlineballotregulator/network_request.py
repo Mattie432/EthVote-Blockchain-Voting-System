@@ -5,36 +5,36 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 
 class RequestHandler(amp.AMP):
 
-    @Request_RegisterUser.responder
-    def request_register_user(self, user_id, ballot_id):
-        print('[RequestHandler - request_register_user] Received request : user_id:%d, ballot_id:%d' % (user_id, ballot_id))
+    @OnlineBallotRegulator_RegisterUserIdForBallotId.responder
+    def insert_into_ballot_register_user_id_ballot_id(self, user_id, ballot_id):
+        print('[RequestHandler - insert_into_ballot_register_user_id_ballot_id] Received request : user_id:%d, ballot_id:%d' % (user_id, ballot_id))
 
         databasequery = self.factory.get_databasequery()
 
-        deferred = databasequery.register_userid_ballotid(user_id, ballot_id)
+        deferred = databasequery.insert_into_ballot_register_user_id_ballot_id(user_id, ballot_id)
 
 
         return deferred
 
-    @Request_RetrieveRegisteredUserBallots.responder
-    def request_retrieve_user_ballots(self, user_id):
+    @OnlineBallotRegulator_SearchBallotRegisterForUserId.responder
+    def search_ballot_register_for_user_id(self, user_id):
         print('[RequestHandler - request_retrieve_ballots] Received request : user_id:%d ' % (user_id))
 
         databasequery = self.factory.get_databasequery()
 
-        deferred = databasequery.retrieve_userid_registered_ballots(user_id)
+        deferred = databasequery.search_ballot_register_for_user_id(user_id)
 
 
         return deferred
 
 
-    @Request_RetrieveAllBallots.responder
-    def request_retrieve_all_ballots(self):
-        print('[RequestHandler - request_retrieve_all_ballots] Received request for all ballots')
+    @OnlineBallotRegulator_SearchBallotsAvailableForAllBallots.responder
+    def search_ballots_available_for_all_ballots(self):
+        print('[RequestHandler - search_ballots_available_for_all_ballots] Received request for all ballots')
 
         databasequery = self.factory.get_databasequery()
 
-        deferred = databasequery.retrieve_all_ballots()
+        deferred = databasequery.search_ballots_available_for_all_ballots()
 
         return deferred
 

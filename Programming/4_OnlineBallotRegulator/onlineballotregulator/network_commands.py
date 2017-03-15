@@ -11,7 +11,7 @@ import psycopg2
 #
 ##########################################
 
-class Request_RegisterUser(Command):
+class OnlineBallotRegulator_RegisterUserIdForBallotId(Command):
     arguments = [
         (b'user_id',            amp.Integer()),
         (b'ballot_id',          amp.Integer())
@@ -24,7 +24,7 @@ class Request_RegisterUser(Command):
         psycopg2.ProgrammingError : b'ProgrammingError'
     }
 
-class Request_RetrieveRegisteredUserBallots(Command):
+class OnlineBallotRegulator_SearchBallotRegisterForUserId(Command):
     arguments = [
         (b'user_id',            amp.Integer())
     ]
@@ -35,7 +35,7 @@ class Request_RetrieveRegisteredUserBallots(Command):
         psycopg2.IntegrityError : b'IntegrityError'
     }
 
-class Request_RetrieveAllBallots(Command):
+class OnlineBallotRegulator_SearchBallotsAvailableForAllBallots(Command):
     arguments = [
     ]
     response = [

@@ -3,7 +3,7 @@ from twisted.protocols.amp import Command
 import psycopg2
 
 
-class Request_RegisterUser(Command):
+class OnlineBallotRegulator_RegisterUserIdForBallotId(Command):
     arguments = [
         (b'user_id',            amp.Integer()),
         (b'ballot_id',          amp.Integer())
@@ -17,7 +17,7 @@ class Request_RegisterUser(Command):
         psycopg2.ProgrammingError : b'ProgrammingError'
     }
 
-class Request_RetrieveRegisteredUserBallots(Command):
+class OnlineBallotRegulator_SearchBallotRegisterForUserId(Command):
     arguments = [
         (b'user_id',            amp.Integer())
     ]
@@ -41,7 +41,7 @@ class Request_RetrieveUserBallots(Command):
     }
 
 
-class Request_RetrieveSignBlindTokenForUser(Command):
+class OnlineAccountVerifier_SearchTokenRequestForUserId(Command):
     arguments = [
         (b'user_id',            amp.Integer())
     ]
@@ -52,7 +52,12 @@ class Request_RetrieveSignBlindTokenForUser(Command):
         #TODO add errors
     }
 
-class Request_PublicKeyForBallot(Command):
+
+
+
+
+
+class OnlineAccountVerifier_GetPublicKeyForBallot(Command):
     arguments = [
         (b'ballot_id',              amp.Integer())
     ]

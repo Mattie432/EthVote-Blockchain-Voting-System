@@ -5,7 +5,7 @@ from twisted.internet.endpoints import TCP4ClientEndpoint, connectProtocol
 from twisted.protocols.amp import AMP
 import pickle
 from twisted.internet.defer import inlineCallbacks, returnValue
-from onlineaccountverifier.network_commands import Request_RetrieveAllBallots
+from onlineaccountverifier.network_commands import OnlineBallotRegulator_SearchBallotsAvailableForAllBallots
 from subprocess import call
 
 #Setup crochet
@@ -34,7 +34,7 @@ def getAllBallots():
     # NOTE: using inline callbacks here so we dont have to write/wait for callbacks.
     destination_deferred = yield TCP4ClientEndpoint(reactor, twisted_ballotregulator_ip, twisted_ballotregulator_port)
     connection_deferred = yield connectProtocol(destination_deferred, AMP())
-    result_deferred = yield connection_deferred.callRemote(Request_RetrieveAllBallots)
+    result_deferred = yield connection_deferred.callRemote(OnlineBallotRegulator_SearchBallotsAvailableForAllBallots)
 
     def format_results(pickled_result):
 

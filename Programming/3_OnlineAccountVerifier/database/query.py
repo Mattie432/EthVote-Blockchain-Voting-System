@@ -40,7 +40,7 @@ class DatabaseQuery:
         else:
             raise ConnectionError
 
-    def register_token_request(self, blind_token, user_id, ballot_id):
+    def insert_into_register_token_blind_token_hash_user_id_ballot_id(self, blind_token_hash, user_id, ballot_id):
 
         """
         Register a token signiture request in the database.
@@ -58,7 +58,7 @@ class DatabaseQuery:
 
         def _insert(cursor, user_id, ballot_id):
             statement = "INSERT INTO token_request (blind_token_hash, user_id, ballot_id) VALUES (%s, %s, %s);"
-            cursor.execute(statement, (blind_token, user_id, ballot_id))
+            cursor.execute(statement, (blind_token_hash, user_id, ballot_id))
 
         deferred = self.dbConnection.runInteraction(_insert, user_id, ballot_id)
         deferred.addCallback(onSuccess)
@@ -66,7 +66,7 @@ class DatabaseQuery:
 
         return deferred
 
-    def register_vote_request(self, signed_token_hash, voter_address, ballot_id):
+    def insert_into_register_vote_signed_token_hash_voter_address_ballot_id(self, signed_token_hash, voter_address, ballot_id):
 
         """
         Register a token signiture request in the database.
@@ -92,7 +92,7 @@ class DatabaseQuery:
 
         return deferred
 
-    def retrieve_request_sign(self, user_id):
+    def search_token_request_for_user_id(self, user_id):
 
         """
         Requests all rows ascociated with a user_id from the token_request table. Will
@@ -124,8 +124,7 @@ class DatabaseQuery:
 
         return deferred
 
-
-    def retrieve_request_register(self, ballot_id, voter_address):
+    def search_ballot_register_for_ballot_id(self, ballot_id, voter_address):
 
         """
         Requests all rows ascociated with a ballot_id from the ballot_register table. Will

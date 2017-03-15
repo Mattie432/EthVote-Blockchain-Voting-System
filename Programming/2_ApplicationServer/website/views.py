@@ -13,7 +13,7 @@ from twisted.internet.endpoints import TCP4ClientEndpoint, connectProtocol
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.protocols.amp import AMP
 import pickle, os
-from website.network_commands import Request_RetrieveSignBlindTokenForUser, Request_RetrieveRegisteredUserBallots
+from website.network_commands import OnlineAccountVerifier_SearchTokenRequestForUserId, OnlineBallotRegulator_SearchBallotRegisterForUserId
 
 
 from crochet import setup, run_in_reactor
@@ -72,7 +72,7 @@ class Dashboard(LoginRequiredMixin, View):
         # NOTE: using inline callbacks here so we dont have to write/wait for callbacks.
         destination_deferred = yield TCP4ClientEndpoint(reactor, self.ballotregulator_ip, self.ballotregulator_port)
         connection_deferred = yield connectProtocol(destination_deferred, AMP())
-        result_deferred = yield connection_deferred.callRemote(Request_RetrieveRegisteredUserBallots, user_id=user_id)
+        result_deferred = yield connection_deferred.callRemote(OnlineBallotRegulator_SearchBallotRegisterForUserId, user_id=user_id)
 
         def format_results(pickled_result):
 
@@ -110,7 +110,7 @@ class Dashboard(LoginRequiredMixin, View):
         # NOTE: using inline callbacks here so we dont have to write/wait for callbacks.
         destination_deferred = yield TCP4ClientEndpoint(reactor, self.accountverifier_ip, self.accountverifier_port)
         connection_deferred = yield connectProtocol(destination_deferred, AMP())
-        result_deferred = yield connection_deferred.callRemote(Request_RetrieveSignBlindTokenForUser, user_id=user_id)
+        result_deferred = yield connection_deferred.callRemote(OnlineAccountVerifier_SearchTokenRequestForUserId, user_id=user_id)
 
         def format_results(pickled_result):
 

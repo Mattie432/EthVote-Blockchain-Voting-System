@@ -41,7 +41,7 @@ class DatabaseQuery:
             raise ConnectionError
 
 
-    def retrieve_userid_registered_ballots(self, user_id):
+    def search_ballot_register_for_user_id(self, user_id):
 
         """
         Requests all rows ascociated with a user_id from the ballot_register table. Will
@@ -85,8 +85,7 @@ class DatabaseQuery:
         return deferred
 
 
-
-    def retrieve_all_ballots(self):
+    def search_ballots_available_for_all_ballots(self):
 
         """
         Requests all rows from the ballot_register table. Will return either a dictionary
@@ -96,7 +95,7 @@ class DatabaseQuery:
         """
 
         def onSuccess(results):
-            print ("[DatabaseQuery - retrieve_all_ballots] - Query sucsess:")
+            print ("[DatabaseQuery - search_ballots_available_for_all_ballots] - Query sucsess:")
             pprint.pprint(results, indent=4)
 
             # Convert list of results to bytes for transport
@@ -105,7 +104,7 @@ class DatabaseQuery:
             return {'ok' : encoded_results}
 
         def onError(failure):
-            print ("[DatabaseQuery - retrieve_all_ballots] - Query error:")
+            print ("[DatabaseQuery - search_ballots_available_for_all_ballots] - Query error:")
             pprint.pprint(failure.value)
             raise failure.raiseException()
 
@@ -116,7 +115,7 @@ class DatabaseQuery:
 
         return deferred
 
-    def register_userid_ballotid(self, user_id, ballot_id):
+    def insert_into_ballot_register_user_id_ballot_id(self, user_id, ballot_id):
 
         """
         Request to register a user for a ballot in the ballot_register table. Will return
@@ -126,11 +125,11 @@ class DatabaseQuery:
         """
 
         def onSuccess():
-            print ("[DatabaseQuery - register_userid_ballotid] - Insert sucsess:")
+            print ("[DatabaseQuery - insert_into_ballot_register_user_id_ballot_id] - Insert sucsess:")
             return {'ok' : True}
 
         def onError(failure):
-            print ("[DatabaseQuery - register_userid_ballotid] - Insert error:")
+            print ("[DatabaseQuery - insert_into_ballot_register_user_id_ballot_id] - Insert error:")
             pprint.pprint(failure.value)
             raise failure.raiseException()
 

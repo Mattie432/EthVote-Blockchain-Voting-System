@@ -13,7 +13,7 @@ import psycopg2
 #
 ##########################################
 
-class Request_SignBlindToken(Command):
+class OnlineAccountVerifier_SignBlindToken(Command):
     arguments = [
         (b'user_id',            amp.Integer()),
         (b'ballot_id',          amp.Integer()),
@@ -26,11 +26,10 @@ class Request_SignBlindToken(Command):
         psycopg2.IntegrityError : b'IntegrityError',
         psycopg2.ProgrammingError : b'ProgrammingError',
         UserNotRegisterdForBallot : b'NotRegistered',
-        Exception : b'Request_SignBlindToken'
+        Exception : b'OnlineAccountVerifier_SignBlindToken'
     }
 
-
-class Request_RetrieveSignBlindTokenForUser(Command):
+class OnlineAccountVerifier_SearchTokenRequestForUserId(Command):
     arguments = [
         (b'user_id',            amp.Integer())
     ]
@@ -39,9 +38,10 @@ class Request_RetrieveSignBlindTokenForUser(Command):
     ]
     errors = {
         #TODO add errors
+        Exception : b'OnlineAccountVerifier_SearchTokenRequestForUserId'
     }
 
-class Request_RegisterAddressToBallot(Command):
+class OnlineAccountVerifier_RegisterAddressToBallot(Command):
     arguments = [
         (b'ballot_id',              amp.Integer()),
         (b'pickled_signed_token',   amp.String()),
@@ -53,10 +53,10 @@ class Request_RegisterAddressToBallot(Command):
     ]
     errors = {
         #TODO add errors
+        Exception : b'OnlineAccountVerifier_RegisterAddressToBallot'
     }
 
-
-class Request_PublicKeyForBallot(Command):
+class OnlineAccountVerifier_GetPublicKeyForBallot(Command):
     arguments = [
         (b'ballot_id',          amp.Integer())
     ]
@@ -64,14 +64,14 @@ class Request_PublicKeyForBallot(Command):
         (b'ok',                 amp.String())
     ]
     errors = {
-        Exception : b'RequestPublicSigningKeyError'
+        Exception : b'OnlineAccountVerifier_GetPublicKeyForBallot'
     }
 
 
 
 # Other Classes
 
-class Request_RetrieveRegisteredUserBallots(Command):
+class OnlineBallotRegulator_SearchBallotRegisterForUserId(Command):
     arguments = [
         (b'user_id',    amp.Integer())
     ]
@@ -83,7 +83,7 @@ class Request_RetrieveRegisteredUserBallots(Command):
     }
 
 
-class Request_RetrieveAllBallots(Command):
+class OnlineBallotRegulator_SearchBallotsAvailableForAllBallots(Command):
     arguments = [
     ]
     response = [
