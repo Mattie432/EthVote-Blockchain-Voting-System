@@ -58,7 +58,7 @@ class Request_RegisterAddressToBallot(Command):
 
 class Request_PublicKeyForBallot(Command):
     arguments = [
-        (b'ballot_id',              amp.Integer())
+        (b'ballot_id',          amp.Integer())
     ]
     response = [
         (b'ok',                 amp.String())
