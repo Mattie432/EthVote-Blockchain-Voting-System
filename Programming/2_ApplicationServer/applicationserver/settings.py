@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'website',
     'accounts',
+    'user_ballot_registration',
 ]
 
 MIDDLEWARE = [

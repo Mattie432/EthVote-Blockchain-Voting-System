@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib.auth import views as auth_views
-from website.views import (Dashboard, HomepageRedirect, RegisterForBallot)
+from website.views import (Dashboard, HomepageRedirect)
+from user_ballot_registration.views import (RegisterForBallot)
 
 urlpatterns = [
 
