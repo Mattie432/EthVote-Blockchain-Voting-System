@@ -35,7 +35,7 @@ class RequestHandler(amp.AMP):
         # First we need to query the OnlineBallotRegulator for the 'user_id'
 
         def searchuser_onconected(ampProto):
-            return ampProto.callRemote(Request_RetrieveBallots, user_id=user_id)
+            return ampProto.callRemote(Request_RetrieveRegisteredUserBallots, user_id=user_id)
 
         def searchuser_callremote_errback(failure):
             print("There was an error in the remote call", type(failure))
@@ -207,6 +207,26 @@ class RequestHandler(amp.AMP):
         databasequery = self.factory.get_databasequery()
 
         return databasequery.retrieve_request_sign(user_id)
+
+
+    @Request_PublicKeyForBallot.responder
+    def request_public_key_for_ballot(self, ballot_id):
+
+        d = defer.Deferred()
+
+        def request(ignored):
+            public_key_string = token_request.get_public_key_string(ballot_id)
+            pickled_public_key_string = pickle.dumps(public_key_string)
+
+            return { 'ok' : pickled_public_key_string }
+
+        def request_errback(failure):
+            raise failure.raiseException()
+
+        d.addCallback(request).addErrback(request_errback)
+        d.callback(None)
+
+        return d
 
 
     @Request_RegisterAddressToBallot.responder

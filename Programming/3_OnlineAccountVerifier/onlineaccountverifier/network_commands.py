@@ -56,10 +56,22 @@ class Request_RegisterAddressToBallot(Command):
     }
 
 
+class Request_PublicKeyForBallot(Command):
+    arguments = [
+        (b'ballot_id',              amp.Integer())
+    ]
+    response = [
+        (b'ok',                 amp.String())
+    ]
+    errors = {
+        Exception : b'RequestPublicSigningKeyError'
+    }
+
+
 
 # Other Classes
 
-class Request_RetrieveBallots(Command):
+class Request_RetrieveRegisteredUserBallots(Command):
     arguments = [
         (b'user_id',    amp.Integer())
     ]
@@ -80,15 +92,3 @@ class Request_RetrieveAllBallots(Command):
     errors = {
         psycopg2.ProgrammingError : b'ProgrammingError'
     }
-
-
-# class Request_RetrieveBallots(Command):
-#     arguments = [
-#         (b'user_id',    amp.Integer())
-#     ]
-#     response = [
-#         (b'ok',         amp.String())
-#     ]
-#     errors = {
-#         psycopg2.ProgrammingError : b'ProgrammingError'
-#     }
