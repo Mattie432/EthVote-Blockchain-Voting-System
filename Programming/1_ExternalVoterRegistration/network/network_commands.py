@@ -121,3 +121,15 @@ class OnlineBallotRegulator_SearchBallotsAvailableForAllBallots(Command):
     errors = {
         psycopg2.ProgrammingError : b'ProgrammingError'
     }
+
+class ApplicationServer_RegisterNewUser(Command):
+    arguments = [
+        (b'user_id',            amp.Integer()),
+        (b'password',            amp.Unicode())
+    ]
+    response = [
+        (b'ok',         amp.Boolean())
+    ]
+    errors = {
+        Exception : b'Exception'
+    }

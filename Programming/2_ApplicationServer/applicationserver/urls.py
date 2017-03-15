@@ -1,7 +1,6 @@
 """applicationserver URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.10/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -16,9 +15,18 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
+
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('website.urls')),
     url(r'^', include('accounts.urls')),
     url(r'^', include('user_ballot_registration.urls')),
 ]
+
+try:
+    import accounts.remote_user_add as RemoteAddUser
+    server = RemoteAddUser.ServerListener()
+    server.start()
+except:
+    print("Failed to start remote add servive... Failing silently.")

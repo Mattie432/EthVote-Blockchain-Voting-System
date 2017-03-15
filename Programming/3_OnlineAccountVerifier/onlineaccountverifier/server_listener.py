@@ -1,10 +1,10 @@
 import psycopg2, os, socket
 from twisted.internet import reactor, protocol
+from onlineaccountverifier.network_request import MyServerFactory
 from twisted.internet.protocol import Factory
 # noinspection PyUnresolvedReferences
 from database.query import DatabaseQuery
 # from .network_request import MyServerFactory
-from onlineaccountverifier.network_request import MyServerFactory
 
 class ServerListener():
 

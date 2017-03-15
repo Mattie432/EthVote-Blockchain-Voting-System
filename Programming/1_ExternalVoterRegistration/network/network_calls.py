@@ -15,6 +15,8 @@ ballotregulator_ip       = os.environ[ 'TWISTED_BALLOTREGULATOR_IP' ]
 ballotregulator_port       = int(os.environ[ 'TWISTED_BALLOTREGULATOR_PORT' ])
 accountverifier_ip       = os.environ[ 'TWISTED_ACCOUNTVERIFIER_IP' ]
 accountverifier_port       = int(os.environ[ 'TWISTED_ACCOUNTVERIFIER_PORT' ])
+applicationserver_ip       = os.environ[ 'TWISTED_APPLICATIONSERVER_IP' ]
+applicationserver_port       = int(os.environ[ 'TWISTED_APPLICATIONSERVER_PORT' ])
 
 @run_in_reactor
 @inlineCallbacks
@@ -30,7 +32,19 @@ def getBallotPublicKey(ballot_id):
     # Inlinecallback return value.
     returnValue(format_results(result_deferred))
 
+@run_in_reactor
+@inlineCallbacks
+def requestRegisterUseridForBallotid(user_id, ballot_id):
 
+    destination_deferred = yield TCP4ClientEndpoint(reactor, ballotregulator_ip, ballotregulator_port)
+    connection_deferred = yield connectProtocol(destination_deferred, AMP())
+    result_deferred = yield connection_deferred.callRemote(OnlineBallotRegulator_RegisterUserIdForBallotId, user_id=int(user_id), ballot_id=int(ballot_id) )
+
+    def format_results(result):
+        return result['ok']
+
+    # Inlinecallback return value.
+    returnValue(format_results(result_deferred))
 
 @run_in_reactor
 @inlineCallbacks
@@ -188,6 +202,19 @@ def searchUserRegisteredBallots(user_id):
             record_list.append(mapper)
 
         return record_list
+
+    # Inlinecallback return value.
+    returnValue(format_results(result_deferred))
+
+@run_in_reactor
+@inlineCallbacks
+def requestRegisterNewUser(user_id, password):
+    destination_deferred = yield TCP4ClientEndpoint(reactor, applicationserver_ip, applicationserver_port)
+    connection_deferred = yield connectProtocol(destination_deferred, AMP())
+    result_deferred = yield connection_deferred.callRemote(ApplicationServer_RegisterNewUser, user_id=int(user_id), password=password)
+
+    def format_results(result):
+        return result['ok']
 
     # Inlinecallback return value.
     returnValue(format_results(result_deferred))

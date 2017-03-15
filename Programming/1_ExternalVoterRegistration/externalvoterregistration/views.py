@@ -1,3 +1,5 @@
+from random import randint, choice
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import login
 from django.http import HttpResponse
@@ -40,12 +42,18 @@ def register_user(request):
 
         result = True
 
+        user_id = randint(0,10000)
+        password = ''.join([choice('abcdefghijklmnopqrstuvwxyz0123456789%^*(-_=+)') for i in range(20)])
+
         try:
             # Register with applicationserver
+            user_success = NetworkRequest.requestRegisterNewUser(user_id, password)
+            if not user_success:
+                raise Exception()
 
             for ballot_id in ballot_ids:
                 try:
-                    result = False#NetworkRequest.requestRegisterNewBallot(ballot_id, ballot_name, ballot_address).wait(5)
+                    result = NetworkRequest.requestRegisterUseridForBallotid(user_id, ballot_id).wait(5)
                 except Exception as e:
                     result = e
                     break
@@ -53,7 +61,7 @@ def register_user(request):
             html = "<p>ballot_ids = %s </p>" \
                     "<p>user_id = %s </p>" \
                     "<p>password = %s </p>" \
-                   "<p>Result = %s </p>" % (ballot_ids, "user_id", "password", result)
+                   "<p>Result = %s </p>" % (ballot_ids, user_id, password, result)
 
             return HttpResponse(html)
 
