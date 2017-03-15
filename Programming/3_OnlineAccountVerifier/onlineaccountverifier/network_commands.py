@@ -29,6 +29,18 @@ class Request_SignBlindToken(Command):
         Exception : b'Request_SignBlindToken'
     }
 
+
+class Request_RetrieveSignBlindTokenForUser(Command):
+    arguments = [
+        (b'user_id',            amp.Integer())
+    ]
+    response = [
+        (b'ok', amp.String())
+    ]
+    errors = {
+        #TODO add errors
+    }
+
 class Request_RegisterAddressToBallot(Command):
     arguments = [
         (b'ballot_id',              amp.Integer()),
@@ -40,8 +52,12 @@ class Request_RegisterAddressToBallot(Command):
         (b'ok',                 amp.Boolean())
     ]
     errors = {
-
+        #TODO add errors
     }
+
+
+
+# Other Classes
 
 class Request_RetrieveBallots(Command):
     arguments = [

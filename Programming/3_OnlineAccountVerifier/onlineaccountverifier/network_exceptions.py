@@ -41,6 +41,15 @@ class BallotNotAvailable(Exception):
     def __init__(self, ballot_id, msg=None):
         if msg is None:
             msg = "Requested ballot '%s' was not available on the 'onlineballotregulator' host." % (ballot_id)
-        super(BadSignitureFromSignedToken, self).__init__(msg)
+        super(BallotNotAvailable, self).__init__(msg)
         self.ballot_id=ballot_id
+
+class BallotVoteraddressAlreadyRegistered(Exception):
+    def __init__(self, ballot_id, voter_address, signed_token, msg=None):
+        if msg is None:
+            msg = "The address '%s' is already registered with ballot '%s'." % (voter_address, ballot_id)
+        super(BallotVoteraddressAlreadyRegistered, self).__init__(msg)
+        self.ballot_id=ballot_id
+        self.voter_address=voter_address
+        self.signed_token=signed_token
 

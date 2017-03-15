@@ -202,6 +202,13 @@ class RequestHandler(amp.AMP):
         return save_token_request
 
 
+    @Request_RetrieveSignBlindTokenForUser.responder
+    def request_retrieve_SignBlindToken_by_userid(self, user_id):
+        databasequery = self.factory.get_databasequery()
+
+        return databasequery.retrieve_request_sign(user_id)
+
+
     @Request_RegisterAddressToBallot.responder
     def request_register_address_to_ballot(self, ballot_id, pickled_signed_token, pickled_token, pickled_voter_address):
         """
@@ -222,14 +229,16 @@ class RequestHandler(amp.AMP):
 
         print('[RequestHandler - request_register_address_to_ballot] Received request : ballot_id:%d, token:%s, signed_token:%s...' % (ballot_id, token, str(signed_token)[0:20]))
 
+        databasequery = self.factory.get_databasequery()
+
          # First we need to check that we received a validly signed token.
 
-        def check_token_signed_for_ballot(pickled_result):
+        def check_token_signed_for_ballot(ignored):
             result = token_request.check_token_signed_for_ballot(signed_token, token, ballot_id)
             return result
 
         def check_token_signed_for_ballot_errback(failure):
-            print("[RequestHandler - request_sign_blind_token - format_searchuser_results_errback] There was an error formatting the results", type(failure))
+            print("[RequestHandler - request_sign_blind_token - format_searchuser_results_errback] There was an error formatting the results")
             raise failure.raiseException()
 
         top_defer = defer.Deferred()
@@ -239,10 +248,39 @@ class RequestHandler(amp.AMP):
         # Next we need to check that this is the first time we are seeing this token + (voter_address & ballot_id)
 
         def check_first_time_seeing_token_ballotid_voteraddress(prev_result):
-            pass
+
+            query = databasequery.retrieve_request_register(ballot_id, voter_address)
+
+            def checkReturnedQuery(pickled_result):
+                # First unpickle the results.
+                results_list = pickle.loads(pickled_result['ok'])
+
+                 # Transform the list results into a dictionary.
+                record_list = []
+                for record in results_list:
+                    mapper = {
+                        'register_vote_id': record[0],
+                        'signed_token': record[1],
+                        'voter_address': record[2],
+                        'ballot_id': record[3],
+                        'timestamp': record[4]
+                    }
+                    # Append each row's dictionary to a list
+                    record_list.append(mapper)
+
+                if len(record_list):
+                    raise BallotVoteraddressAlreadyRegistered(record_list[0]['ballot_id'], record_list[0]['voter_address'], record_list[0]['signed_token'])
+
+                return True # Return something though we dont need to.
+
+            def checkReturnedQuery_Errback(failure):
+                raise failure.raiseException()
+
+            return query.addCallback(checkReturnedQuery).addErrback(checkReturnedQuery_Errback)
 
         def check_first_time_seeing_token_ballotid_voteraddress_errback(failure):
-            pass
+            print("[RequestHandler - request_sign_blind_token - check_first_time_seeing_token_ballotid_voteraddress_errback] There was an error when checking not already registered")
+            raise failure.raiseException()
 
         check_first_time_seeing_token_ballotid_voteraddress_result = check_token_signed_for_ballot_result.addCallback(check_first_time_seeing_token_ballotid_voteraddress).addErrback(check_first_time_seeing_token_ballotid_voteraddress_errback)
 
@@ -278,18 +316,21 @@ class RequestHandler(amp.AMP):
 
                 # Check the available ballots for *our* ballot
                 for record in record_list:
-                    if __name__ == '__main__':
-                        if record['ballot_id'] == ballot_id:
-                            return record
+                    if record['ballot_id'] == ballot_id:
+                        return record
 
                 # If we reach here we havent found *our* ballot in the list available
                 raise BallotNotAvailable(ballot_id)
 
-            parsed_results = requestsearchuser_deferred.addCallback(done)
+            def done_errback(failure):
+                raise failure.raiseException()
+
+            parsed_results = requestsearchuser_deferred.addCallback(done).addErrback(done_errback)
 
             return parsed_results
 
         def get_ballot_information_errback(failure):
+            print("[RequestHandler - request_sign_blind_token - get_ballot_information_errback] There was an error when getting the ballot information")
             raise failure.raiseException()
 
         get_ballot_information_result = check_first_time_seeing_token_ballotid_voteraddress_result.addCallback(get_ballot_information).addErrback(get_ballot_information_errback)
@@ -300,17 +341,25 @@ class RequestHandler(amp.AMP):
             pass
 
         def register_voteraddress_ethereumcontract_errback(failure):
-            pass
+            print("[RequestHandler - request_sign_blind_token - register_voteraddress_ethereumcontract_errback] There was an error registering address to the ethereum contract")
+            raise failure.raiseException()
 
         register_voteraddress_ethereumcontract_result = get_ballot_information_result.addCallback(register_voteraddress_ethereumcontract).addErrback(register_voteraddress_ethereumcontract_errback)
 
         # Save our details to register_vote table
 
         def save_vote_registration(prev_result):
-            pass
+
+            # We should save our processed request.
+            hash = SHA256.new()
+            hash.update(str(signed_token).encode())
+            signed_token_hash = hash.hexdigest()
+
+            return databasequery.register_vote_request(signed_token_hash, voter_address, ballot_id)
 
         def save_vote_registration_errback(failure):
-            pass
+            print("[RequestHandler - request_sign_blind_token - save_vote_registration_errback] There was an error saving the vote registration.")
+            raise failure.raiseException()
 
         save_vote_registration_result = register_voteraddress_ethereumcontract_result.addCallback(save_vote_registration).addErrback(save_vote_registration_errback)
 

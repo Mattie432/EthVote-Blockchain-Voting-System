@@ -66,10 +66,36 @@ class DatabaseQuery:
 
         return deferred
 
+    def register_vote_request(self, signed_token_hash, voter_address, ballot_id):
+
+        """
+        Register a token signiture request in the database.
+        :return:
+        """
+
+        def onSuccess(result):
+            print ("[DatabaseQuery - register_vote_request] - Insert sucsess:")
+            return {'ok' : True}
+
+        def onError(failure):
+            print ("[DatabaseQuery - register_vote_request] - Insert error:")
+            pprint.pprint(failure.value)
+            raise failure.raiseException()
+
+        def _insert(cursor, signed_token, voter_address, ballot_id):
+            statement = "INSERT INTO register_vote (signed_token_hash, voter_address, ballot_id) VALUES (%s, %s, %s);"
+            cursor.execute(statement, (signed_token_hash, voter_address, ballot_id))
+
+        deferred = self.dbConnection.runInteraction(_insert, signed_token_hash, voter_address, ballot_id)
+        deferred.addCallback(onSuccess)
+        deferred.addErrback(onError)
+
+        return deferred
+
     def retrieve_request_sign(self, user_id):
 
         """
-        Requests all rows ascociated with a user_id from the ballot_register table. Will
+        Requests all rows ascociated with a user_id from the token_request table. Will
         return either a dictionary (onSucsess) or raise an exception (onError) to be
         passed back to the client.
 
@@ -92,6 +118,40 @@ class DatabaseQuery:
             raise failure.raiseException()
 
         query = "SELECT * FROM token_request WHERE user_id=%s;" % user_id
+        deferred = self.dbConnection.runQuery(query)
+        deferred.addCallback(onSuccess)
+        deferred.addErrback(onError)
+
+        return deferred
+
+
+    def retrieve_request_register(self, ballot_id, voter_address):
+
+        """
+        Requests all rows ascociated with a ballot_id from the ballot_register table. Will
+        return either a dictionary (onSucsess) or raise an exception (onError) to be
+        passed back to the client.
+
+        :param ballot_id:
+        :param voter_address:
+        :return:
+        """
+
+        def onSuccess(results):
+            print ("[DatabaseQuery - retrieve_request_register] - Query sucsess:")
+            pprint.pprint(results, indent=4)
+
+            # Convert list of results to bytes for transport
+            encoded_results = pickle.dumps(results)
+
+            return {'ok' : encoded_results}
+
+        def onError(failure):
+            print ("[DatabaseQuery - retrieve_request_register] - Query error:")
+            pprint.pprint(failure.value)
+            raise failure.raiseException()
+
+        query = "SELECT * FROM register_vote WHERE ballot_id=%s AND voter_address='%s';" % (ballot_id, voter_address)
         deferred = self.dbConnection.runQuery(query)
         deferred.addCallback(onSuccess)
         deferred.addErrback(onError)

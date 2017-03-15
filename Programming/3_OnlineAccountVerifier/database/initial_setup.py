@@ -107,7 +107,7 @@ def main():
     # Table to hold token registration information
     cursor.execute( "CREATE TABLE IF NOT EXISTS register_vote ("
                         "register_vote_id serial PRIMARY KEY, "
-                        "signed_token varchar(1000) UNIQUE, "
+                        "signed_token_hash varchar(1000) UNIQUE, "
                         "voter_address varchar(50) NOT NULL, "
                         "ballot_id integer NOT NULL, "
                         "created_on timestamp DEFAULT CURRENT_TIMESTAMP, "
