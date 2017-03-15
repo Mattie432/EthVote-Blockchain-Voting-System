@@ -85,6 +85,20 @@ class OnlineBallotRegulator_RegisterUserIdForBallotId(Command):
         psycopg2.ProgrammingError : b'ProgrammingError'
     }
 
+class OnlineBallotRegulator_RegisterBallotId(Command):
+    arguments = [
+        (b'ballot_id',              amp.Integer()),
+        (b'ballot_name',              amp.Unicode()),
+        (b'ballot_address',              amp.Unicode()),
+    ]
+    response = [
+        (b'ok', amp.Boolean())
+    ]
+    errors = {
+        psycopg2.IntegrityError : b'IntegrityError',
+        psycopg2.ProgrammingError : b'ProgrammingError'
+    }
+
 
 class OnlineBallotRegulator_SearchBallotRegisterForUserId(Command):
     arguments = [

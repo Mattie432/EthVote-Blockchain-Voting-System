@@ -124,7 +124,7 @@ class DatabaseQuery:
         :return:
         """
 
-        def onSuccess():
+        def onSuccess(result):
             print ("[DatabaseQuery - insert_into_ballot_register_user_id_ballot_id] - Insert sucsess:")
             return {'ok' : True}
 
@@ -138,6 +138,34 @@ class DatabaseQuery:
             cursor.execute(statement)
 
         deferred = self.dbConnection.runInteraction(_insert, user_id, ballot_id)
+        deferred.addCallback(onSuccess)
+        deferred.addErrback(onError)
+
+        return deferred
+
+    def insert_into_ballots_available(self, ballot_id, ballot_name, ballot_address):
+
+        """
+        Request to register a new ballot in the ballots_available table. Will return
+        True on sucsess or raise an exception on failure which will be passed back to the client.
+        :param user_id:
+        :return:
+        """
+
+        def onSuccess(result):
+            print ("[DatabaseQuery - insert_into_ballot_register_user_id_ballot_id] - Insert sucsess:")
+            return {'ok' : True}
+
+        def onError(failure):
+            print ("[DatabaseQuery - insert_into_ballot_register_user_id_ballot_id] - Insert error:")
+            pprint.pprint(failure.value)
+            raise failure.raiseException()
+
+        def _insert(cursor, ballot_id, ballot_name, ballot_address):
+            statement = "INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address) VALUES (%d, '%s', '%s');" % (ballot_id, ballot_name, ballot_address)
+            cursor.execute(statement)
+
+        deferred = self.dbConnection.runInteraction(_insert, ballot_id, ballot_name, ballot_address)
         deferred.addCallback(onSuccess)
         deferred.addErrback(onError)
 
