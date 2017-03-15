@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}ETH Vote | Management{% endblock %}
+{% block header %}ETH Vote | Management{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-13 col-md-offset-0">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Available Ballots</h3>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-hover" style="width: 100%">
+                            <tr>
+                                <th>Ballot ID</th>
+                                <th>Time Registered</th>
+                                <th>Ballot Name</th>
+                                <th>Ballot Address</th>
+                            </tr>
+                            {% for row in registerd_ballots_list %}
+                            <tr style="line-height: 50px">
+                                <td> {{ row.ballot_id }}</td>
+                                <td> {{ row.timestamp }}</td>
+                                <td> {{ row.ballot_name }}</td>
+                                <td> {{ row.ballot_address }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        <div style="width:100%; ">
+                            <form class="form-inline" style="display: table;" action="/register_ballot/" method="get">
+                                {% csrf_token %}
+                                <div class="form-group" style="display:table-cell; width:33%">
+                                    <label for="ballot_id">Ballot ID:</label>
+                                    <input style="width:100%" type="text" name="ballot_id">
+                                </div>
+
+                                <div class="form-group" style="display:table-cell;; width:33%">
+                                    <label for="ballot_name">Ballot Name:</label>
+                                    <input style="width:100%" type="text" name="ballot_name">
+                                </div>
+                                <div class="form-group" style="display:table-cell;; width:33%">
+                                    <label for="ballot_address">Ballot Address:</label>
+                                    <input style="width:90%" type="text" name="ballot_address">
+
+                                </div>
+
+                                <div style="display:table-cell; width:100%">
+                                    <button type="submit" class="btn btn-sm" style="display:block;margin: 0 auto;">Add</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
