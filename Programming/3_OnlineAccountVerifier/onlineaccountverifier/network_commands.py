@@ -1,6 +1,6 @@
 from twisted.protocols import amp
 from twisted.protocols.amp import Command
-from onlineaccountverifier.network_exceptions import *
+from .network_exceptions import *
 import psycopg2
 
 ##########################################
@@ -9,9 +9,10 @@ import psycopg2
 #   Changes here need to be reflected in:
 #       2_ApplicationServer/website/network_commands.py
 #       3_OnlineAccountVerifier/onlineaccountverifier/network_commands.py
-#       4_OnlineBallotRegulator
+#       4_OnlineBallotRegulator/onlineaballotregulator/network_commands.py
 #
 ##########################################
+
 
 class OnlineAccountVerifier_SignBlindToken(Command):
     arguments = [
@@ -29,6 +30,7 @@ class OnlineAccountVerifier_SignBlindToken(Command):
         Exception : b'OnlineAccountVerifier_SignBlindToken'
     }
 
+
 class OnlineAccountVerifier_SearchTokenRequestForUserId(Command):
     arguments = [
         (b'user_id',            amp.Integer())
@@ -40,6 +42,7 @@ class OnlineAccountVerifier_SearchTokenRequestForUserId(Command):
         #TODO add errors
         Exception : b'OnlineAccountVerifier_SearchTokenRequestForUserId'
     }
+
 
 class OnlineAccountVerifier_RegisterAddressToBallot(Command):
     arguments = [
@@ -56,6 +59,7 @@ class OnlineAccountVerifier_RegisterAddressToBallot(Command):
         Exception : b'OnlineAccountVerifier_RegisterAddressToBallot'
     }
 
+
 class OnlineAccountVerifier_GetPublicKeyForBallot(Command):
     arguments = [
         (b'ballot_id',          amp.Integer())
@@ -68,18 +72,29 @@ class OnlineAccountVerifier_GetPublicKeyForBallot(Command):
     }
 
 
+class OnlineBallotRegulator_RegisterUserIdForBallotId(Command):
+    arguments = [
+        (b'user_id',            amp.Integer()),
+        (b'ballot_id',          amp.Integer())
+    ]
+    response = [
+        (b'ok', amp.Boolean())
+    ]
+    errors = {
+        psycopg2.IntegrityError : b'IntegrityError',
+        psycopg2.ProgrammingError : b'ProgrammingError'
+    }
 
-# Other Classes
 
 class OnlineBallotRegulator_SearchBallotRegisterForUserId(Command):
     arguments = [
-        (b'user_id',    amp.Integer())
+        (b'user_id',            amp.Integer())
     ]
     response = [
         (b'ok',         amp.String())
     ]
     errors = {
-        psycopg2.ProgrammingError : b'ProgrammingError'
+        psycopg2.IntegrityError : b'IntegrityError'
     }
 
 
