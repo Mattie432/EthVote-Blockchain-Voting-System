@@ -8,6 +8,7 @@
         <title>{% block title %}ETH Vote{% endblock %}</title>
         <!-- Core CSS - Include with every page -->
         <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/multi-select.css' %}" rel="stylesheet">
     </head>
     <body>
         <nav class="navbar navbar-default">
@@ -45,6 +46,7 @@
     <!-- Core Scripts - Include with every page -->
     <script src = "{% static 'js/jquery.min.js' %}"></script>
     <script src = "{% static 'js/bootstrap.min.js' %}"></script>
+    <script src = "{% static 'js/jquery.multi-select.js' %}"></script>
 
     {% block javascript %}
     <!-- Custom scripts -->

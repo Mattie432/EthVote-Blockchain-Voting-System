@@ -8,7 +8,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-13 col-md-offset-0">
-                <div class="login-panel panel panel-default">
+                <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Available Ballots</h3>
                     </div>
@@ -56,6 +56,60 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-13 col-md-offset-0">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Register New User</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-inline" style="display: table;" action="/register_user/" method="get">
+                            {% csrf_token %}
+
+                            <div class="form-group" style="" >
+                                <label for="ballot_name">Select ballots to register user to:</label>
+
+                               <select multiple="multiple" id="my-select" name="my-select[]">
+                                {% for row in registerd_ballots_list %}
+                                  <option value='{{ row.ballot_id }}'>{{ row.ballot_id }} - {{ row.ballot_name }}</option>
+                                {% endfor %}
+                               </select>
+
+                                <input type="hidden" name="ballot_ids" id="ballot_ids"  />
+                            </div>
+
+                            <div style="display:table-cell; width:100%">
+                                <button type="submit" class="btn btn-sm" style="display:block;margin: 0 auto;">Register new user</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+         $(function(){
+            $('#my-select').multiSelect({
+
+              afterSelect: function(value, text){
+                var get_val = $("#ballot_ids").val();
+                var hidden_val = (get_val != "") ? get_val+"," : get_val;
+                $("#ballot_ids").val(hidden_val+""+value);
+              },
+
+              afterDeselect: function(value, text){
+                var get_val = $("#ballot_ids").val();
+                var new_val = get_val.replace(value, "");
+                $("#ballot_ids").val(new_val);
+              }
+            });
+        });
+
+    </script>
 {% endblock %}

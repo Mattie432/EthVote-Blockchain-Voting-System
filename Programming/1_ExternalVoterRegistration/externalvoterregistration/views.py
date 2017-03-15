@@ -7,7 +7,6 @@ from django.views import View
 from twisted.python import failure
 
 import network.network_calls as NetworkRequest
-from psycopg2 import IntegrityError, ProgrammingError
 
 
 def register_ballot(request):
@@ -33,6 +32,36 @@ def register_ballot(request):
     else:
         return HttpResponseRedirect("/")
 
+
+
+def register_user(request):
+    if 'ballot_ids' in request.GET:
+        ballot_ids = [int(numeric_string) for numeric_string in (request.GET['ballot_ids']).split(",")]
+
+        result = True
+
+        try:
+            # Register with applicationserver
+
+            for ballot_id in ballot_ids:
+                try:
+                    result = False#NetworkRequest.requestRegisterNewBallot(ballot_id, ballot_name, ballot_address).wait(5)
+                except Exception as e:
+                    result = e
+                    break
+
+            html = "<p>ballot_ids = %s </p>" \
+                    "<p>user_id = %s </p>" \
+                    "<p>password = %s </p>" \
+                   "<p>Result = %s </p>" % (ballot_ids, "user_id", "password", result)
+
+            return HttpResponse(html)
+
+        except Exception as e:
+            return HttpResponse("Failed application register\n\n%s" % e)
+    else:
+        # return HttpResponseRedirect("/")
+        return HttpResponse("Failed")
 
 class Dashboard(View):
     """

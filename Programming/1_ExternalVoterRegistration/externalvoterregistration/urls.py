@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$',      Dashboard.as_view(),  name="applicationserver"),
     url(r'^register_ballot/', register_ballot),
+    url(r'^register_user/', register_user),
 ]
