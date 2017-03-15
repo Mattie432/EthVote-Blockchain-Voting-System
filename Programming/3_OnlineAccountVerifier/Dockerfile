@@ -6,7 +6,7 @@
 ##################################################
 
 # Set the base image to Python 3.4
-FROM python:3.4
+FROM python:3.5
 
 # Do not buffer the output from stdout.
 ENV PYTHONUNBUFFERED 1

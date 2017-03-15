@@ -27,7 +27,8 @@ class RegisterForBallot(LoginRequiredMixin, View):
 
         (voter_address, voter_private_key, voter_public_key) = self.request_address_register(request.user, ballot_id, token, signed_token)
 
-        html = "Token:" \
+        html = "<h1>DEMO PURPOSE ONLY - remove this in prod</h1>" \
+               "<div>Token:" \
                "<p style='word-wrap: break-word'>%s</p>" \
                "Signed token:" \
                "<p style='word-wrap: break-word'>%s</p>" \
@@ -36,7 +37,7 @@ class RegisterForBallot(LoginRequiredMixin, View):
                "voter_private_key:" \
                "<p style='word-wrap: break-word'>%s</p>" \
                "voter_public_key:" \
-               "<p style='word-wrap: break-word'>%s</p>" \
+               "<p style='word-wrap: break-word'>%s</p></div>" \
                "" % (token, signed_token, voter_address, voter_private_key, voter_public_key)
 
         return HttpResponse(html)
@@ -52,12 +53,6 @@ class RegisterForBallot(LoginRequiredMixin, View):
 
         keccak.update(pub)
         hex_address = keccak.hexdigest()[24:]
-
-        # print("priv.to_string()", priv.to_string().hex())
-
-        print("Private key:", priv.to_string().hex())
-        print("Public key: ", pub.hex())
-        print("Address:     0x" + hex_address)
 
         private_key = priv.to_string().hex()
         public_key = pub.hex()
@@ -78,8 +73,20 @@ class RegisterForBallot(LoginRequiredMixin, View):
 
         (private_key, public_key, address) = self.generateEthereumAddress()
 
+        # Throws if there's a problem
+        NetworkRequest.requestRegisterBallotidVoteraddress(ballot_id, signed_token, token, address).wait(5)
 
-        return ("test","test","test")
+        # Save our address & keys
+        request_register_address = RegisterAddress(
+            user=user_object,
+            ballot_id=ballot_id,
+            voter_address=address,
+            voter_private_key=private_key,
+            voter_public_key=public_key
+        )
+        request_register_address.save()
+
+        return (address, private_key, public_key )
 
     def request_token_sign(self, ballot_id, user_object, username):
 
@@ -110,6 +117,7 @@ class RegisterForBallot(LoginRequiredMixin, View):
 
         # Unblind the token & check the signiture
         signed_token = public_key.unblind(signed_blind_token, random_number)
+
         sig_check = public_key.verify(token, (signed_token, ""))
         if not sig_check:
             raise NetworkExceptions.BadSignitureFromSignedToken(signed_token, token, ballot_id)

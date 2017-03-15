@@ -32,6 +32,24 @@ def getBallotPublicKey(ballot_id):
 
 @run_in_reactor
 @inlineCallbacks
+def requestRegisterBallotidVoteraddress(ballot_id, signed_token, token, voter_address):
+
+    pickled_signed_token = pickle.dumps(int(signed_token))
+    pickled_token = pickle.dumps(token)
+    pickled_voter_address = pickle.dumps(voter_address)
+
+    destination_deferred = yield TCP4ClientEndpoint(reactor, accountverifier_ip, accountverifier_port)
+    connection_deferred = yield connectProtocol(destination_deferred, AMP())
+    result_deferred = yield connection_deferred.callRemote(OnlineAccountVerifier_RegisterAddressToBallot, ballot_id=int(ballot_id), pickled_signed_token=pickled_signed_token, pickled_token=pickled_token, pickled_voter_address=pickled_voter_address)
+
+    def format_results(result):
+        return result['ok']
+
+    # Inlinecallback return value.
+    returnValue(format_results(result_deferred))
+
+@run_in_reactor
+@inlineCallbacks
 def requestSignOfToken(user_id, ballot_id, blind_token):
 
     destination_deferred = yield TCP4ClientEndpoint(reactor, accountverifier_ip, accountverifier_port)

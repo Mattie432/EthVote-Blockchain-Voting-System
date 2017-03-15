@@ -65,8 +65,10 @@ def check_token_signed_for_ballot(signed_token, token, ballot_id):
         # private_key_string = open(str(path_private), "r").read()
         # private_key = RSA.importKey(private_key_string)
 
-        sig_check = public_key.verify(token, (signed_token, 0))
+        print("Im here, token type=", type(token), " signed type=", type(signed_token))
+        sig_check = public_key.verify(token, (signed_token, ""))
 
+        print("Im here")
         if not sig_check:
             # Throw if we cannot verif the signiture.
             raise BadSignitureFromSignedToken(signed_token, token, ballot_id)

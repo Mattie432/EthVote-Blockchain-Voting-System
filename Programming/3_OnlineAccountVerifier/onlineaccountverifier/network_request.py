@@ -359,7 +359,7 @@ class RequestHandler(amp.AMP):
 
         def register_voteraddress_ethereumcontract(prev_result):
             # TODO
-            pass
+            return prev_result
 
         def register_voteraddress_ethereumcontract_errback(failure):
             print("[RequestHandler - request_sign_blind_token - register_voteraddress_ethereumcontract_errback] There was an error registering address to the ethereum contract")
