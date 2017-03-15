@@ -13,22 +13,39 @@
                         <h3 class="panel-title">Available Ballots</h3>
                     </div>
                     <div class="panel-body">
-                        <table style="width:100%">
-                            <tr>
-                                <th>User ID</th>
-                                <th>Ballot ID</th>
-                                <th>Time Registered</th>
-                                <th>Ballot Name</th>
-                                <th>Ballot Address</th>
-                            </tr>
-                            {% for row in registerd_ballots_list %}
-                            <tr>
-                                <td> {{ row.user_id }}</td>
-                                <td> {{ row.ballot_id }}</td>
-                                <td> {{ row.timestamp }}</td>
-                                <td> {{ row.ballot_name }}</td>
-                                <td> {{ row.ballot_address }}</td>
-                            </tr>
+                        <table class="table-hover" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Ballot ID</th>
+                                    <th>Time Registered</th>
+                                    <th>Ballot Name</th>
+                                    <th>Ballot Address</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in registerd_ballots_list %}
+                                <tr style="line-height: 50px">
+                                    <td> {{ row.user_id }}</td>
+                                    <td> {{ row.ballot_id }}</td>
+                                    <td> {{ row.timestamp }}</td>
+                                    <td> {{ row.ballot_name }}</td>
+                                    <td> {{ row.ballot_address }}</td>
+                                    <td>
+                                        {% if row.registered == False %}
+                                        <div style="line-height:50%">
+                                            <input class="btn btn-primary btn-sm " type="button" id="register" name="hid" value="Register"/>
+                                        </div>
+                                        {% else %}
+                                        <div style="line-height:50%">
+                                            <input class="btn btn-primary btn-sm " type="button" id="vote" name="hid" value="Vote"/>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <!-- <td> {{ row.registered }}</td> TODO show icon rather than boolean text -->
+                                </tr>
+                            </tbody>
                             {% endfor %}
                         </table>
                     </div>

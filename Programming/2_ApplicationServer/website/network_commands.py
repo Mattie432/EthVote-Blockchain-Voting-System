@@ -17,8 +17,19 @@ class Request_RegisterUser(Command):
         psycopg2.ProgrammingError : b'ProgrammingError'
     }
 
+class Request_RetrieveRegisteredUserBallots(Command):
+    arguments = [
+        (b'user_id',            amp.Integer())
+    ]
+    response = [
+        (b'ok',         amp.String())
+    ]
+    errors = {
+        psycopg2.IntegrityError : b'IntegrityError',
+        psycopg2.ProgrammingError : b'ProgrammingError'
+    }
 
-class Request_RetrieveBallots(Command):
+class Request_RetrieveUserBallots(Command):
     arguments = [
         (b'user_id',    amp.Integer())
     ]
@@ -27,4 +38,27 @@ class Request_RetrieveBallots(Command):
     ]
     errors = {
         psycopg2.ProgrammingError : b'ProgrammingError'
+    }
+
+
+class Request_RetrieveSignBlindTokenForUser(Command):
+    arguments = [
+        (b'user_id',            amp.Integer())
+    ]
+    response = [
+        (b'ok', amp.String())
+    ]
+    errors = {
+        #TODO add errors
+    }
+
+class Request_PublicKeyForBallot(Command):
+    arguments = [
+        (b'ballot_id',              amp.Integer())
+    ]
+    response = [
+        (b'ok',                 amp.String())
+    ]
+    errors = {
+        Exception : b'RequestPublicSigningKeyError'
     }
