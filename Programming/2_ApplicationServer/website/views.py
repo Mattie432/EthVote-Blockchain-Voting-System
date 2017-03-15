@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.views import View
 
 import network.network_calls as NetworkRequest
+from user_ballot_registration.models import *
 
 
 class HomepageRedirect(View):
@@ -38,8 +39,17 @@ class Dashboard(LoginRequiredMixin, View):
 
             for available_ballot in available_ballots_list:
                 temp = available_ballot
-                test = [item for item in registerd_ballots_list if (item["user_id"] == username and item['ballot_id'] == available_ballot['ballot_id'])]
-                temp['registered'] = True if len(test) else False
+                remote_registered_userid = True if len([item for item in registerd_ballots_list if item['ballot_id'] == available_ballot['ballot_id']]) else False
+
+                # First check we havent already recieved a signed token
+                database_results = RegisterAddress.objects.filter(
+                    user=request.user,
+                    ballot_id=available_ballot['ballot_id']
+                )
+                local_registered_address = True if len(database_results) else False
+
+
+                temp['registered'] = remote_registered_userid and local_registered_address
                 form_available_ballots_list.append(temp)
 
 

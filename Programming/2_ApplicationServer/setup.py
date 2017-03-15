@@ -14,6 +14,8 @@ setup(
         'Django>=1.10.0',
         'psycopg2',
         'crochet',
-        'pycrypto'
+        'pycrypto',
+        'ecdsa',
+        'pysha3'
     ]
 )
