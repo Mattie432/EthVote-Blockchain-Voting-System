@@ -1,0 +1,6 @@
+#!/bin/bash
+
+mkdir -p $WORK_DIR/ethereumDB/testnet
+
+# Start geth (add the --fast parameter if this is the initial download)
+geth --testnet --fast --cache=2048 --datadir $WORK_DIR/ethereumDB 2> $WORK_DIR/ethereumDB/testnet/geth.log &

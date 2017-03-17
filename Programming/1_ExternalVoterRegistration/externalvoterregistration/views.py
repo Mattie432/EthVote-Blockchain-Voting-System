@@ -38,11 +38,13 @@ def register_ballot(request):
 
 def register_user(request):
     if 'ballot_ids' in request.GET:
-        ballot_ids = [int(numeric_string) for numeric_string in (request.GET['ballot_ids']).split(",")]
+
+        ballot_ids_string = request.GET['ballot_ids']
+        ballot_ids = [] if len(ballot_ids_string) == 0 else [ int(numeric_string) for numeric_string in (ballot_ids_string).split(",")]
 
         result = True
 
-        user_id = randint(0,10000)
+        user_id = randint(10000,99999)
         password = ''.join([choice('abcdefghijklmnopqrstuvwxyz0123456789%^*(-_=+)') for i in range(20)])
 
         try:

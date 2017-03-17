@@ -76,7 +76,7 @@
                                 {% endfor %}
                                </select>
 
-                                <input type="hidden" name="ballot_ids" id="ballot_ids"  />
+                                <input type="" name="ballot_ids" id="ballot_ids"  />
                             </div>
 
                             <div style="display:table-cell; width:100%">
@@ -103,12 +103,15 @@
                 $("#ballot_ids").val(hidden_val+""+value);
               },
 
+
               afterDeselect: function(value, text){
                 var get_val = $("#ballot_ids").val();
                 var new_val = get_val.replace(value, "");
                 $("#ballot_ids").val(new_val);
               }
             });
+
+          console.log("Setup complete")
         });
 
     </script>
