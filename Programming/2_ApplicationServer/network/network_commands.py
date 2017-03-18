@@ -90,6 +90,8 @@ class OnlineBallotRegulator_RegisterBallotId(Command):
         (b'ballot_id',              amp.Integer()),
         (b'ballot_name',              amp.Unicode()),
         (b'ballot_address',              amp.Unicode()),
+        (b'ballot_interface',              amp.Unicode()),
+
     ]
     response = [
         (b'ok', amp.Boolean())
@@ -131,5 +133,5 @@ class ApplicationServer_RegisterNewUser(Command):
         (b'ok',         amp.Boolean())
     ]
     errors = {
-        # Exception : b'Exception'
+        Exception : b'Exception'
     }

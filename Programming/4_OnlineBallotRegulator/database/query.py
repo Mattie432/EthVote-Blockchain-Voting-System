@@ -143,7 +143,7 @@ class DatabaseQuery:
 
         return deferred
 
-    def insert_into_ballots_available(self, ballot_id, ballot_name, ballot_address):
+    def insert_into_ballots_available(self, ballot_id, ballot_name, ballot_address, ballot_interface):
 
         """
         Request to register a new ballot in the ballots_available table. Will return
@@ -161,11 +161,11 @@ class DatabaseQuery:
             pprint.pprint(failure.value)
             raise failure.raiseException()
 
-        def _insert(cursor, ballot_id, ballot_name, ballot_address):
-            statement = "INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address) VALUES (%d, '%s', '%s');" % (ballot_id, ballot_name, ballot_address)
+        def _insert(cursor, ballot_id, ballot_name, ballot_address, ballot_interface):
+            statement = "INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface) VALUES (%s, %s, %s, %s);", (ballot_id, ballot_name, ballot_address, ballot_interface)
             cursor.execute(statement)
 
-        deferred = self.dbConnection.runInteraction(_insert, ballot_id, ballot_name, ballot_address)
+        deferred = self.dbConnection.runInteraction(_insert, ballot_id, ballot_name, ballot_address, ballot_interface)
         deferred.addCallback(onSuccess)
         deferred.addErrback(onError)
 

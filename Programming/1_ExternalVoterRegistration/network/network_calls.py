@@ -81,11 +81,11 @@ def requestSignOfToken(user_id, ballot_id, blind_token):
 
 @run_in_reactor
 @inlineCallbacks
-def requestRegisterNewBallot(ballot_id, ballot_name, ballot_address):
+def requestRegisterNewBallot(ballot_id, ballot_name, ballot_address, ballot_interface):
 
     destination_deferred = yield TCP4ClientEndpoint(reactor, ballotregulator_ip, ballotregulator_port)
     connection_deferred = yield connectProtocol(destination_deferred, AMP())
-    result_deferred = yield connection_deferred.callRemote(OnlineBallotRegulator_RegisterBallotId, ballot_id=ballot_id, ballot_name=ballot_name, ballot_address=ballot_address)
+    result_deferred = yield connection_deferred.callRemote(OnlineBallotRegulator_RegisterBallotId, ballot_id=ballot_id, ballot_name=ballot_name, ballot_address=ballot_address, ballot_interface=ballot_interface)
 
     def format_results(result):
         return result['ok']

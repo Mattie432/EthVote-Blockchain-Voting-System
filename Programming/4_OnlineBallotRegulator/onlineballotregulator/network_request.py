@@ -28,12 +28,12 @@ class RequestHandler(amp.AMP):
         return deferred
 
     @OnlineBallotRegulator_RegisterBallotId.responder
-    def register_ballot(self, ballot_id, ballot_name, ballot_address):
+    def register_ballot(self, ballot_id, ballot_name, ballot_address, ballot_interface):
         print('[RequestHandler - register_ballot] Received request : ballot_id:%d as %s ' % (ballot_id, ballot_name))
 
         databasequery = self.factory.get_databasequery()
 
-        deferred = databasequery.insert_into_ballots_available(ballot_id, ballot_name, ballot_address)
+        deferred = databasequery.insert_into_ballots_available(ballot_id, ballot_name, ballot_address, ballot_interface)
 
 
         return deferred
