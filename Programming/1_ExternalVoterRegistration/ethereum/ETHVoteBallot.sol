@@ -81,6 +81,8 @@ contract ETHVoteBallot {
     {
         if(now > ballotEndTime) throw;
 
+        if(votingOptions.length < 2) throw;
+
         optionsFinalized = true;    // Stop the addition of any more options.
     }
 
@@ -180,4 +182,21 @@ contract ETHVoteBallot {
     {
         return votingOptions[_index].voteCount;
     }
+
+    /*
+    * Returns if the voting options have been finalized.
+    */
+    function getOptionsFinalized() returns (bool)
+    {
+        return optionsFinalized;
+    }
+
+    /*
+    * Returns the end time of the ballot in seconds since epoch.
+    */
+    function getBallotEndTime() returns (uint)
+    {
+        return ballotEndTime;
+    }
+
 }
