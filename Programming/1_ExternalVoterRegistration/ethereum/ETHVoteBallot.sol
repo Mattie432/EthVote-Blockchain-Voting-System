@@ -68,8 +68,6 @@ contract ETHVoteBallot {
             name: _votingOptionName,
             voteCount: 0
         }));
-
-        registeredVoterCount += 1;      // Increment registered voters.
     }
 
     /*
@@ -107,6 +105,8 @@ contract ETHVoteBallot {
     {
         if(now > ballotEndTime) throw;
         voters[_voter].eligableToVote = true;
+
+        registeredVoterCount += 1;      // Increment registered voters.
     }
 
     /*
