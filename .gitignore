@@ -196,3 +196,6 @@ keys/
 
 # Ignore pem files
 *.pem
+
+# Ignore ethererum database
+ethereumDB/
