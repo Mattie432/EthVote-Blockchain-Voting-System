@@ -1,0 +1,18 @@
+#!/bin/bash
+
+mkdir -p $WORK_DIR/ethereumDB
+
+# Add our main account in charge of the ballots.
+geth --datadir $WORK_DIR/ethereumDB \
+     --password $WORK_DIR/ethereum/keys/ethereum_password account import $WORK_DIR/ethereum/keys/ethereum_private_key
+
+# For unlocking our account
+account_address=$(cat $WORK_DIR/ethereum/keys/ethereum_address)
+
+# Start geth in background
+geth --datadir $WORK_DIR/ethereumDB --rpc --fast --cache=1024 \
+     --unlock $account_address --password $WORK_DIR/ethereum/keys/ethereum_password \
+     2> $WORK_DIR/ethereumDB/geth.log &
+
+# Fix permissions on ethererum directory.
+chmod -R o+rw $WORK_DIR/ethereumDB

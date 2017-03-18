@@ -1,0 +1,3 @@
+#!/bin/bash
+
+geth --preload $WORK_DIR/ethereum/gethload.js attach ipc:$WORK_DIR/ethereumDB/geth.ipc

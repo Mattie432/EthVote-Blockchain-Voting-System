@@ -13,6 +13,7 @@ setup(
     ],
     install_requires=[
         'Twisted>=17.1.0',
-        'psycopg2'
+        'psycopg2',
+        'web3'
     ]
 )
