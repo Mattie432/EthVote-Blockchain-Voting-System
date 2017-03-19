@@ -81,14 +81,17 @@ def requestSignOfToken(user_id, ballot_id, blind_token):
 
 @run_in_reactor
 @inlineCallbacks
-def requestRegisterNewBallot(ballot_id, ballot_name, ballot_address, ballot_interface):
+def requestRegisterNewBallot(ballot_name, ballot_options_array, ballot_end_date):
+
+
+    ballot_options_array_pickled = pickle.dumps(ballot_options_array)
 
     destination_deferred = yield TCP4ClientEndpoint(reactor, ballotregulator_ip, ballotregulator_port)
     connection_deferred = yield connectProtocol(destination_deferred, AMP())
-    result_deferred = yield connection_deferred.callRemote(OnlineBallotRegulator_RegisterBallotId, ballot_id=ballot_id, ballot_name=ballot_name, ballot_address=ballot_address, ballot_interface=ballot_interface)
+    result_deferred = yield connection_deferred.callRemote(OnlineBallotRegulator_RegisterBallotId, ballot_name=ballot_name, ballot_options_array_pickled=ballot_options_array_pickled, ballot_end_date=ballot_end_date)
 
     def format_results(result):
-        return result['ok']
+        return result['ballot_address']
 
     # Inlinecallback return value.
     returnValue(format_results(result_deferred))
@@ -160,6 +163,8 @@ def searchAllAvailableBallots():
             mapper['ballot_name'] = record[1]
             mapper['ballot_address'] = record[2]
             mapper['timestamp'] = record[3]
+            mapper['ballot_interface'] = record[4]
+            mapper['ballot_end_date'] = record[5]
             # Append each row's dictionary to a list
             record_list.append(mapper)
 

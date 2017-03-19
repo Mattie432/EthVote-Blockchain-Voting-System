@@ -30,7 +30,7 @@ RUN apt-get update && \
 RUN pip3 install .
 
 # Expose our ports
-EXPOSE 80, 5436
+EXPOSE 80 5436
 
 # Run django migrate command to setup database migration, then start the server.
 #CMD . ./bin/docker_entrypoint

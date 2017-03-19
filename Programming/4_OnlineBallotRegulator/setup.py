@@ -9,11 +9,13 @@ setup(
     url='https://github.com/Mattie432/Blockchain-Voting-System',
     packages=[
         'onlineballotregulator',
-        'database'
+        'database',
+        'ethereum'
     ],
     install_requires=[
         'Twisted>=17.1.0',
         'psycopg2',
-        'web3'
+        'web3',
+        'py-solc'
     ]
 )

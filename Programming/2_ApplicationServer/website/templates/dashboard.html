@@ -28,7 +28,7 @@
                                 <td> {{ row.ballot_id }}</td>
                                 <td> {{ row.timestamp }}</td>
                                 <td> {{ row.ballot_name }}</td>
-                                <td> {{ row.ballot_address }}</td>
+                                <td> <a href="https://etherscan.io/address/{{ row.ballot_address }}">{{ row.ballot_address }}</a></td>
                                 <td>
                                     {% if row.registered == False %}
                                     <div style="line-height:50%">

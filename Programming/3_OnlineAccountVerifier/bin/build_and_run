@@ -18,7 +18,7 @@ do
 done
 
 # Build docker image.
-if [[ -z $PARAMS || ( $PARAMS  && ( $BUILD || $build ) ) ]];
+if [[ -z $PARAMS || ( $PARAMS  && ( $BUILDME || $buildme ) ) ]];
 then
 
     if [ -s ~/Programming/Blockchain-Voting-System/Programming/3_OnlineAccountVerifier/postgresDB ]; then
@@ -30,7 +30,7 @@ then
     docker build -t onlineaccountverifier ~/Programming/Blockchain-Voting-System/Programming/3_OnlineAccountVerifier/
 fi
 
-if [[ -z $PARAMS || ( $PARAMS  && ( $RUN || $run ) ) ]];
+if [[ -z $PARAMS || ( $PARAMS  && ( $RUNME || $runme ) ) ]];
 then
     echo "Running docker container"
     # Run the docker image. Expose port 5433. Use volume for our webapp so we dont have to rebuild for all changes.

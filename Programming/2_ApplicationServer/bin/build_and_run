@@ -18,13 +18,13 @@ do
 done
 
 # Build docker image.
-if [[ -z $PARAMS || ( $PARAMS  && ( $BUILD || $build ) ) ]];
+if [[ -z $PARAMS || ( $PARAMS  && ( $BUILDME || $buildme ) ) ]];
 then
     echo "Building docker container."
     docker build -t applicationserver ~/Programming/Blockchain-Voting-System/Programming/2_ApplicationServer/
 fi
 
-if [[ -z $PARAMS || ( $PARAMS  && ( $RUN || $run ) ) ]];
+if [[ -z $PARAMS || ( $PARAMS  && ( $RUNME || $runme ) ) ]];
 then
     echo "Running docker container"
     # Run the docker image. Expose port 80. Use volume for our webapp so we dont have to rebuild for all changes.

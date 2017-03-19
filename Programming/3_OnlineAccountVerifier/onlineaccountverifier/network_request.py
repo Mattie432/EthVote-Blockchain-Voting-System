@@ -358,8 +358,20 @@ class RequestHandler(amp.AMP):
         # Register on the ethereum contract.
 
         def register_voteraddress_ethereumcontract(prev_result):
-            # TODO
-            return prev_result
+
+            register_voteraddress_ethereumcontract_destination = TCP4ClientEndpoint(reactor, self.twisted_ballotregulator_ip, self.twisted_ballotregulator_port)
+            register_voteraddress_ethereumcontract_deferred = connectProtocol(register_voteraddress_ethereumcontract_destination, AMP())
+
+            def add_voter_address_to_contract(ampProto):
+                return ampProto.callRemote(OnlineBallotRegulator_RegisterVoterAddressBallotId, voter_addres=voter_address, ballot_id=ballot_id)
+
+            def add_voter_address_to_contract_errback(failure):
+                print("There was an error in the remote call to add the voter address to the contract.")
+                raise failure.raiseException()
+
+            register_voteraddress_ethereumcontract = register_voteraddress_ethereumcontract_deferred.addCallback(add_voter_address_to_contract).addErrback(add_voter_address_to_contract_errback)
+
+            return register_voteraddress_ethereumcontract
 
         def register_voteraddress_ethereumcontract_errback(failure):
             print("[RequestHandler - request_sign_blind_token - register_voteraddress_ethereumcontract_errback] There was an error registering address to the ethereum contract")

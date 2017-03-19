@@ -1,13 +1,17 @@
-import psycopg2, os
-from psycopg2.extensions import adapt
+import pickle
 
+import psycopg2, os, sys
+from psycopg2.extensions import adapt
 
 # Import postgres credentials from environment
 postgres_database   = os.environ[ 'POSTGRES_DATABASE' ]
 postgres_user       = os.environ[ 'POSTGRES_USER' ]
 postgres_password   = os.environ[ 'POSTGRES_PASS' ]
 postgres_host       = os.environ[ 'POSTGRES_HOST' ]
+work_dir            = os.environ[ 'WORK_DIR' ]
 
+sys.path.insert(0, work_dir + "/") # Hack to work before we've started our project
+from ethereum.ethereum import Ethereum
 
 def main():
 
@@ -25,10 +29,11 @@ def main():
 
     cursor.execute( "CREATE TABLE IF NOT EXISTS available_ballots ("
                         "ballot_id serial UNIQUE PRIMARY KEY, "
-                        "ballot_name varchar(50) UNIQUE NOT NULL, "
-                        "ballot_address varchar(50) UNIQUE NOT NULL, "
+                        "ballot_name varchar(500) UNIQUE NOT NULL, "
+                        "ballot_address varchar(500) UNIQUE NOT NULL, "
                         "created_on timestamp DEFAULT CURRENT_TIMESTAMP, "
-                        "ballot_interface varchar(5000) NOT NULL "
+                        "ballot_interface varchar(6000) NOT NULL, "
+                        "ballot_end_date integer NOT NULL"
                     ");")
 
     cursor.execute( "CREATE TABLE IF NOT EXISTS ballot_register ("
@@ -46,20 +51,27 @@ def main():
 
     try:
 
-        ballot_interface = """[{"constant":false,"inputs":[{"name":"_votingOptionIndex","type":"uint256"}],"name":"vote","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_votingOptionName","type":"string"}],"name":"addVotingOption","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"getRegisteredVoterCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"finalizeVotingOptions","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"getBallotName","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_voter","type":"address"}],"name":"giveRightToVote","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"voters","outputs":[{"name":"eligableToVote","type":"bool"},{"name":"voted","type":"bool"},{"name":"votedFor","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_index","type":"uint256"}],"name":"getVotingOptionsVoteCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_index","type":"uint256"}],"name":"getVotingOptionsName","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"getVotingOptionsLength","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"votingOptions","outputs":[{"name":"name","type":"string"},{"name":"voteCount","type":"uint256"}],"payable":false,"type":"function"},{"inputs":[{"name":"_ballotName","type":"string"},{"name":"_ballotEndTime","type":"uint256"}],"payable":false,"type":"constructor"}]"""
+        e = Ethereum()
+        ballot_interface = str(e.getBallotInterface())
 
-        cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface) VALUES (%s, %s, %s, %s);", (4321, 'Selly Oak Regional', '0xB476f990B00995ae3F70C9A972811E6fF506De65', ballot_interface))
-        cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface) VALUES (%s, %s, %s, %s);", (5432, 'Birmigham City Council', '0xB476f990B00995ae3F70C9A972811E6fF506De66', ballot_interface))
-        cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface) VALUES (%s, %s, %s, %s);", (6543, 'London', '0xB476f990B00995ae3F70C9A972811E6fF506De67', ballot_interface))
-        connection.commit()
+
+
+        cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface, ballot_end_date) VALUES (%s, %s, %s, %s, %s);", (1234, 'a', '0x07359454C5859a810A6dE6a588D92b6a20A3f543', pickle.dumps(ballot_interface), 1603238400))
+        # cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface, ballot_end_date) VALUES (%s, %s, %s, %s, %s);",
+        #                (4321, 'Selly Oak Regional', '0xB476f990B00995ae3F70C9A972811E6fF506De65', ballot_interface, 1603238400))
+        # cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface, ballot_end_date) VALUES (%s, %s, %s, %s, %s);",
+        #                (5432, 'Birmigham City Council', '0xB476f990B00995ae3F70C9A972811E6fF506De66', ballot_interface, 1603238400))
+        cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface, ballot_end_date) VALUES (%s, %s, %s, %s, %s);", (6543, 'Referendum on the United Kingdoms membership of the European Union', '0x7654EC4067e8fA04184D68fF08169A29A3B20F19', pickle.dumps(ballot_interface), 1603238400))
+        # connection.commit()
     except Exception as e:
         print( "[initialSetup] Error inserting test data in available_ballots." )
-        # print(e)
+        # print("\n\n\n", e, "\n\n\n")
 
     try:
-        cursor.execute("INSERT INTO ballot_register (user_id, ballot_id) VALUES (1234, 4321);")
-        cursor.execute("INSERT INTO ballot_register (user_id, ballot_id) VALUES (1234, 5432);")
-        cursor.execute("INSERT INTO ballot_register (user_id, ballot_id) VALUES (2345, 5432);")
+        cursor.execute("INSERT INTO ballot_register (user_id, ballot_id) VALUES (1234, 1234);")
+        cursor.execute("INSERT INTO ballot_register (user_id, ballot_id) VALUES (1234, 6543);")
+
+        cursor.execute("INSERT INTO ballot_register (user_id, ballot_id) VALUES (2345, 6543);")
         connection.commit()
     except Exception as e:
         print( "[initialSetup] Error inserting test data in ballot_register." )

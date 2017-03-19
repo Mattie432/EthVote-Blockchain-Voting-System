@@ -7,27 +7,28 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
 from twisted.python import failure
+import datetime
 
 import network.network_calls as NetworkRequest
 
 
 def register_ballot(request):
-    if 'ballot_id' in request.GET and 'ballot_name' in request.GET and 'ballot_address' in request.GET:
-        ballot_id = int(request.GET['ballot_id'])
-        ballot_address = request.GET['ballot_address']
-        ballot_name = request.GET['ballot_name']
+    if 'ballot_name' in request.GET and 'ballot_options' and 'ballot_end_date' in request.GET:
+        ballot_name = (request.GET['ballot_name'])
+        ballot_end_date = request.GET['ballot_end_date']
+        ballot_end_date_epoch = int(datetime.datetime.strptime(ballot_end_date,'%Y-%m-%d').strftime('%s')) # Convert to sec since epoc
+        ballot_options = str(request.GET['ballot_options']).split(",")
 
         try:
-            result = NetworkRequest.requestRegisterNewBallot(ballot_id, ballot_name, ballot_address).wait(5)
+            ballot_address = NetworkRequest.requestRegisterNewBallot(ballot_name, ballot_options, ballot_end_date_epoch).wait(300)
         except Exception as e:
-            result = e
+            ballot_address = e
 
-        html = "<p>ballot_id = %s </p>" \
-               "<p>ballot_name = %s </p>" \
-               "<p>ballot_address = %s </p><br>" \
-               "<p>Result = %s </p>" % (ballot_id, ballot_name, ballot_address, result)
+        html = "<p>ballot_name = %s </p>" \
+               "<p>ballot_end_date = %s / %s</p>" \
+               "<p>ballot_address = %s </p><br>"  % (ballot_name, ballot_end_date, ballot_end_date_epoch, ballot_address)
 
-        if result == True:
+        if ballot_address is not None:
             return HttpResponseRedirect("/")
         else:
             return HttpResponse(html)

@@ -42,7 +42,8 @@ RUN apt-get update && \
         gcc \
         libc-dev \
         ca-certificates \
-        ethereum
+        ethereum \
+        solc
 
 #RUN git clone --depth 1 https://github.com/ethereum/go-ethereum /usr/src/onlineballotregulator/go-ethereum
 

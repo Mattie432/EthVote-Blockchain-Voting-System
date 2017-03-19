@@ -18,7 +18,7 @@ do
 done
 
 # Build docker image.
-if [[ -z $PARAMS || ( $PARAMS  && ( $BUILD || $build ) ) ]];
+if [[ -z $PARAMS || ( $PARAMS  && ( $BUILDME || $buildme ) ) ]];
 then
 
     if [ -s ~/Programming/Blockchain-Voting-System/Programming/4_OnlineBallotRegulator/postgresDB ]; then
@@ -32,13 +32,14 @@ fi
 
 
 
-if [[ -z $PARAMS || ( $PARAMS  && ( $RUN || $run ) ) ]];
+if [[ -z $PARAMS || ( $PARAMS  && ( $RUNME || $runme ) ) ]];
 then
     echo "Running docker container"
     # Run the docker image. Expose port 5433. Use volume for our webapp so we dont have to rebuild for all changes.
     docker run -t -i \
         -p 5434:5434 -p 8545:8545 -p 30303:30303 \
         -v /home/mattie432/Programming/Blockchain-Voting-System/Programming/4_OnlineBallotRegulator/:/usr/src/onlineballotregulator/ \
+        -v /home/mattie432/Programming/Blockchain-Voting-System/Programming/ethereumDB/:/usr/src/ethereumDB/ \
         --env-file=/home/mattie432/Programming/Blockchain-Voting-System/Programming/4_OnlineBallotRegulator/bin/Variables.env \
         onlineballotregulator
 fi

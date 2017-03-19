@@ -74,7 +74,7 @@ class RegisterForBallot(LoginRequiredMixin, View):
         (private_key, public_key, address) = self.generateEthereumAddress()
 
         # Throws if there's a problem
-        NetworkRequest.requestRegisterBallotidVoteraddress(ballot_id, signed_token, token, address).wait(5)
+        NetworkRequest.requestRegisterBallotidVoteraddress(ballot_id, signed_token, token, address).wait(300)
 
         # Save our address & keys
         request_register_address = RegisterAddress(

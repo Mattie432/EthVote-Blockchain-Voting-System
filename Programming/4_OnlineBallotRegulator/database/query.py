@@ -96,7 +96,7 @@ class DatabaseQuery:
 
         def onSuccess(results):
             print ("[DatabaseQuery - search_ballots_available_for_all_ballots] - Query sucsess:")
-            pprint.pprint(results, indent=4)
+            # pprint.pprint(results, indent=4)
 
             # Convert list of results to bytes for transport
             encoded_results = pickle.dumps(results)
@@ -109,6 +109,36 @@ class DatabaseQuery:
             raise failure.raiseException()
 
         query = "SELECT * FROM available_ballots;"
+        deferred = self.dbConnection.runQuery(query)
+        deferred.addCallback(onSuccess)
+        deferred.addErrback(onError)
+
+        return deferred
+
+    def search_ballots_available_for_ballot_id(self, ballot_id):
+
+        """
+        Requests all rows from the ballot_register table. Will return either a dictionary
+        (onSucsess) or raise an exception (onError) to be passed back to the client.
+
+        :return:
+        """
+
+        def onSuccess(results):
+            print ("[DatabaseQuery - search_ballots_available_for_ballot_id] - Query sucsess:")
+            # pprint.pprint(results, indent=4)
+
+            # Convert list of results to bytes for transport
+            encoded_results = pickle.dumps(results)
+
+            return {'ok' : encoded_results}
+
+        def onError(failure):
+            print ("[DatabaseQuery - search_ballots_available_for_all_ballots] - Query error:")
+            pprint.pprint(failure.value)
+            raise failure.raiseException()
+
+        query = "SELECT * FROM available_ballots WHERE ballot_id=%s;" % ballot_id
         deferred = self.dbConnection.runQuery(query)
         deferred.addCallback(onSuccess)
         deferred.addErrback(onError)
@@ -143,7 +173,7 @@ class DatabaseQuery:
 
         return deferred
 
-    def insert_into_ballots_available(self, ballot_id, ballot_name, ballot_address, ballot_interface):
+    def insert_into_ballots_available(self, ballot_name, ballot_address, ballot_interface, ballot_end_date):
 
         """
         Request to register a new ballot in the ballots_available table. Will return
@@ -153,20 +183,22 @@ class DatabaseQuery:
         """
 
         def onSuccess(result):
-            print ("[DatabaseQuery - insert_into_ballot_register_user_id_ballot_id] - Insert sucsess:")
-            return {'ok' : True}
+            print ("[DatabaseQuery - insert_into_ballots_available] - Insert sucsess:")
+            return { 'ballot_address' : ballot_address}
 
         def onError(failure):
-            print ("[DatabaseQuery - insert_into_ballot_register_user_id_ballot_id] - Insert error:")
+            print ("[DatabaseQuery - insert_into_ballots_available] - Insert error:")
             pprint.pprint(failure.value)
             raise failure.raiseException()
 
-        def _insert(cursor, ballot_id, ballot_name, ballot_address, ballot_interface):
-            statement = "INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface) VALUES (%s, %s, %s, %s);", (ballot_id, ballot_name, ballot_address, ballot_interface)
+        def _insert(cursor, ballot_name, ballot_address, ballot_interface, ballot_end_date):
+            statement = "INSERT INTO available_ballots (ballot_name, ballot_address, ballot_interface, ballot_end_date) VALUES (%s, %s, %s, %s);", ( ballot_name, ballot_address, ballot_interface, ballot_end_date)
             cursor.execute(statement)
 
-        deferred = self.dbConnection.runInteraction(_insert, ballot_id, ballot_name, ballot_address, ballot_interface)
+        deferred = self.dbConnection.runInteraction(_insert, ballot_name, ballot_address, ballot_interface, ballot_end_date)
         deferred.addCallback(onSuccess)
         deferred.addErrback(onError)
+
+
 
         return deferred

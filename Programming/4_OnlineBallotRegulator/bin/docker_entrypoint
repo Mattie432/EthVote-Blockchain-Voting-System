@@ -22,12 +22,15 @@ if [ ! -s /usr/src/onlineballotregulator/postgresDB ]; then
     su postgres --command "/usr/lib/postgresql/$postgres_version/bin/initdb -D /usr/src/onlineballotregulator/postgresDB/"
     su postgres --command "/usr/lib/postgresql/$postgres_version/bin/postgres -D /usr/src/onlineballotregulator/postgresDB/" &
 
+    sleep 5
+
     # Create a postgres user
     psql -U postgres -c "CREATE USER docker PASSWORD 'docker' CREATEDB CREATEROLE CREATEUSER;"
     su postgres --command 'createdb -O docker onlineballotregulator'
 
 else
     echo "[docker_entrypoint] Database folder already exists... skipping creation..."
+    sleep 5
     su postgres --command "/usr/lib/postgresql/$postgres_version/bin/postgres -D /usr/src/onlineballotregulator/postgresDB/" &
 fi
 
@@ -44,3 +47,4 @@ python3 main.py
 
 # Shutdown postgres
 su postgres --command "pkill postgres"
+chmod -R o+rwx /usr/src/ethereumDB

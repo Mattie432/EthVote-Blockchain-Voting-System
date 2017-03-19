@@ -87,14 +87,13 @@ class OnlineBallotRegulator_RegisterUserIdForBallotId(Command):
 
 class OnlineBallotRegulator_RegisterBallotId(Command):
     arguments = [
-        (b'ballot_id',              amp.Integer()),
-        (b'ballot_name',              amp.Unicode()),
-        (b'ballot_address',              amp.Unicode()),
-        (b'ballot_interface',              amp.Unicode()),
+        (b'ballot_name',                    amp.Unicode()),
+        (b'ballot_options_array_pickled',   amp.String()),
+        (b'ballot_end_date',                amp.Integer())
 
     ]
     response = [
-        (b'ok', amp.Boolean())
+        (b'ballot_address', amp.Unicode())
     ]
     errors = {
         psycopg2.IntegrityError : b'IntegrityError',
@@ -119,6 +118,18 @@ class OnlineBallotRegulator_SearchBallotsAvailableForAllBallots(Command):
     ]
     response = [
         (b'ok',         amp.String())
+    ]
+    errors = {
+        psycopg2.ProgrammingError : b'ProgrammingError'
+    }
+
+class OnlineBallotRegulator_RegisterVoterAddressBallotId(Command):
+    arguments = [
+        (b'voter_addres', amp.Unicode()),
+        (b'ballot_id', amp.Integer())
+    ]
+    response = [
+        (b'ok',         amp.Unicode())
     ]
     errors = {
         psycopg2.ProgrammingError : b'ProgrammingError'
