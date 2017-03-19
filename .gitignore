@@ -199,3 +199,4 @@ keys/
 
 # Ignore ethererum database
 ethereumDB/
+web3_test.py
