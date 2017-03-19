@@ -1,3 +1,5 @@
+import os
+
 from django.http import Http404
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,12 +13,19 @@ from network import network_exceptions as NetworkExceptions
 from ecdsa import SigningKey, SECP256k1
 import hashlib
 import sha3
+from web3 import Web3, KeepAliveRPCProvider, IPCProvider
 
 import network.network_calls as NetworkRequest
 
 class RegisterForBallot(LoginRequiredMixin, View):
 
-    def get(self, request, param_ballot_id):
+    def __init__(self):
+        super().__init__()
+        ballotregulator_ip       = os.environ[ 'TWISTED_BALLOTREGULATOR_IP' ]
+        self.web3 = Web3(KeepAliveRPCProvider( host=ballotregulator_ip ))
+
+
+    def get(self, request, param_ballot_id, password):
         try:
             ballot_id = int(param_ballot_id)
             username = int(request.user.username)
@@ -72,6 +81,10 @@ class RegisterForBallot(LoginRequiredMixin, View):
             return ( database_results[0].voter_address, database_results[0].voter_private_key, database_results[0].voter_public_key )
 
         (private_key, public_key, address) = self.generateEthereumAddress()
+
+        web3_address = self.web3.personal.importRawKey(private_key, 'password')
+
+        assert address == web3_address
 
         # Throws if there's a problem
         NetworkRequest.requestRegisterBallotidVoteraddress(ballot_id, signed_token, token, address).wait(300)

@@ -16,6 +16,7 @@ setup(
         'crochet',
         'pycrypto',
         'ecdsa',
-        'pysha3'
+        'pysha3',
+        'web3',
     ]
 )
