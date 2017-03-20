@@ -37,7 +37,7 @@ then
     echo "Running docker container"
     # Run the docker image. Expose port 5433. Use volume for our webapp so we dont have to rebuild for all changes.
     docker run -t -i \
-        -p 5434:5434 -p 8545:8545 -p 30303:30303 \
+        -p 5434:5434 \
         -v /home/mattie432/Programming/Blockchain-Voting-System/Programming/4_OnlineBallotRegulator/:/usr/src/onlineballotregulator/ \
         -v /home/mattie432/Programming/Blockchain-Voting-System/Programming/ethereumDB/:/usr/src/ethereumDB/ \
         --env-file=/home/mattie432/Programming/Blockchain-Voting-System/Programming/4_OnlineBallotRegulator/bin/Variables.env \
