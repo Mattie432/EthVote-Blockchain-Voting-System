@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-
+{% load staticfiles %}
 
 {% block title %}ETH Vote | Voting{% endblock %}
 {% block header %}ETH Vote | Voting{% endblock %}
 
 
 {% block css %}
-
+<link href="{% static 'css/charts.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -141,11 +141,11 @@
         </div>
         <div class="col-md-3">
           <ul data-pie-id="my-cool-chart" data-options='{"donut": "true"}'>
-                <li data-value="{{ballot_info.ballot_registered_voter_count}}">
                     {% with totalVotes=ballot_info.ballot_options_vote_count|running_total %}
+                <li data-value="{{ballot_info.ballot_registered_voter_count|sub:totalVotes}}">
                         Voters yet to participate: ({{ballot_info.ballot_registered_voter_count|sub:totalVotes}})
-                    {% endwith %}
                 </li>
+                    {% endwith %}
               <li data-value="{{ballot_info.ballot_options_vote_count|running_total}}">
                     Votes cast: ({{ballot_info.ballot_options_vote_count|running_total}})
                 </li>
@@ -198,6 +198,9 @@
 {% endblock %}
 
 {% block javascript %}
+
+<script src = "{% static 'js/snap.svg-min.js' %}"></script>
+<script src = "{% static 'js/charts.js' %}"></script>
 
 <script>
 
