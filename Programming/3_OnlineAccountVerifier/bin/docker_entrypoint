@@ -20,6 +20,8 @@ if [ ! -s /usr/src/onlineaccountverifier/postgresDB ]; then
     su postgres --command "/usr/lib/postgresql/9.4/bin/initdb -D /usr/src/onlineaccountverifier/postgresDB/"
     su postgres --command "/usr/lib/postgresql/9.4/bin/postgres -D /usr/src/onlineaccountverifier/postgresDB/" &
 
+    sleep 5
+
     # Create a postgres user
     psql -U postgres -c "CREATE USER docker PASSWORD 'docker' CREATEDB CREATEROLE CREATEUSER;"
     su postgres --command 'createdb -O docker onlineaccountverifier'
