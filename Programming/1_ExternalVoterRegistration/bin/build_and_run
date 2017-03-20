@@ -18,15 +18,17 @@ do
 done
 
 # Build docker image.
-if [[ -z $PARAMS || ( $PARAMS  && ( $BUILD || $build ) ) ]];
+if [[ -z $PARAMS || ( $PARAMS  && ( $BUILDME || $buildme ) ) ]];
 then
     echo "Building docker container."
     docker build -t externalvoterregistration ~/Programming/Blockchain-Voting-System/Programming/1_ExternalVoterRegistration/
 fi
 
-if [[ -z $PARAMS || ( $PARAMS  && ( $RUN || $run ) ) ]];
+if [[ -z $PARAMS || ( $PARAMS  && ( $RUNME || $runme ) ) ]];
 then
     echo "Running docker container"
     # Run the docker image. Expose port 80. Use volume for our webapp so we dont have to rebuild for all changes.
-    docker run -t -i -p 8080:8080 -v ~/Programming/Blockchain-Voting-System/Programming/1_ExternalVoterRegistration/:/usr/src/externalvoterregistration/ --env-file=/home/mattie432/Programming/Blockchain-Voting-System/Programming/1_ExternalVoterRegistration/bin/Variables.env externalvoterregistration
+    docker run -t -i -p 8080:8080 \
+        -v /home/mattie432/Programming/Blockchain-Voting-System/Programming/ethereumDB/:/usr/src/ethereumDB/ \
+        -v ~/Programming/Blockchain-Voting-System/Programming/1_ExternalVoterRegistration/:/usr/src/externalvoterregistration/ --env-file=/home/mattie432/Programming/Blockchain-Voting-System/Programming/1_ExternalVoterRegistration/bin/Variables.env externalvoterregistration
 fi

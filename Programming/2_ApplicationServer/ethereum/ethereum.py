@@ -13,8 +13,8 @@ class Ethereum():
         self.work_dir = os.environ[ 'WORK_DIR' ]
         self.ballotregulator_ip = os.environ[ 'TWISTED_BALLOTREGULATOR_IP' ]
 
-        # self.web3 = Web3(IPCProvider("/usr/src/ethereumDB/geth.ipc"))
-        self.web3 = Web3(KeepAliveRPCProvider( host=self.ballotregulator_ip))
+        self.web3 = Web3(IPCProvider("/usr/src/ethereumDB/geth.ipc"))
+        # self.web3 = Web3(KeepAliveRPCProvider( host=self.ballotregulator_ip))
         self.abi = Network.request_contract_abi().wait(5)
 
     def ballotInfo(self, ballot_address):

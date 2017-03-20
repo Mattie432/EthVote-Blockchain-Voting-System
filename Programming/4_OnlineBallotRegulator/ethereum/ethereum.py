@@ -11,8 +11,8 @@ class Ethereum():
     def __init__(self):
         self.work_dir = os.environ[ 'WORK_DIR' ]
 
-        # self.web3 = Web3(IPCProvider("/usr/src/ethereumDB/geth.ipc"))
-        self.web3 = Web3(KeepAliveRPCProvider())
+        self.web3 = Web3(IPCProvider("/usr/src/ethereumDB/geth.ipc"))
+        # self.web3 = Web3(KeepAliveRPCProvider())
         contract_path = self.work_dir + "ethereum/ETHVoteBallot.sol"
         compiled_contract = compile_files( [contract_path] )
         key = '{0}:ETHVoteBallot'.format(os.path.abspath(contract_path))

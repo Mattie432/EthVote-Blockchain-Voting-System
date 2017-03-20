@@ -368,6 +368,6 @@
 
 }($, this, this.document));
 
-$(window).load(function() {
+$(window).on('load', function() {
       Pizza.init();
 })

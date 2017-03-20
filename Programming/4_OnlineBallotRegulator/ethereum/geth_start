@@ -13,6 +13,6 @@ geth --datadir /usr/src/ethereumDB \
 account_address=$(cat $WORK_DIR/ethereum/keys/ethereum_address)
 
 # Start geth in background
-geth --datadir /usr/src/ethereumDB --rpc --rpcaddr "0.0.0.0" --rpccorsdomain "*" --rpcapi eth,web3,personal --fast --cache=1024 \
+geth --datadir /usr/src/ethereumDB --fast --cache=1024 \
      --unlock $account_address --password $WORK_DIR/ethereum/keys/ethereum_password \
      2> /usr/src/ethereumDB/geth.log &

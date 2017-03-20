@@ -21,7 +21,6 @@
                     <div class="panel-body">
 
                     {% if vote_transaction is not None %}
-
                         <!-- Modal -->
                         <div id="transaction_modal" class="modal fade" role="dialog" data-toggle="modal">
                           <div class="modal-dialog">
@@ -200,13 +199,11 @@
 
 {% block javascript %}
 
-
-</script>
-
-</script>
-
 <script>
 
+$( document ).ready(function() {
+
+    console.log( "ready!" );
     $("#transaction_modal").modal()
 
     // Get the modal
@@ -233,7 +230,8 @@
         if (event.target == modal) {
             modal.style.display = "none";
         }
-}
+    }
+});
 
 </script>
 
