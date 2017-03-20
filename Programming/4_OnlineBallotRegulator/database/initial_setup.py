@@ -52,13 +52,13 @@ def main():
     try:
 
         e = Ethereum()
-        ballot_interface = str(e.getBallotInterface())
+        ballot_interface = '' #str(e.getBallotInterface())
 
 
 
-        cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface, ballot_end_date) VALUES (%s, %s, %s, %s, %s);", (1234, 'a', '0x07359454C5859a810A6dE6a588D92b6a20A3f543', pickle.dumps(ballot_interface), 1603238400))
-        # cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface, ballot_end_date) VALUES (%s, %s, %s, %s, %s);",
-        #                (4321, 'Selly Oak Regional', '0xB476f990B00995ae3F70C9A972811E6fF506De65', ballot_interface, 1603238400))
+        cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface, ballot_end_date) VALUES (%s, %s, %s, %s, %s);", (1234, 'Election of the Member of Parliament for the Harborne Constituency', '0x127c73Af1F9E0efF8226Db6bdf04310fDEe674F6', pickle.dumps(ballot_interface), 1603238400))
+        cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface, ballot_end_date) VALUES (%s, %s, %s, %s, %s);",
+                       (4321, 'Election of Police and Crime Commissioner for Edgbaston area', '0x8C872c720DF854a058C3D1DD54e4CEE51d798B6A', ballot_interface, 1603238400))
         # cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface, ballot_end_date) VALUES (%s, %s, %s, %s, %s);",
         #                (5432, 'Birmigham City Council', '0xB476f990B00995ae3F70C9A972811E6fF506De66', ballot_interface, 1603238400))
         cursor.execute("INSERT INTO available_ballots (ballot_id, ballot_name, ballot_address, ballot_interface, ballot_end_date) VALUES (%s, %s, %s, %s, %s);", (6543, 'Referendum on the United Kingdoms membership of the European Union', '0x7654EC4067e8fA04184D68fF08169A29A3B20F19', pickle.dumps(ballot_interface), 1603238400))

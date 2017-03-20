@@ -37,6 +37,17 @@ class Ethereum():
 
         return return_dict
 
+    def userInfo(self, ballot_address, voter_address):
+        ContractFactory = self.web3.eth.contract(address=ballot_address, abi=self.abi)
+        data_voter = ContractFactory.call().voters(voter_address)
+        return_dict = {
+            'voter_eligable_to_vote' : data_voter[0],
+            'voter_cast_vote' : data_voter[1],
+            'voter_voted_index' : data_voter[2]
+        }
+        return return_dict
+
+
     def registerPrivateKey(self, private_key, password):
         web3_address = self.web3.personal.importRawKey(private_key, password)
         return web3_address

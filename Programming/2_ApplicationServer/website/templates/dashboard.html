@@ -36,7 +36,7 @@
                                             {% csrf_token %}
 
                                             <!-- The Modal -->
-                                            <div id="myModal" class="myModal modal ">
+                                            <div id="myModal_{{row.ballot_id}}" class="myModal modal ">
 
                                               <!-- Modal content -->
                                               <div class="modal-content">
@@ -55,7 +55,7 @@
                                             {% if row.requested != None %}
                                                 <input class="btn btn-primary btn-sm " value="Processing.." disabled />
                                             {% else %}
-                                                <input class="btn btn-primary btn-sm " type="button" id="open_password_modal" value="Register"  />
+                                                <input class="btn btn-primary btn-sm " type="button" id="open_password_modal_{{row.ballot_id}}" modal_to_open="myModal_{{row.ballot_id}}" value="Register"  />
                                             {% endif %}
                                         </form>
                                     </div>
@@ -80,12 +80,13 @@
 
 {% block javascript %}
 
+{% for row in registerd_ballots_list %}
 <script>
     // Get the modal
-    var modal = document.getElementById('myModal');
+    var modal = document.getElementById('myModal_{{row.ballot_id}}');
 
     // Get the button that opens the modal
-    var btn = document.getElementById("open_password_modal");
+    var btn = document.getElementById("open_password_modal_{{row.ballot_id}}");
 
     // Get the <span> element that closes the modal
     var span = document.getElementsByClassName("close")[0];
@@ -108,5 +109,6 @@
 }
 
 </script>
+{% endfor %}
 
 {% endblock %}

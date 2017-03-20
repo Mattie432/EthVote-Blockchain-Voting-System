@@ -28,6 +28,15 @@ def return_item(l, i):
     except:
         return None
 
+@register.filter
+def running_total(role_total):
+     return sum(role_total)
+
+@register.filter
+def sub(value, arg):
+    "Subtracts the arg from the value"
+    return int(value) - int(arg)
+
 class RegisterForBallot(LoginRequiredMixin, View):
 
     def __init__(self):
@@ -182,7 +191,7 @@ class Vote(LoginRequiredMixin, View):
             raise Http404("Error setting initial values.")
 
 
-        tx_hash = '0x70307fd6d15c1381ac03d0ceba3ad051e9d88c65b900c1d3f7e0abcd1120ad44'#self.ethereum.vote(ballot_address, voted_index, voter_address, voter_password)
+        tx_hash = self.ethereum.vote(ballot_address, voted_index, voter_address, voter_password)
 
         request.session['vote_transaction'] = tx_hash
 
@@ -194,6 +203,7 @@ class Vote(LoginRequiredMixin, View):
             username = int(request.user.username)
             ballot_id = int(_ballot_id)
             vote_transaction = request.session.get('vote_transaction', None)
+            (voter_address, voter_private_key, voter_public_key) = request_address_register_check_local( request.user, ballot_id )
             if vote_transaction is not None:
                 del request.session['vote_transaction']
                 request.session.modified = True
@@ -207,7 +217,12 @@ class Vote(LoginRequiredMixin, View):
 
         ballot_address = ballot_info['ballot_address']
 
-        return render(request, 'vote.html', { 'ballot_info' : self.ethereum.ballotInfo(ballot_address), 'ballot_id' : ballot_id, 'ballot_address' : ballot_address, 'vote_transaction' : vote_transaction })
+        return render(request, 'vote.html', {
+            'ballot_info' : self.ethereum.ballotInfo(ballot_address),
+            'user_info' : self.ethereum.userInfo(ballot_address, voter_address),
+            'ballot_id' : ballot_id,
+            'ballot_address' : ballot_address,
+            'vote_transaction' : vote_transaction })
 
 
 

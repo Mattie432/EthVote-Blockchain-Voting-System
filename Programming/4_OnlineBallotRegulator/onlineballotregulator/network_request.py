@@ -61,7 +61,7 @@ class RequestHandler(amp.AMP):
         print('[RequestHandler - register_ballot] Received request : name:%s \n'
               '    With options: %s' % (ballot_name, ballot_options_array))
 
-        ballot_interface = pickle.dumps(self.ethereum.getBallotInterface())
+        ballot_interface = '' #pickle.dumps(self.ethereum.getBallotInterface())
 
         ballot_address = self.ethereum.registerBallot(ballot_name, ballot_end_date, ballot_options_array)
 

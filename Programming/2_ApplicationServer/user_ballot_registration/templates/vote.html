@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+
 {% block title %}ETH Vote | Voting{% endblock %}
 {% block header %}ETH Vote | Voting{% endblock %}
 
@@ -110,23 +111,99 @@
     </div>
 
 
-    <table class="table table-hover" style="width:100%">
-        <tr>
-            <th>name</th>
-            <th>value</th>
-        </tr>
-        {% for mykey,myvalue in ballot_info.items %}
-            <tr style="line-height: 50px">
-                    <td>{{ mykey }}</td>
-                    <td>{{ myvalue }}</td>
-            </tr>
-        {% endfor %}
-    </table>
+
+
+
+
+
+
+
+
+
+<div class="container">
+	<div class="row">
+        <div class="col-md-12">
+            <h2>Current ballot statistics</h2>
+        </div>
+	</div>
+    <div class="row">
+        <div class="col-md-3">
+          <ul data-pie-id="svg">
+              {% for i in ballot_info.ballot_options_range %}
+                <li data-value="{{ballot_info.ballot_options_vote_count|return_item:i}}">
+                    {{ballot_info.ballot_options_name|return_item:i}} ({{ballot_info.ballot_options_vote_count|return_item:i}})
+                </li>
+            {% endfor %}
+
+          </ul>
+        </div>
+        <div class="col-md-3">
+          <div id="svg"></div>
+        </div>
+        <div class="col-md-3">
+          <ul data-pie-id="my-cool-chart" data-options='{"donut": "true"}'>
+                <li data-value="{{ballot_info.ballot_registered_voter_count}}">
+                    {% with totalVotes=ballot_info.ballot_options_vote_count|running_total %}
+                        Voters yet to participate: ({{ballot_info.ballot_registered_voter_count|sub:totalVotes}})
+                    {% endwith %}
+                </li>
+              <li data-value="{{ballot_info.ballot_options_vote_count|running_total}}">
+                    Votes cast: ({{ballot_info.ballot_options_vote_count|running_total}})
+                </li>
+            </ul>
+
+        </div>
+        <div class="col-md-3">
+            <div id="my-cool-chart"></div>
+        </div>
+    </div>
+</div>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-13 col-md-offset-0">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Show raw data:       <button class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#more_info">Collapsible</button> </h3>
+                    </div>
+
+                        <div id="more_info" class="panel-body collapse">
+
+                                <table class="table table-hover" style="width:100%">
+                                    <tr>
+                                        <th>name</th>
+                                        <th>value</th>
+                                    </tr>
+                                    {% for mykey,myvalue in ballot_info.items %}
+                                        <tr style="line-height: 50px">
+                                                <td>{{ mykey }}</td>
+                                                <td>{{ myvalue }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    {% for mykey,myvalue in user_info.items %}
+                                        <tr style="line-height: 50px">
+                                                <td>{{ mykey }}</td>
+                                                <td>{{ myvalue }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 {% endblock %}
 
 {% block javascript %}
+
+
+</script>
+
+</script>
 
 <script>
 
