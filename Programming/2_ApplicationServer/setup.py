@@ -8,7 +8,11 @@ setup(
     description='',
     url='https://github.com/Mattie432/Blockchain-Voting-System',
     packages=[
-        'applicationserver'
+        'applicationserver',
+        'network',
+        'user_ballot_registration',
+        'website',
+        'ethereum'
     ],
     install_requires=[
         'Django>=1.10.0',
@@ -17,6 +21,6 @@ setup(
         'pycrypto',
         'ecdsa',
         'pysha3',
-        'web3',
+        'web3'
     ]
 )

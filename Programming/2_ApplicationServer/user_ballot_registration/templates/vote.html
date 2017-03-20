@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}ETH Vote | Voting{% endblock %}
+{% block header %}ETH Vote | Voting{% endblock %}
+
+
+{% block css %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-13 col-md-offset-0">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Ballot | {{ ballot_info.ballot_name }} </h3>
+                    </div>
+                    <div class="panel-body">
+
+                    {% if vote_transaction is not None %}
+
+                        <!-- Modal -->
+                        <div id="transaction_modal" class="modal fade" role="dialog" data-toggle="modal">
+                          <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Vote submitted.</h4>
+                              </div>
+                              <div class="modal-body">
+                                <p>Your vote is pending confirmation. Check this transactions status: <a href="https://etherscan.io/tx/{{vote_transaction}}">{{vote_transaction}}</a></p>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+                    {% endif %}
+
+
+                    <form action="/vote/{{ ballot_id }}/" method="post">
+                        <input type="hidden" name="ballot_address" value="{{ballot_address}}">
+                            {% csrf_token %}
+                        <table class="table table-hover" style="width:100%">
+                            <tr>
+                                <th style="width:20%">Time Remaining:</th>
+                                <th>Voting options:</th>
+                            </tr>
+                            <tr style="line-height: 50px">
+                                <td>
+                                    <div id="clockdiv">
+                                        days: 0 <br>
+                                        hours: 0 <br>
+                                        minutes: 0 <br>
+                                        seconds: 0
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="mycontainer">
+                                      <ul>
+                                        {% for i in ballot_info.ballot_options_range %}
+
+                                      <li>
+                                        <input type="radio" value="{{i}}" id="{{ ballot_info.ballot_options_name|return_item:i }}" name="voted_index">
+                                        <label for="{{ ballot_info.ballot_options_name|return_item:i }}">{{ ballot_info.ballot_options_name|return_item:i }}</label>
+
+                                        <div class="check"></div>
+                                      </li>
+                                        {% endfor %}
+
+                                      </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr style="line-height: 50px">
+                                <td></td>
+                                <td>
+                                    <input class="btn btn-primary btn-sm " type="button" id="open_password_modal" value="Vote"/>
+                                </td>
+                            </tr>
+
+
+                            <!-- The Modal -->
+                            <div id="myModal" class="myModal modal ">
+
+                              <!-- Modal content -->
+                              <div class="modal-content">
+                                <span class="close">&times;</span>
+                                  <div class="myCenter">
+                                        <p>Please confirm your password.</p>
+                                        <input type="password" id="voter_password" name="voter_password">
+                                        <input class="btn btn-primary btn-sm " type="submit" value="Vote"  />
+                                </div>
+                              </div>
+
+                            </div>
+
+                        </table>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <table class="table table-hover" style="width:100%">
+        <tr>
+            <th>name</th>
+            <th>value</th>
+        </tr>
+        {% for mykey,myvalue in ballot_info.items %}
+            <tr style="line-height: 50px">
+                    <td>{{ mykey }}</td>
+                    <td>{{ myvalue }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+{% endblock %}
+
+{% block javascript %}
+
+<script>
+
+    $("#transaction_modal").modal()
+
+    // Get the modal
+    var modal = document.getElementById('myModal');
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("open_password_modal");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on the button, open the modal
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+}
+
+</script>
+
+<script>
+    function getTimeRemaining(endtime){
+      var t = Date.parse(endtime) - Date.parse(new Date());
+      var seconds = Math.floor( (t/1000) % 60 );
+      var minutes = Math.floor( (t/1000/60) % 60 );
+      var hours = Math.floor( (t/(1000*60*60)) % 24 );
+      var days = Math.floor( t/(1000*60*60*24) );
+      return {
+        'total': t,
+        'days': days,
+        'hours': hours,
+        'minutes': minutes,
+        'seconds': seconds
+      };
+    }
+    function initializeClock(id, endtime){
+      var clock = document.getElementById(id);
+      var timeinterval = setInterval(function(){
+        var t = getTimeRemaining(endtime);
+        clock.innerHTML = 'days: ' + t.days + '<br>' +
+                          'hours: '+ t.hours + '<br>' +
+                          'minutes: ' + t.minutes + '<br>' +
+                          'seconds: ' + t.seconds;
+        if(t.total<=0){
+          clearInterval(timeinterval);
+        }
+      },1000);
+    }
+    var deadline = new Date(0); // The 0 there is the key, which sets the date to the epoch
+    deadline.setUTCSeconds({{ballot_info.ballot_end_time}});
+
+    console.log(deadline);
+
+    initializeClock('clockdiv', deadline);
+</script>
+{% endblock %}

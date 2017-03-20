@@ -1,6 +1,8 @@
 import json, os, pprint, datetime
 import pickle
 
+from twisted.internet import defer
+from twisted.internet import threads
 from web3 import Web3, KeepAliveRPCProvider, IPCProvider
 from solc import compile_source, compile_files, link_code
 
@@ -9,7 +11,8 @@ class Ethereum():
     def __init__(self):
         self.work_dir = os.environ[ 'WORK_DIR' ]
 
-        self.web3 = Web3(IPCProvider("/usr/src/ethereumDB/geth.ipc"))
+        # self.web3 = Web3(IPCProvider("/usr/src/ethereumDB/geth.ipc"))
+        self.web3 = Web3(KeepAliveRPCProvider())
         contract_path = self.work_dir + "ethereum/ETHVoteBallot.sol"
         compiled_contract = compile_files( [contract_path] )
         key = '{0}:ETHVoteBallot'.format(os.path.abspath(contract_path))
@@ -154,14 +157,36 @@ class Ethereum():
         add_voter_tx_hash = ContractFactory.transact().giveRightToVote(str(voter_address))
         print("                        add_voter_tx_hash: %s" % add_voter_tx_hash)
 
-        # Wait 'n' mins for transaction to process.
-        wait_until = datetime.datetime.now() + datetime.timedelta(minutes=timeout_mins)
-        break_loop = False
-        while not break_loop:
-            finalize_address = self.web3.eth.getTransactionReceipt(add_voter_tx_hash)
-            if wait_until < datetime.datetime.now():
-                raise Exception("Adding voter_address '%s' in transaction '%s' not mined. Timing out after %s mins." % (voter_address, add_voter_tx_hash, timeout_mins))
-            elif finalize_address is not None:
-                break_loop = True
-                print("                                confirmed: %s" % add_voter_tx_hash)
-        return add_voter_tx_hash
+        # 0.005 == $0.20
+        ETH = 0.005
+        ammount = self.web3.toWei(ETH, "ether")
+        fund_hash = self.web3.eth.sendTransaction( { 'to':voter_address, 'value': ammount } )
+
+        print("[ethereum - interact_give_right_to_vote] Funding voter account '%s' with %sETH" % (voter_address, ETH ))
+        print("                                fund_hash: %s" % fund_hash)
+
+        def wait_for_confirmation():
+            # Wait 'n' mins for transaction to process.
+            wait_until = datetime.datetime.now() + datetime.timedelta(minutes=timeout_mins)
+            break_loop = False
+            while not break_loop:
+                finalize_address = self.web3.eth.getTransactionReceipt(add_voter_tx_hash)
+                if wait_until < datetime.datetime.now():
+                    raise Exception("Adding voter_address '%s' in transaction '%s' not mined. Timing out after %s mins." % (voter_address, add_voter_tx_hash, timeout_mins))
+                elif finalize_address is not None:
+                    break_loop = True
+                    print("                                confirmed: %s" % add_voter_tx_hash)
+
+            return add_voter_tx_hash
+
+        def return_result(result):
+            return result
+
+        def return_errback(failure):
+            print(failure.getErrorMessage())
+            raise failure.raiseException()
+
+        d = threads.deferToThread(wait_for_confirmation)
+        d.addCallback(return_result).addErrback(return_errback)
+
+        return d

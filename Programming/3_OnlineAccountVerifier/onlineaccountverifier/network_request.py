@@ -209,6 +209,11 @@ class RequestHandler(amp.AMP):
         return databasequery.search_token_request_for_user_id(user_id)
 
 
+    @OnlineAccountVerifier_SearchRegisterVoteForAddress.responder
+    def search_register_vote_for_voter_address(self, voter_address):
+        databasequery = self.factory.get_databasequery()
+        return databasequery.search_register_vote_for_voter_address(voter_address)
+
     @OnlineAccountVerifier_GetPublicKeyForBallot.responder
     def request_public_key_for_ballot(self, ballot_id):
 
@@ -382,6 +387,8 @@ class RequestHandler(amp.AMP):
         # Save our details to register_vote table
 
         def save_vote_registration(prev_result):
+
+            print("Type prev result (it is a defered?) = ", type(prev_result))
 
             # We should save our processed request.
             hash = SHA256.new()

@@ -32,13 +32,38 @@
                                 <td>
                                     {% if row.registered == False %}
                                     <div style="line-height:50%">
-                                        <form action="/register_for_ballot/{{ row.ballot_id }}">
-                                            <input class="btn btn-primary btn-sm " type="submit" value="Register" />
+                                        <form action="/register_for_ballot/{{ row.ballot_id }}/" method="post">
+                                            {% csrf_token %}
+
+                                            <!-- The Modal -->
+                                            <div id="myModal" class="myModal modal ">
+
+                                              <!-- Modal content -->
+                                              <div class="modal-content">
+                                                <span class="close">&times;</span>
+                                                  <div class="myCenter">
+                                                        <p>Please confirm your password.</p>
+                                                        <input type="password" id="voter_password" name="register_password">
+                                                        <input class="btn btn-primary btn-sm " type="submit" value="Submit"  />
+                                                </div>
+                                              </div>
+
+                                            </div>
+
+
+
+                                            {% if row.requested != None %}
+                                                <input class="btn btn-primary btn-sm " value="Processing.." disabled />
+                                            {% else %}
+                                                <input class="btn btn-primary btn-sm " type="button" id="open_password_modal" value="Register"  />
+                                            {% endif %}
                                         </form>
                                     </div>
                                     {% else %}
                                     <div style="line-height:50%">
-                                        <input class="btn btn-primary btn-sm " type="button" value="Vote"/>
+                                        <form action="/vote/{{ row.ballot_id }}/" method="get">
+                                                <input class="btn btn-primary btn-sm " type="submit" value="Vote"  />
+                                        </form>
                                     </div>
                                     {% endif %}
                                 </td>
@@ -50,5 +75,38 @@
             </div>
         </div>
     </div>
+
+{% endblock %}
+
+{% block javascript %}
+
+<script>
+    // Get the modal
+    var modal = document.getElementById('myModal');
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("open_password_modal");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on the button, open the modal
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+}
+
+</script>
 
 {% endblock %}

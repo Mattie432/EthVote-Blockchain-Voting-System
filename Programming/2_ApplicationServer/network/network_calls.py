@@ -138,3 +138,53 @@ def searchUserRegisteredBallots(user_id):
 
     # Inlinecallback return value.
     returnValue(format_results(result_deferred))
+
+@run_in_reactor
+@inlineCallbacks
+def searchUserAddressRegisterVote(voter_address):
+    """
+    http://crochet.readthedocs.io/en/latest/api.html#run-in-reactor-asynchronous-results
+
+    Blocking call to the acountverifier server to request the ballots for a particular user has already registered for..
+
+    :return: EventualResult
+    """
+
+    # NOTE: using inline callbacks here so we dont have to write/wait for callbacks.
+    destination_deferred = yield TCP4ClientEndpoint(reactor, accountverifier_ip, accountverifier_port)
+    connection_deferred = yield connectProtocol(destination_deferred, AMP())
+    result_deferred = yield connection_deferred.callRemote(OnlineAccountVerifier_SearchRegisterVoteForAddress, voter_address=voter_address)
+
+    def format_results(pickled_result):
+        # First unpickle the results.
+        result = pickle.loads(pickled_result['ok'])
+
+        # Transform the list results into a dictionary.
+        record_list = []
+        for record in result:
+            mapper = {}
+            mapper['register_vote_id'] = record[0]
+            mapper['signed_token_hash'] = record[1]
+            mapper['voter_address'] = record[2]
+            mapper['ballot_id'] = record[3]
+            mapper['timestamp'] = record[4]
+            # Append each row's dictionary to a list
+            record_list.append(mapper)
+
+        return record_list
+
+    # Inlinecallback return value.
+    returnValue(format_results(result_deferred))
+
+@run_in_reactor
+@inlineCallbacks
+def request_contract_abi():
+    destination_deferred = yield TCP4ClientEndpoint(reactor, ballotregulator_ip, ballotregulator_port)
+    connection_deferred = yield connectProtocol(destination_deferred, AMP())
+    result_deferred = yield connection_deferred.callRemote(OnlineBallotRegulator_RequestContractABI)
+
+    def format_results(pickled_result):
+        # First unpickle the results.
+        return pickle.loads(pickled_result['ok'])
+
+    returnValue(format_results(result_deferred))

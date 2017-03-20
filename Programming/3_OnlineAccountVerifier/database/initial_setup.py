@@ -121,8 +121,8 @@ def main():
     #TODO remove testing data
 
     try:
-        cursor.execute("INSERT INTO token_request (user_id, ballot_id, blind_token_hash) VALUES (1234, 4321, ThisIsABlineToken_1234_5431);")
-        cursor.execute("INSERT INTO token_request (user_id, ballot_id, blind_token_hash) VALUES (2345, 5432, ThisIsABlineToken_2345_5432);")
+        cursor.execute("INSERT INTO token_request (user_id, ballot_id, blind_token_hash) VALUES (2345, 4321, 'ThisIsABlineToken_1234_5431');")
+        cursor.execute("INSERT INTO token_request (user_id, ballot_id, blind_token_hash) VALUES (2345, 5432, 'ThisIsABlineToken_2345_5432');")
 
         connection.commit()
     except:

@@ -1,3 +1,6 @@
+from twisted.internet import defer
+from twisted.internet import threads
+
 from onlineballotregulator.network_commands import *
 from twisted.internet.protocol import Factory
 from twisted.internet.defer import inlineCallbacks, returnValue
@@ -9,6 +12,24 @@ class RequestHandler(amp.AMP):
     def __init__(self):
         super().__init__()
         self.ethereum = Ethereum()
+
+    @OnlineBallotRegulator_RequestContractABI.responder
+    def request_contract_abi(self):
+
+
+        def request(param):
+            interface = self.ethereum.getBallotInterface()
+            dumps = pickle.dumps(interface)
+            return { 'ok' : (dumps) }
+
+        def request_errback(failure):
+            raise failure.raiseException()
+
+        d = defer.Deferred()
+        d.addCallback(request).addErrback(request_errback)
+        d.callback(True)
+        return d
+
 
     @OnlineBallotRegulator_RegisterUserIdForBallotId.responder
     def insert_into_ballot_register_user_id_ballot_id(self, user_id, ballot_id):
@@ -93,13 +114,14 @@ class RequestHandler(amp.AMP):
         results = defered.addCallback(search_ballot_id_format_results).addErrback(search_ballot_id_errback)
 
         def blockchain_add(record_list):
+
             ballot_interface = self.ethereum.getBallotInterface()
             ballot_address = record_list[0]['ballot_address']
 
             ethererum = Ethereum()
-            add_voter_tx_hash = ethererum.interact_give_right_to_vote(ballot_address, voter_addres, ballot_interface)
+            d = ethererum.interact_give_right_to_vote(ballot_address, voter_addres, ballot_interface)
 
-            return { 'ok' : add_voter_tx_hash }
+            return d
 
         def blockchain_add_errback(failure):
             raise failure.raiseException()
@@ -107,7 +129,17 @@ class RequestHandler(amp.AMP):
 
         blockchain_add_defered = results.addCallback(blockchain_add).addErrback(blockchain_add_errback)
 
-        return blockchain_add_defered
+        def return_res(result):
+            response = str(result)
+            return { 'ok' : response }
+
+        def return_res_errback(failuire):
+            print("return_res_errback\n\n", failuire.getErrorMessage())
+            raise failuire.raiseException()
+
+        return_defered = blockchain_add_defered.addCallback(return_res).addErrback(return_res_errback)
+
+        return return_defered
 
 
 class MyServerFactory(Factory):

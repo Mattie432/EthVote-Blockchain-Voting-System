@@ -92,6 +92,37 @@ class DatabaseQuery:
 
         return deferred
 
+    def search_register_vote_for_voter_address(self, voter_address):
+        """
+        Requests all rows ascociated with a voter_address from the token_request table. Will
+        return either a dictionary (onSucsess) or raise an exception (onError) to be
+        passed back to the client.
+
+        :param user_id:
+        :return:
+        """
+
+        def onSuccess(results):
+            print ("[DatabaseQuery - retrieve_request_sign] - Query sucsess:")
+            # pprint.pprint(results, indent=4)
+
+            # Convert list of results to bytes for transport
+            encoded_results = pickle.dumps(results)
+
+            return {'ok' : encoded_results}
+
+        def onError(failure):
+            print ("[DatabaseQuery - retrieve_request_sign] - Query error:")
+            pprint.pprint(failure.value)
+            raise failure.raiseException()
+
+        query = "SELECT * FROM register_vote WHERE voter_address='%s';" % voter_address
+        deferred = self.dbConnection.runQuery(query)
+        deferred.addCallback(onSuccess)
+        deferred.addErrback(onError)
+
+        return deferred
+
     def search_token_request_for_user_id(self, user_id):
 
         """

@@ -71,6 +71,18 @@ class OnlineAccountVerifier_GetPublicKeyForBallot(Command):
         Exception : b'OnlineAccountVerifier_GetPublicKeyForBallot'
     }
 
+class OnlineAccountVerifier_SearchRegisterVoteForAddress(Command):
+    arguments = [
+        (b'voter_address',            amp.Unicode())
+    ]
+    response = [
+        (b'ok', amp.String())
+    ]
+    errors = {
+        #TODO add errors
+        Exception : b'OnlineAccountVerifier_SearchTokenRequestForUserId'
+    }
+
 
 class OnlineBallotRegulator_RegisterUserIdForBallotId(Command):
     arguments = [
@@ -106,7 +118,7 @@ class OnlineBallotRegulator_SearchBallotRegisterForUserId(Command):
         (b'user_id',            amp.Integer())
     ]
     response = [
-        (b'ok',         amp.String())
+        (b'ok',                 amp.String())
     ]
     errors = {
         psycopg2.IntegrityError : b'IntegrityError'
@@ -133,6 +145,16 @@ class OnlineBallotRegulator_RegisterVoterAddressBallotId(Command):
     ]
     errors = {
         psycopg2.ProgrammingError : b'ProgrammingError'
+    }
+
+class OnlineBallotRegulator_RequestContractABI(Command):
+    arguments = [
+    ]
+    response = [
+        (b'ok',         amp.String())
+    ]
+    errors = {
+
     }
 
 class ApplicationServer_RegisterNewUser(Command):

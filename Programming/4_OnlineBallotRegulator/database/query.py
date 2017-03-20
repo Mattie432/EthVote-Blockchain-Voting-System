@@ -54,7 +54,7 @@ class DatabaseQuery:
 
         def onSuccess(results):
             print ("[DatabaseQuery - retrieve_ballots] - Query sucsess:")
-            pprint.pprint(results, indent=4)
+            # pprint.pprint(results, indent=4)
 
             # Convert list of results to bytes for transport
             encoded_results = pickle.dumps(results)

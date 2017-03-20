@@ -17,8 +17,9 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib.auth import views as auth_views
 from website.views import (Dashboard, HomepageRedirect)
-from user_ballot_registration.views import (RegisterForBallot)
+from user_ballot_registration.views import (RegisterForBallot, Vote)
 
 urlpatterns = [
-    url(r'^register_for_ballot/(\d{2,5})/$',    RegisterForBallot.as_view(), name="applicationserver"),
+    url(r'^register_for_ballot/(\d{2,5})/$',    RegisterForBallot.as_view(),    name="applicationserver"),
+    url(r'^vote/(\d{2,5})/$',                   Vote.as_view(),                 name="applicationserver"),
 ]

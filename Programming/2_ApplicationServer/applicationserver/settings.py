@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'website',
     'accounts',
     'user_ballot_registration',
+    'ethereum'
 ]
 
 MIDDLEWARE = [
