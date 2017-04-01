@@ -1,0 +1,52 @@
+\documentclass[]{article}
+\usepackage{standalone}
+\usepackage[a4paper]{geometry}
+\usepackage{longtable}
+
+\usepackage{enumitem}
+\usepackage{textcomp}
+\usepackage{gensymb}
+\usepackage[normalem]{ulem}
+\usepackage{color}
+\usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{csquotes}
+
+\usepackage{array}
+\usepackage{ragged2e}
+\newcolumntype{P}[1]{>{\RaggedRight\hspace{0pt}}p{#1}}
+
+\usepackage{supertabular,booktabs}
+\usepackage{listings}
+\usepackage{booktabs}
+\newcommand{\bftab}{\fontseries{b}\selectfont}
+
+%Paths for graphics locations
+\graphicspath{ {./}{../../}{../}{TitlePage/}{LiteratureReview/}{ExperimentalResults/}}
+\usepackage{caption}
+
+\begin{document}
+
+	%Insert title page
+	\input{TitlePage/TitlePage}
+	
+	%Insert the abstract
+    \pagenumbering{arabic}
+    \setcounter{page}{2}
+	
+	%table of contents
+%	\newgeometry{bottom=2cm}
+	\tableofcontents
+	\newpage
+
+	\input{Abstract/Abstract}
+	\begin{center}
+	\hrulefill
+	\end{center}
+	
+	\cleardoublepage
+
+\end{document}

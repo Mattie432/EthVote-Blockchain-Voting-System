@@ -200,3 +200,6 @@ keys/
 # Ignore ethererum database
 ethereumDB/
 web3_test.py
+
+# Ignore report folder
+/Paper/Dissertation/Robotics
