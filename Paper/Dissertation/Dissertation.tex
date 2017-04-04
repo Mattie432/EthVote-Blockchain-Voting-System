@@ -19,6 +19,7 @@
 \usepackage{ragged2e}
 \newcolumntype{P}[1]{>{\RaggedRight\hspace{0pt}}p{#1}}
 
+\usepackage[parfill]{parskip}
 \usepackage{supertabular,booktabs}
 \usepackage{listings}
 \usepackage{booktabs}
@@ -27,6 +28,26 @@
 %Paths for graphics locations
 \graphicspath{ {./}{../../}{../}{TitlePage/}{LiteratureReview/}{ExperimentalResults/}}
 \usepackage{caption}
+
+%Used for bibliography
+\usepackage[british]{babel}
+\usepackage[%
+  autolang=other,
+  backend=bibtex      % biber or bibtex
+%,style=authoryear    % Alphabeticalsch
+ ,style=numeric-comp  % numerical-compressed
+ ,sorting=none        % no sorting
+ ,sortcites=true      % some other example options ...
+ ,block=none
+ ,indexing=false
+ ,citereset=none
+ ,isbn=true
+ ,url=true
+ ,doi=true            % prints doi
+ ,natbib=true         % if you need natbib functions
+]{biblatex}
+\addbibresource{Bibliography/Bibliography}
+
 
 \begin{document}
 
@@ -42,11 +63,15 @@
 	\tableofcontents
 	\newpage
 
-	\input{Abstract/Abstract}
-	\begin{center}
-	\hrulefill
-	\end{center}
-	
+	\input{Abstract/Abstract}	
 	\cleardoublepage
 
+	\input{Introduction/Introduction}	
+	\cleardoublepage
+
+	\input{Design/Design}	
+	\cleardoublepage
+
+	\cleardoublepage
+	\printbibliography
 \end{document}
