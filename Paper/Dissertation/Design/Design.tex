@@ -4,7 +4,24 @@
 \usepackage{multicol}
 \usepackage[parfill]{parskip}
 
+% Used for sequence diagram
+\usepackage{pgf-umlsd}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
 
+% Hyperlinks
+\usepackage[colorlinks,allcolors=blue]{hyperref}
+\usepackage[normalem]{ulem}
+\usepackage{xcolor}
+\makeatletter
+\begingroup
+  \catcode`\$=6 %
+  \catcode`\#=12 %
+  \gdef\href@split$1#$2#$3\\$4{%
+    \hyper@@link{$1}{$2}{\uline{$4}}% or \underline
+    \endgroup
+  }%
+\endgroup
 %Used for bibliography
 \usepackage[british]{babel}
 \usepackage[%
@@ -32,6 +49,8 @@
 In this paper, I present an ``end-to-end verifiable system'' built on the Ethereum Blockchain, i.e., a system where a voter can be assured their vote has been fairly counted, only eligible voters are allowed to vote and the tallied results of the election are publicly verifiable.
 
 Although this system has been designed and developed with the idea of a national general election in mind, the protocols and ideas involved could be applied to smaller scale ballots which wish to provide transparency in their audit. Although we wish to minimize trust in a central authority, due to the nature of these type of elections (where there needs to be some degree of voter eligibility verification), we cannot fully decentralize this system as we need to only allow those eligible the rights to vote. Despite needing to verify an individual we still need to ensure that their votes are publicly anonymous, especially given the public transactions underpinning the blockchain concept while providing the ability for an individual to verify that their vote was correctly counted.
+
+I do not see this system as a direct ``replace all'' for national election voting. I believe there will still be a need for traditional voting implementations in certain situations; for example, maintaining postal vote for the elderly who may not have the technical capability or equipment for online voting. However I do think that this could be phased in along side traditional voting, eventually replacing the pre-existing e-voting systems and ultimately becoming the main way for the majority of people to choose their government. 
 
 The designed schema for this protocol is the following:
 \begin{enumerate}
@@ -88,74 +107,270 @@ In summary, Ethereum is an open software platform based on blockchain technology
  
 Ethereum is poised to become the next greatest innovation based on block chain technology so is Ethereum similar to Bitcoin? The answer is sort of, but not really. Like Bitcoin, Ethereum is a distributed public blockchain network, however there are some significant technical differences between the two. The most important distinction to note is that Bitcoin and Ethereum differ substantially in purpose and capability. Bitcoin offers one particular application of blockchain technology, a peer to peer electronic cash system that enables online payments. While the bitcoin blockchain is used to track ownership of digital currency (bitcoins), the Ethereum blockchain focuses on running the programming code of decentralized application {\Large [55]}.
 
+Ethereum enables developers to build and deploy decentralized applications. A decentralized application or Dapp serves some particular purpose to its users, for example Bitcoin, is a Dapp that provides its users with a peer to peer payment system. Because decentralized applications are made up of code that runs on a blockchain network, they are not controlled by any individual or central entity. Running these Dapps on a decentralized Platform, the blockchain, they benefit from all of its properties {\Large [54]}:
 
+\begin{itemize}
+	\item Immutability, a third party cannot make any changes to data.
 
+	\item Corruption \& tamper proof as apps are based on a network formed around the principle of consensus, making censorship impossible.
 
+	\item No central point of failure, as Dapps can be run on every node in the network.
 
+	\item Secured using cryptography, applications are well protected against hacking attacks and fraudulent activities.
 
-\cleardoublepage
+	\item Zero downtime, Dapps never go down and can never be switched off.
 
-decentralized
-
-Ethereum enables developers to build and deploy decentralized applications. A decentralized application or Dapp serves some particular purpose to its users. Bitcoin, for example, is a Dapp that provides its users with a peer to peer electronic cash system that enables online Bitcoin payments. Because decentralized applications are made up of code that runs on a blockchain network, they are not controlled by any individual or central entity.
-
-Any services that are centralized can be decentralized using Ethereum. Think about all the intermediary services that exist across hundreds of different industries. From obvious services like loans provided by banks to intermediary services rarely thought about by most people like title registries, voting systems, regulatory compliance and much more.
-
-Ethereum can also be used to build Decentralized Autonomous Organizations (DAO). A DAO is fully autonomous, decentralized organization with no single leader. DAO’s are run by programming code, on a collection of smart contracts written on the Ethereum blockchain. The code is designed to replace the rules and structure of a traditional organization, eliminating the need for people and centralized control. A DAO is owned by everyone who purchases tokens, but instead of each token equating to equity shares \& ownership, tokens act as contributions that give people voting rights.
-
-What are the benefits of Ethereum decentralized Platform?
-Because decentralized applications run on the blockchain, they benefit from all of its properties.
-
-Immutability – A third party cannot make any changes to data.
-
-Corruption \& tamper proof Apps are based on a network formed around the principle of consensus, making censorship impossible.
-
-Secure – With no central point of failure and secured using cryptography, applications are well protected against hacking attacks and fraudulent activities.
-
-Zero downtime – Apps never go down and can never be switched off.
-
-What’s the downside of decentralized applications?
-
-Despite bringing a number of benefits, decentralized applications aren’t faultless. Because smart contract code is written by humans, smart contracts are only as good as the people who write them. Code bugs or oversights can lead to unintended adverse actions being taken. If a mistake in the code gets exploited, there is no efficient way in which an attack or exploitation can be stopped other than obtaining a network consensus and re-writing the underlying code. This goes against the essence of the blockchain which is meant to be immutable. Also, any action taken by a central party raises serious questions about the decentralized nature of an application.
-
- 
+\end{itemize}
 
 \cleardoublepage
-\subsubsection{Blockchain}
+\subsubsection{Ethereum Blockchain}
+The concept of the blockchain was originally outlined in a white paper \citep{12_nakamoto_2008} authored under the pseudonym Satoshi Nakamoto in November of 2008 and was quickly followed by an open source release of the Bitcoin proof-of-concept source code in January 2009 \citep{13_nakamoto_2009}. This is the distributed ledger which underpins the entirety of the Bitcoin and Ethereum systems. A distributed ledger is a consensus of replicated, shared, and synchronized digital data geographically spread across multiple sites, countries, and/or institutions \citep{24_distributed_ledgers_and_blockchain_technology_2016}. This ledger is stored locally on every node in the network which is running the full version of the blockchain software \citep{14_bitcoin_2009} and records every transaction sent and confirmed on the network (the current size of the Ethereum Blockchain is around 21GB, March 2017\citep{25_blockchain_size_2016}). This complete history, coupled with the fact that it is an open network means that anyone can see what is happening in the network, not just now but during all periods in the past. This is extremely powerful as it allows an individual to fully audit the entire contents of the Blockchain without relying on external parties. This process is, in fact, what happens when you first download the full version of many blockchain reliant software \citep{20_developer_guide_bitcoin_2016}.
 
+While the Ethereum Blockchain is not the only most mature distributed ledger in existence, it does have several years of being a publicly proven method to achieve distributed consensus and does this via the `proof-of-work mining' process \citep{24_distributed_ledgers_and_blockchain_technology_2016}. This is how new information gets added to the blockchain, by nodes in the network running a special `mining' variant of the Ethereum software which uses considerable computing resources to win the right to add another block to the Blockchain which is accompanied by a reward for the winning user. The concept of `proof-of-work' is a method of ensuring that the information being added to the Blockchain was difficult (in terms of cost and time) to be made, though is easy for others to validate that the requirements were met \citep{26_blockchain_mining_-_distributed_ledgers_and_blockchain_technology_2016}. This means that the expenditure of computing power serves to secure the integrity of the Blockchain, while the miners themselves verify through public-private key cryptography the validity of each transaction they include in a block.
+
+Blocks are chained together making it impossible to modify transactions included in any one block without modifying all following blocks; as a result, the cost to modify a particular block increases with every new block added to the block chain, magnifying the effect of the proof of work \citep{20_developer_guide_bitcoin_2016}\citep{38_proof_of_work_-_masterpage_2016}. This is why, although a transaction is deemed clear upon its inclusion in a block on the Blockchain, best practices dictate that a user considers a transaction confirmed after its inclusion in a block and the addition of five subsequent blocks to the Blockchain \citep{27_confirmation_-_bitcoin_wiki_2016}.
+
+The difficulty of the proof-of-work mining needs to be controlled, so that an average mining time of around 12 seconds per block is maintained. This time is somewhat arbitrary but is an attempt to find a balance between accepting transactions quickly and minimizing instability and waste in the network, as, while a new block is being distributed other miners will be working on an obsolete problem. As more miners join the network the block creation rate will increase due to the greater collective computational power. Therefore, every 2,016 blocks the difficulty of the mathematical challenge is recalculated so that the average mining time returns to normal \citep{20_developer_guide_bitcoin_2016}\citep{26_blockchain_mining_-_distributed_ledgers_and_blockchain_technology_2016}.
+
+Despite the media often suggesting that bitcoin (and the Blockchain technology behind it) is an anonymous payment system, the Blockchain is in fact a transparent record of all user transactions on the network. Blockchain transactions are in fact pseudonymous, and your transactions in the network are like writing under a pseudonym. If an author's identity is ever linked to their pseudonym then everything written under that pseudonym will be revealed \citep{28_anonymity_2016}. This is particularly poignant when considering the Blockchain as every transaction is stored forever, therefore a compromised address could lead to all transactions being linked to a person. There are however ways to reduce the amount of statistical analysis which can be done on transactions that a person is a part of which help to achieve reasonable anonymity.
 
 \cleardoublepage
-\subsubsection{Ether}
-mining
+\subsubsection{Mining \& Ether}
+Ether is the fuel of the Ethereum system. It is the currency of the Ethereum network with which the payment of computation is achieved. Ethereum, like all blockchain technologies, uses an incentive-driven model of security where transaction consensus is based on a ``proof-of-work'' criterion of a given difficulty.
 
+The block chain on which the Ethereum executes certain environment is known as the Ethereum Virtual Machine (EVM) {\Large [54]}. Each participating node within the network runs the EVM and performs the proof of work algorithm called Ethash which involves finding a nonce input to the algorithm so that the result is below a certain threshold (depending on the difficulty) {\Large [57]}. There is no better strategy to find such a nonce than enumerating the possibilities while verification of a solution is trivial and cheap. If outputs have a uniform distribution, then we can guarantee that on average the time needed to find a nonce depends on the difficulty threshold, making it possible to control the time of finding a new block just by manipulating difficulty {\Large [57]}.
 
-In the Ethereum blockchain, instead of mining for bitcoin, miners work to earn Ether, a type of crypto token that fuels the network. Beyond a tradeable cryptocurrency, Ether is also used by application developers to pay for transaction fees and services on the Ethereum network {\Large [55]}.
+This is how transactions are validated, new transactions are forwarded around the network and placed into a pool of unconfirmed transactions. These are not considered `accepted' yet but are available for all to see almost instantaneously. Miners draw from this pool to create a candidate next set of transactions to be officially accepted which will form the next block. The full text of all of these candidate transactions, along with the hash of the previous block and a nonce, are input into the the hash function (Ethash) and miners will try different values for the nonce until the resulting hash is below a certain value. Because it's a cryptographic hash, there's no way to find a nonce that satisfies the output hashes condition other than attempting to guess \citep{20_developer_guide_bitcoin_2016}. At this point, all of the miners are in a competition to find the hash first, each with a potentially different set of transactions to confirm. Once a miner succeeds they announce their solution to the rest of the network, their block becomes the next block in the Blockchain, and the transactions therein become confirmed. This strategy means that one miner will choose the next set of confirmed transactions, but the hash function effectively makes the miner a random one. All other mines then validate this new block, and the transactions held within, and can choose to accept it and start work on the next block. As the new block contains the hash of the previous block, this forms a chain of confirmed blocks securing the order of the transactions held within.
+
+Occasionally, two miners may find a solution to the problem at the same time creating two potential next blocks in the chain. When miners produce simultaneous blocks at the end of the block chain, each node individually chooses which block to accept, this is usually the first block they see. Eventually another miner finds the solution to another block which attaches to only one of the competing blocks. This makes that side of the fork stronger and, as the general consensus is to use the strongest chain, other nodes will switch to this longer Blockchain \citep{20_developer_guide_bitcoin_2016}. While this is statistically unlikely to happen, it is even more unlikely for the subsequent blocks to be solved at the same time, meaning that one fork will grow quicker than the other and the fork will resolve itself quickly. Transactions that were in the fork that wasn't chosen are not lost and are placed back into the unconfirmed transactions pool \citep{4_driscoll_2016}. The fact that the end of the chain can be forked and rearranged means you shouldn't trust transactions at the end of the chain as much as ones further back. In Ethereum, a transaction is not considered confirmed until it is part of a block in the longest fork, and at least five blocks follow it. In this case we say that the transaction has ``5 confirmations''. This gives the network time to come to an agreed-upon the ordering of the blocks \citep{35_nielsen_2013}.
+
+The successful miner of a block receives a reward for the 'winning' block, consisting of exactly 5.0 Ether along with all of the gas expended within the block, that is, all the gas consumed by the execution of all the transactions in the block. Over time, it's expected the gas reward will dwarf the block reward and become the main incentive for miners to continue working {\Large [57]}.
 
 \cleardoublepage
 \subsubsection{Transaction Costs \& Gas}
+Ethereum does have a small transaction fee, just like Bitcoin, where users pay a relatively small amount to the executor of your transaction. The sender has to pay the fees at each and every step of the activated program, this includes the memory, storage and computation {\Large [54]}. The size of the fee paid is equivalent to the complexity of the transaction, i.e. the more complex the commands you wish to execute, the more gas (and Ether) you have to pay. For example if ``Alice'' wants to send ``Bob'' 1 Ether unit, there would be a total cost of 1.00001 Ether to be paid by Alice. However if A wanted to deploy a contract or run a contract function, there would be more lines of code executable, therefore more energy consumption placed on the distributed Ether network and she would have to pay more than the 1 Gas done in the first transaction {\Large [56]}. Some computational steps cost more than others, either because they are more computationally expensive or because they increase the amount of data that has to be stored in the state. 
 
+Gas is the internal pricing for running a transaction or contract in Ethereum. The gas system is not very different from the use of kilowatts in measuring electricity except that the originator of the transaction sets the price of gas, to which the miner can or not accept {\Large [56]}. Ether and Gas are inversely related say for instance if the Ether price increases, than Gas price should decrease to maintain the concept of real cost {\Large [54]}. With Ethereum there is also a blocksize limit, so the more space your transaction takes up the more you have to pay to get it validated. With Bitcoin miners prioritise transaction with the highest mining fees. The same is true of Ethereum where miners are free to ignore transactions whose gas price limit is too low. 
+
+The reason for the inclusion of a gas price per transaction or contract is to deal with the Turing Complete nature of Ethereum and its EVM essentially to guarantee that code running in the network will terminate. So for example, 0.00001 Ether or 1 Gas can execute a line of code or some command. If there is not enough Ether in the account to perform the transaction or message then it is considered invalid. This aims to stop denial of service attacks from infinite loops, encourage efficiency in the code and make any potential attacker pay for the resources they use (whether that be bandwidth, CPU calculations or storage) {\Large [56]}.
 
 \cleardoublepage
 \subsubsection{Smart Contracts}
-solidity
-Smart contract is just a phrase used to describe computer code that can facilitate the exchange of money, content, property, shares, or anything of value. When run on the blockchain a smart contract becomes like a self-operating computer program that automatically executes when specific conditions are met. Because smart contracts run on the blockchain, they run exactly as programmed without any possibility of censorship, downtime, fraud or third party interference. While all blockchains have the ability to process code, most are severely limited. Ethereum is different. Rather than giving a set of limited operations, Ethereum allows developers to create whatever operations they want. This means developers can build thousands of different applications that go way beyond anything we have seen before.
+Smart contracts are the key element of Ethereum. In them, any algorithm can be encoded, they can carry arbitrary state and can perform any arbitrary computations even being able to call other smart contracts. This gives the scripting capabilities of Ethereum tremendous flexibility {\Large [59]}. When run a smart contract becomes like a self-operating computer program that automatically executes when specific conditions are met and because they run on the blockchain, they run exactly as programmed without any possibility of censorship, downtime, fraud or third party interference. While all blockchains have the ability to process code, most are severely limited. Ethereum is different in this respect as rather than giving a set of limited operations, Ethereum allows developers to create whatever operations they want allowing developers to build thousands of different applications that go far beyond anything seen previously {\Large [55]}.
 
+The Ethereum Virtual Machine is where smart contracts are run. It provides a more expressive and complete language than bitcoin for scripting and is Turing Complete. A good metaphor is that the EVM is a distributed global computer where all smart contracts are executed {\Large [58]}. There are several higher level languages used to program smart contracts, but Solidity is the most mature and widly adopted. Its syntax is similar to that of JavaScript, its statically typed, supports inheritance, libraries and complex user-defined types among other features.
 
-
-
-\cleardoublepage
-\subsubsection{Ethereum Clients}
-geth
-
+Smart contracts are run by each node as part of the block creation process and, just like in Bitcoin, this is the moment where transactions actually take place. An important part of how smart contracts work in Ethereum is that they have their own unique address in the blockchain. In other words, contract code is not carried inside each transaction that makes use of it. Instead contracts are ``deployed'' to the blockchain in a special transaction that assigns an address to a contract. This transaction can also run code at the moment of creation. After this initial transaction, the contract becomes forever a part of the blockchain and its address never changes. Whenever a node wants to call any of the methods defined by the contract, it can send a message to the address of the contract, specifying data as input and the method that must be called. The contract will then run as part of the creation of newer blocks up (subject to the gas limit or completion) and can return a value or store data {\Large [59]}.
 
 \cleardoublepage
-\subsubsection{Something...}
+\subsubsection{Why Choose Ethereum}
+Ultimately the decision to use Ethereum for this project was an easy one. Ethereum is not just a digital currency, it is a blockchain based platform with many aspects desirable when designing and creating distributed applications. There simply is no other technology (at the time of writing) that can offer the same level of customization of decentralized programming and has a similarly substantial user base.
+
+I initially investigated using the Bitcoin protocol as a method to store data (votes) immutably and reviewed several papers proposing voting solutions {\Large [60]}. All of these proposals were however `clunky' in design due to the inescapable fact that that is not what Bitcoin was designed for. Bitcoin was written in a stack based language that isn't Turing Complete as it was designed as a distributed value transfer ledger. 
+
+Ethereum, on the other hand, has contracts written in a Turing Complete Language meaning that anything can be done with it given enough time and enough computing power. This means that Ethereum was built specifically to handle smart contracts over simple currency transactions and although Bitcoin could be built upon to allow the functionality that Ethereum has it would seem unnecessary and be likely cause more problems when programming the application.
+
+Ethereums block confirmation time is also much shorter than Bitcoins. Bitcoin is currently at around 10 minutes whereas Ethereum is around 12 seconds. So consequently, while bitcoin transactions normally take a few minutes to be cleared, Ethereum transactions are cleared almost instantly and at most in a matter of seconds.
+
+The choice to use Solidity as the programming language for my Smart Contracts was mostly governed by maturity. The simple fact is, that there is no other competing languages that have sufficient levels of publicly tested development to justify their use. The closest competitor looks to be Viper {\Large [61]} though this is still in the very early stages of development and lacks many features I would require to be able to use it for this application.
 	
 
 \cleardoublepage
 \subsection{System Design}
 
-%\printbibliography
+There were several points to consider when designing the high level plan of this voting system. The most important of which being the need to ensure separation of a voters account (tied to an individual) and the address they use to vote in the ballot contracts. This directly affected how I designed the system and lead to me splitting the system into distinct sections to take on specific roles; the \textit{Application server} (voter interaction), the \textit{Online Account Verifier} (verify the legitimacy of an account to vote) and the \textit{Online Ballot Regulator} (manages the ballot contracts).
+
+\begin{figure}[h]
+	\noindent
+  	\makebox[\textwidth]{\includegraphics[width=0.8\paperwidth]{blockchain_high_level_overview}}%
+	\caption{Outline of system showing the basic interactions between nodes.}
+\end{figure}
+
+Splitting the system like this adds both a layer of security and increased scalability. AS all of the data is not centralized on one node (or in one database) this would make it more difficult for a potential attacker to breach the system as they would have to get past the security of at least two nodes to obtain anything useful. The big benefit here is scalability, as if this was scaled up to a general election, more traffic would be seen on some nodes than others (e.g. more logins through the \textit{Application Server} than ballot queries in the \textit{Ballot Regulator}). We could then independently scale each node accordingly.
+
+As each of these nodes are effectively self contained, they only need to expose a select number of services to allow inter-node further decreasing the possibilities for attack. As many of these services only need to be called from other nodes, we can add authentication to these connections to ensure that is upheld. In fact, there are only two external points of contact with this system, the web interface for the voter to use and the blockchain interface to contact other Ethereum nodes, meaning we could black box our system from the outside world fairly completely (see networking between nodes section {\Large LINK SECTION}).
+
+Finally, I chose python as the main language for this system as it has strong frameworks for building web applications (Django) which I heavily utilized these for the \textit{Application Server} \& \textit{External Voter Registration} nodes. There is also strong development of Web3.py {\Large [62]} which is a python implementation of web3.js, heavily used when interacting with Ethereum through the Geth client. I also discovered the Twisted python networking package {\Large [63]} which includes an Asynchronous Messaging Protocol (AMP) implementation for calling remote methods and the Pycrypto library which allowed me to perform the RSA blind signature verification which is crucial to separating a user from their Ethereum address.
+
+\subsubsection{External Voter Registration}
+The ``External Voter Registration'' node is meant to represent \textit{some external registrar} who is not directly a part of the designed voting system, but plays a crucial role in the verification of a voters validity (e.g. the UK governments register to vote system). Their role should be purely during the ``pre-election registration'' stage where the voting populous registers their intent to vote in the upcoming election. 
+
+I envision this as being very similar to registering to vote with GOV.UK, where you send your uniquely identifying information (e.g. date of birth, national insurance number, etc) and are then, if verified as a valid voter, registered for the appropriate ballots for your area. As such there would be no need to write this application from scratch as i would make sense to utilize the existing verification systems already in place and modify them to interact with the Ethereum voting system as appropriate. 
+
+For the purpose of demonstrating my application I have written the software for the ``pre-election registration'' node so that I can register a new voter in the system easily (as there needs to be multiple database entries created) and so I can easily deploy a new ballot contract to the blockchain from a specific Ethereum address (necessary so that we have permission to register a voter to a ballot contract). The ``External Voter Registration'' application runs on a Django base, this is because I needed to present a web interface for interaction when registering a new ballot \& user.
+
+\subsubsection{Application Server}
+
+show databse tabkes
+
+\subsubsection{Online Account Verifier}
+
+show databse tabkes
+
+\subsubsection{Online Ballot Regulator}
+
+show databse tabkes
+
+\subsubsection{Blockchain Ballot Contract}
+
+\cleardoublepage
+\subsection{Pre-election setup}
+\subsubsection{Creating a new ballot contract}
+The first thing which needs to be done before any other aspect of the election can take place, is publish the smart contract for each ballot in the election to the blockchain (a deeper analysis of the contract is presented in {\Large LINK TO SECTION}. The smart contract I created can be seen as a `template' of sorts, allowing different sets of voting options to be added to a similar core structure. The system requests the `ballot name', `ballots voting options' (provided as a comma separated list) and the `end date' of the ballot. Because all of the Blockchain interactions are handled by the ``Online Ballot Regulator'' we wrap up this information and send it in a network call to the ``Online Ballot Regulator''.
+
+\begin{figure}[h]
+	\noindent
+  	\makebox[\textwidth]{
+
+		\begin{sequencediagram}
+			
+			% External; Voter registration
+    		\newthread{EVR}{\shortstack{External Voter \\Registration}}
+			
+			%Online ballot regulator
+			\newinst[5]{OBR}{\shortstack{Online Ballot\\Regulator}}
+			
+			% Blockchain
+    		\newinst[5]{B}{\shortstack{Blockchain \\\begin{tikzpicture}[shape aspect=.5]
+				\tikzset{every node/.style={cylinder, shape border rotate=90, draw,fill=gray!25}}
+			\node  at (1.5,0) {BD};
+			\end{tikzpicture}}}{}   
+			
+			% Display the calls between nodes	
+			\begin{sdblock}{Ballot contract registration}{}
+
+				\postlevel
+				\begin{call}
+					{EVR}{\shortstack{Send ballot creation details.\\{[}ballotName, ballotOptions, ballotEndDate{]} }}
+					{OBR}{Response {[}Ok{]}}
+					
+					\begin{call}
+						{OBR}{\shortstack{Create login credentials for voter\\{[}voterID, nonce{]} } }
+						{B}{Response {[}ballotAddress{]}}
+						\postlevel
+					\end{call}
+					
+					\postlevel
+					\postlevel
+					\begin{call}
+						{OBR}{\shortstack{Save ballot details to databse\\{[}ballotName, ballotAddress{]} } }
+						{OBR}{Response {[}Ok{]}}
+						\postlevel
+					\end{call}
+				\end{call}
+  			\end{sdblock}
+  		\end{sequencediagram}
+  	
+  	}%
+	\caption{Registering a new ballot in the blockchain.}
+\end{figure}
+
+The \textit{Online Ballot Regulator} does two things, first registering the ballot contract into the Blockchain with the information received from the remote call. This is funded (and therefore deployed) by the \textit{Ballot Regulators} private key and corresponding Ethereum address which, due to the programming of the ballot contract, means that the ballot regulator has exclusive rights to modify the contract. Deploying the contract happens in three stages in the \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/4_OnlineBallotRegulator/ethereum/ethereum.py}{ethereum/ethereum.py} class of the \textit{Ballot Regulator}. First, the contract `template' is deployed to the Blockchain via the Ethereum software run on the server. This is done by sending the compiled contracts bytecode in an Ethereum transaction along with the contract parameters needed to initially setup the contract (the ballot name \& ballot end time). Once the contract is deployed and confirmed into the blockchain we can access the contract at a specific address which we will use from here on out to interact with the contract (e.g. \href{https://etherscan.io/address/0x127c73af1f9e0eff8226db6bdf04310fdee674f6}{0x127c73af1f9e0eff8226db6bdf04310fdee674f6}).
+
+Next we send another transaction for each ballot option, calling an internal method of the contract, to add each of the options to the deployed contract (you can see examples as the 2nd and 3rd transactions in the above link). These options are then immutably added as choices of the ballot.
+
+The final transaction to the contract is to the internal `finalize()' method. After which, no more ballot options can be added and any registered voters are able to cast their votes.
+
+Once the ballot has been deployed to the blockchain the \textit{Ballot Regulator} confirms its validity and then stores internally the ballots name \& Blockchain address. This allows us to query the \textit{Ballot Regulator} later to obtain the correct address for a specific ballot.
+
+
+\cleardoublepage
+\subsubsection{Registering voters in our system}
+Once we have a voter who wishes to register, and is eligible to voter in a specific ballot (or set of ballots) we need to add this user to our system so they can log in \& vote.
+
+\begin{figure}[h]
+	\noindent
+  	\makebox[\textwidth]{
+
+		\begin{sequencediagram}
+			
+			% External; Voter registration
+    		\newthread{EVR}{\shortstack{External Voter \\Registration}}
+			
+			%Voter
+   			\newinst[2]{V}{\shortstack{Voter \\ \\ \begin{tikzpicture}
+				%\node [fill=gray!20,draw=black,thick ,align=center] {Procesos};
+				\draw (0,0) -- (0,0.5); 			%body
+    			\draw (-0.25, 0.25) -- (0.25,0.25); 	% arms
+    			\draw (0,0) -- (0.25,-0.25); 		% right leg
+			    \draw (0,0) -- (-0.25,-0.25);		%left leg
+			    \draw (0,0.7) circle(.2); 	% head
+			\end{tikzpicture}}}{}
+
+			%Application server
+			\newinst[2]{AS}{\shortstack{Application\\Server}}			
+			
+			%Online account verifier
+			%\newinst[1]{OAV}{\shortstack{Online Account\\Verifier}}
+			
+			%Online ballot regulator
+			\newinst[2]{OBR}{\shortstack{Online Ballot\\Regulator}}
+			
+			% Blockchain
+    		%\newinst[1]{B}{\shortstack{Blockchain \\\begin{tikzpicture}[shape aspect=.5]
+			%	\tikzset{every node/.style={cylinder, shape border rotate=90, draw,fill=gray!25}}
+			%\node  at (1.5,0) {BD};
+			%\end{tikzpicture}}}{}   
+			
+			% Display the calls between nodes	
+			\begin{sdblock}{Pre-election registration}{}
+
+				\postlevel
+				\postlevel
+				\begin{call}
+					{V}{\shortstack{Voter registers\\with external\\registrar}}
+					{EVR}{\shortstack{Send voter login\\ credentials\\{[}voterID, nonce{]} }}
+					
+			 	\postlevel
+				\begin{call}
+					{EVR}{\shortstack{Create login credentials for voter } }
+					{AS}{Returned account details{[}voterID, nonce{]}}
+				\end{call}
+				
+				\postlevel
+				\postlevel
+				\begin{call}
+					{EVR}{\shortstack{Inform the verifier of this voter \& their associated ballot(s)\\{[}voterID, ballotID{]} }}
+					{OBR}{Ok}
+				\end{call}
+				
+				\postlevel
+				\postlevel
+				\end{call}
+  			\end{sdblock}
+  		\end{sequencediagram}
+  	
+  	}%
+	\caption{Sequence diagram showing order of calls when a voter is registered with our system.}
+\end{figure}
+
+The first step is validating the user requesting to register is eligible to vote. The validation process is out of the scope of this project but you could imagine this being a similar process to current election registration schemes. Therefore our system has no verification built in and allows anyone to sign up for any ballot of their choosing.
+
+Next we request a new user account is created in the \textit{Application Server} for our voter. A network request is sent and handled by the \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/2_ApplicationServer/accounts/remote_user_add.py}{accounts/remote\_user\_add.py} class which generates a new userID \& random secure password which are then passed back to the caller.
+
+We now register the userID for any ballots they are eligible for. This is done in another network call to the \textit{Online Ballot Regulator} and is handled in the \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/4_OnlineBallotRegulator/onlineballotregulator/network_request.py}{onlineballotregulator/network\_request.py} class. A database entry is created linking the userID to a ballotID  which is used later to verify which ballots a logged in user is eligible for.
+
+Finally the login credentials are sent securely to the user using an applicable method. For a more traditional registration system, this could be sent in the post similar to how you receive a credit card \& pin number (separate letters). It would be possible to encode this information into a QR code format so that the end user need simply scan their received credentials to first log into the system. If the voter validation process was online based, i.e. allowing users to upload their identity documents for automatic processing, we could respond with the users login details almost instantly just like signing up to any secure website (the risks here are reduced as the user is required to change their password on first login anyway).
+
+\begin{figure}[h]
+	\noindent
+	\vspace{-0.5cm}
+  	\makebox[\textwidth]{\includegraphics[width=0.62\paperwidth]{external_voter_registration_register_new_user}}%
+	\caption{Screenshot of the web interface to the \textit{External Voter Registration} showing the previously created ballots at the top \& the ability to register a new user (to a set of ballots) at the bottom.}
+\end{figure}
+
+
+\cleardoublepage
+\subsection{During the Election}
+\subsubsection{First login}
+\subsubsection{Online Registration}
+\subsubsection{Voting}
+
+\cleardoublepage
+\subsection{Post Election results}
+\subsubsection{Retrieving results}
+anyone can, openly verifiable
+
 
 %\printbibliography
 
