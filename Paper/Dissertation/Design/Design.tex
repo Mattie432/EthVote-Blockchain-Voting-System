@@ -9,6 +9,12 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows}
 
+%used for subsubsubsections
+\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{5}
+
+\usepackage{changepage}   % for the adjustwidth environment
+
 % Hyperlinks
 \usepackage[colorlinks,allcolors=blue]{hyperref}
 \usepackage[normalem]{ulem}
@@ -200,16 +206,122 @@ I envision this as being very similar to registering to vote with GOV.UK, where 
 For the purpose of demonstrating my application I have written the software for the ``pre-election registration'' node so that I can register a new voter in the system easily (as there needs to be multiple database entries created) and so I can easily deploy a new ballot contract to the blockchain from a specific Ethereum address (necessary so that we have permission to register a voter to a ballot contract). The ``External Voter Registration'' application runs on a Django base, this is because I needed to present a web interface for interaction when registering a new ballot \& user.
 
 \subsubsection{Application Server}
+The ``Application Server'' node is the main place for voter interaction with the system. Here, the Django backend provides the web interface for users to log in, register to a ballot \& ultimately vote.
 
-show databse tabkes
+User interaction is centred around a dashboard page which displays core system information to the user (ballots they are eligible for, whether they have voted, etc). From here the user can invoke all voting operations available to them such as registering for a ballot \& voting, to account management options such as changing passwords. When displaying the voting page after a user requests to vote in a ballot, the application server will query the blockchain contract for the voting options \& also display current statistics about the ballot (such as number of registered voters, the current votes per candidate \& voter turnout).
 
 \subsubsection{Online Account Verifier}
+The ``Online Account Verifier'' holds the role of authenticating that a user is eligible for a ballot while retaining the anonymity of the final Ethereum address the user casts their vote with. This is accomplished with the use of blind token signing, the process of signing a message without seeing the contents. This means we can verify a voter and return them a signed token which can be sent in future along with an Ethereum address to verify that the address is legitimate. 
 
-show databse tabkes
+\begin{figure}[h]
+	\noindent
+	
+	\begin{center}
+	
+	Database table holding token requests.
+	\end{center}
+
+  	
+  	\makebox[\textwidth]{
+  	    \begin{tabular}{ | l | p{5cm} | l | l | p{2,5cm} |}
+    		\hline
+    		token\_request\_id & blind\_token\_hash & user\_id & ballot\_id & created\_on  \\ \hline
+    		
+    		1 & 54baa883f28a768d6bd352d12c730
+    		7d1592d394acea4337a018ee2d0f1
+    		43642a & 68401 & 1234 & 2017-04-08
+    		18:08:49.527817 \\ \hline
+    		
+    		2 & 4451458fe4d479387fdca5dde405a
+    		16fd2fca2c4f92c516fea78b2f0d27
+    		27f7c & 67173 & 1234 & 2017-04-08
+    		18:27:25.984678 \\ \hline
+    		   		
+    		
+    	\end{tabular}
+  	}%
+    	
+	\begin{center}
+		\hfill \break
+		Database table holding token registrations.
+	\end{center}
+
+
+  	\makebox[\textwidth]{
+  	    \begin{tabular}{ | l | p{5cm} | p{4cm} | l | p{2.5cm} |}
+    		\hline
+    		register\_vote\_id & signed\_token\_hash & voter\_address & ballot\_id & created\_on  \\ \hline
+    		
+    		1 & 19a91bc3d91b5873e5b0e4687a988
+    		a08b362bd357a85ce3bc109cba4ed
+    		984407 & \href{https://etherscan.io/address/0x79957083494aa13895ae6bad9f04f2bb99f0ad39}{0x79957083494aa13895ae6
+    		bad9f04f2bb99f0ad39} & 4321 & 2017-04-08
+    		18:30:25.736455 \\ \hline
+    		
+    		1 & 13jad238sjkgfn39n3asd882nd2d8
+    		77ad327dnk3lq9afv4b234akd3nd8
+    		98hd82 & \href{https://etherscan.io/address/0x925A8e765F9563D979b576A68210903a9968B8Be}{0x925A8e765F9563D979b5
+    		76A68210903a9968B8Be} & 5432 & 2017-04-09
+    		12:23:41.162341 \\ \hline
+    	\end{tabular}
+  	}% 
+  	
+	\caption{Database table used to store the requests to register an Ethereum address to a ballot for a registered user.}
+\end{figure}
+
+The first table is used to verify that a user account has not requested to register for a particular ballot previously with a blind token. The second table is used to keep track of registered Ethereum addresses and which ballot they are registered to. Both of these tables are only used for internal state storage, they are used to determine if a user has already registered for a ballot and show the `register' or `vote' options accordingly. The data stored here is not used by the application server to retrieve any voter credentials. These tables store the token hashes so that we can ensure that tokens cannot be reused by an attacker.
 
 \subsubsection{Online Ballot Regulator}
+The ``Online Ballot Regulator'' manages everything to do with the voting ballots. This includes all created ballots in the system and their corresponding Blockchain addresses through to which user accounts are registered to which ballots.
 
-show databse tabkes
+\begin{figure}[h]
+	\noindent
+		
+	\begin{center}
+		Database table showing which ballots a userID is allowed to vote in.
+	\end{center}
+
+  	\makebox[\textwidth]{
+  	    \begin{tabular}{ | l | l | l | l |}
+    		\hline
+    		ballot\_register\_id & user\_id & ballot\_id & created\_on  \\ \hline
+    		
+                  1 &    1234 &      1234 & 2017-04-08 18:26:23.440678  \\ \hline
+                  2 &    1234 &      6543 & 2017-04-08 18:26:23.440678  \\ \hline
+                  3 &    2345 &      6543 & 2017-04-08 18:26:23.440678  \\ \hline
+                  4 &   67173 &      1234 & 2017-04-08 18:26:44.067895  \\ \hline
+                  5 &   67173 &      4321 & 2017-04-08 18:26:44.134928  \\ \hline
+
+    	\end{tabular}
+  	}% 
+  	
+	\begin{center}
+		\hfill \break
+		Database table holding information about each ballot in the system.
+	\end{center}
+
+  	
+  	\makebox[\textwidth]{
+  	    \begin{tabular}{ | l | p{4cm} | p{4cm} | p{2.5cm} | p{2.5cm} | l |}
+    		\hline
+    		ballot\_id & ballot\_name & ballot\_address & created\_on & ballot\_interface & ballot\_end\_date \\ \hline
+    		
+    		1234 & Election of the Member of Parliament for the Harborne Constituency & \href{https://etherscan.io/address/0x127c73af1f9e0eff8226db6bdf04310fdee674f6}{0x127c73Af1F9E0efF8226
+    		Db6bdf04310fDEe674F6} & 2017-04-08 18:26:23.440678 & x800358071002e &      1603238400\\ \hline
+    		
+    		4321 & Election of Police and Crime Commissioner for Edgbaston area & \href{https://etherscan.io/address/0x8C872c720DF854a058C3D1DD54e4CEE51d798B6A}{0x8C872c720DF854a058C3
+    		D1DD54e4CEE51d798B6A} & 2017-04-08 18:26:23.440678 & x800358071002e & 1603238400\\ \hline
+    		
+    		6543 & Referendum on the United Kingdoms membership of the European Union & \href{https://etherscan.io/address/0x7654EC4067e8fA04184D68fF08169A29A3B20F19}{0x7654EC4067e8fA04184D
+    		68fF08169A29A3B20F19} & 2017-04-08 18:26:23.440678 & x800358071002e & 1603238400  \\ \hline 		
+    		
+    	\end{tabular}
+  	}%
+    
+	\caption{Database table used to store the requests to register an Ethereum address to a ballot for a registered user.}
+\end{figure}
+
+The ``Online Ballot Regulator'' is where the ``External Voter Registrar'' sends the available ballots for a user account to be stored. This node is the most queried in the entire system as it holds information about ballots the user account is tied to along with the address of ballots in the blockchain.
 
 \subsubsection{Blockchain Ballot Contract}
 
@@ -363,7 +475,204 @@ Finally the login credentials are sent securely to the user using an applicable 
 \cleardoublepage
 \subsection{During the Election}
 \subsubsection{First login}
+Once a user has requested to be registered into the system, and received their initial login credentials, they are able to access the service and log in. Before they are able to access any site content, we enforce a password change and basic user information to be entered. This is for security reasons and is good practice for web applications.
+
+This enforcement is handled by some extra Django middleware in the ``Application Server'' (\href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/2_ApplicationServer/accounts/middleware.py}{accounts/middleware.py}) which will not allow access to any internal pages unless the user has already entered their initial information. It does this by checking, before the display of any internal page, if there is a `requires initial information' flag set in the user database and if so refuses to display the requested page and redirects to the initial information request page..
+
+\begin{figure}[h]
+	\noindent
+	\vspace{-0.25cm}
+  	\makebox[\textwidth]{\includegraphics[width=0.8\paperwidth]{application_server_initial_login}}%
+	\caption{Initial login information entry page.}
+\end{figure}
+
+As the system I produced is only proof-of-concept I have not enforced entry of much information besides an email address and the password reset. If this system was deployed in an actual election you could request for more options to be set here such as contact preferences, display preferences (visually impaired mode) or further security options (maybe setting up two-factor authentication). Once the user has entered the required information they are able to proceed further into the system and access the user dashboard.
+ 
+\cleardoublepage
 \subsubsection{Online Registration}
+The user dashboard page is the starting place for any user interaction with the system. Here, a list of ballots the user has been approved to vote in is shown along with their corresponding Ethereum address \& associated information such as the current user registration state. Users are presented with a link to an external blockchain viewer showing the transactions of each contract that they can use to independently verify a contracts validity if they wish.
+
+\begin{figure}[h]
+	\noindent
+	\vspace{-0.25cm}
+  	\makebox[\textwidth]{\includegraphics[width=0.8\paperwidth]{application_server_dashboard}}%
+	\caption{User dashboard showing ballot information along with the users registration state for each ballot.}
+\end{figure}
+
+In order for the user to engage in voting on a ballot we require them to `register' with that ballot. This will start the process of generating a new Ethereum address that will be allowed to interact with the blockchain contract. Note that we could do this automatically without user interaction (possibly after the initial login information has been entered) but I have chosen to offer this as a distinct step which must be invoked in this proof-of-concept system. This is because its easier to demonstrate the separate process of registering a user to a system account to that of registering an address to a deployed ballot contract. In a real world system there would be no need to show this step to the user, as it could cause confusion about what is being registered, and it could easily be abstracted away.
+
+When the user clicks the button to register on a ballot contract we begin the process of generating an Ethereum address for the voter to use, giving it some Ether and allowing it to vote on the selected contract.
+
+\cleardoublepage
+\thispagestyle{empty}
+\begin{figure}[h]
+    \vspace*{-3.8cm}
+	\noindent
+	\scriptsize
+  	\makebox[\textwidth]{
+
+		\begin{sequencediagram}
+			\def\unitfactor{0.6}
+			
+			% External; Voter registration
+			%\newthread{EVR}{\shortstack{External Voter \\Registration}}
+			
+			%Voter
+   			\newthread{V}{\shortstack{Voter \\ \\ \begin{tikzpicture}
+				%\node [fill=gray!20,draw=black,thick ,align=center] {Procesos};
+				\draw (0,0) -- (0,0.5); 			%body
+    			\draw (-0.25, 0.25) -- (0.25,0.25); 	% arms
+    			\draw (0,0) -- (0.25,-0.25); 		% right leg
+			    \draw (0,0) -- (-0.25,-0.25);		%left leg
+			    \draw (0,0.7) circle(.2); 	% head
+			\end{tikzpicture}}}{}
+
+			%Application server
+			\newinst[2]{AS}{\shortstack{Application\\Server}}			
+			
+			%Online account verifier
+			\newinst[2]{OAV}{\shortstack{Online Account\\Verifier}}
+			
+			%Online ballot regulator
+			\newinst[2]{OBR}{\shortstack{Online Ballot\\Regulator}}
+			
+			 Blockchain
+    		\newinst[2]{B}{\shortstack{Blockchain \\\begin{tikzpicture}[shape aspect=.5]
+				\tikzset{every node/.style={cylinder, shape border rotate=90, draw,fill=gray!25}}
+			\node  at (1.5,0) {BD};
+			\end{tikzpicture}}}{}   
+			
+			% Display the calls between nodes	
+			\begin{sdblock}{Ballot contract registration}{}
+
+				\begin{call}
+					{V}{\shortstack{Voter requests to\\vote in a ballot contract}}
+					{AS}{\shortstack{Response{[}Ok{]} }}
+					
+					\begin{call}
+						{AS}{Generates a blind token}
+						{AS}{{[}blind(T){]}}
+					\end{call}					
+					
+					\postlevel
+					\begin{call}
+						{AS}{\shortstack{Request token signing\\{[}ballotID, userID, blind(T){]}}}
+						{OAV}{\shortstack{Return signed token\\{[}signed\_ballotID(blind(T)){]} }}
+						
+						\begin{call}
+							{OAV}{\shortstack{Check that voterID is\\registered for ballotID\\{[}ballotID, userID{]}}}
+							{OBR}{Ok}
+						\end{call}							
+
+						\postlevel
+						\begin{call}
+							{OAV}{\shortstack{Check first time userID\\submits token for ballotID \\{[}ballotID, userID, blind(T){]}}}
+							{OAV}{Ok}
+						\end{call}		
+						
+						\postlevel
+						\begin{call}
+							{OAV}{\shortstack{Signs the token with private\\key associated with the ballotID \\{[}ballotID, blind(T){]}}}
+							{OAV}{Ok}
+						\end{call}								
+						%\prelevel
+					\end{call}
+					
+					\postlevel
+					\begin{call}
+						{AS}{\shortstack{Extract a signed token from blind token\\{[}signed\_ballotID(blind(T)){]}}}
+						{AS}{{[}signed\_ballotID(T){]}}
+					\end{call}		
+					
+					%\postlevel
+					\begin{call}
+						{AS}{\shortstack{Generate private key \& corresponding Ethereum address}}
+						{AS}{{[}privKey, pubKey, voterAddress{]}}
+					\end{call}		
+					
+					\postlevel
+					\begin{call}
+						{AS}{\shortstack{Register address to vote.\\{[}signed\_ballotID(T), T, voterAddress{]}}}
+						{OAV}{Ok}
+						
+						\begin{call}
+							{OAV}{\shortstack{Check token signature is valid.}}
+							{OAV}{Ok}
+						\end{call}	
+						
+						\begin{call}
+							{OAV}{\shortstack{Check first times seeing this token.}}
+							{OAV}{Ok}
+						\end{call}	
+								
+						\postlevel				
+						\begin{call}
+							{OAV}{\shortstack{Register address to ballot\\{[}voterAddress, ballotID{]}}}
+							{OBR}{Ok}
+							
+							\begin{call}
+								{OBR}{\shortstack{Adds voterAddress to ``allowed\\voters'' for the contract\\associated with ballotID}}
+								{B}{Ok}
+							\end{call}	
+							\postlevel
+							\begin{call}
+								{OBR}{\shortstack{Funds voterAddress with\\enough Ether to cast a vote.}}
+								{B}{Ok}
+							\end{call}	
+														
+						%\prelevel
+						\end{call}	
+													
+					%\prelevel
+					\end{call}		
+					
+												
+				%\prelevel
+				\end{call}
+  			\end{sdblock}
+  		\end{sequencediagram}
+  	}%
+  	
+    \vspace*{-0.5cm}
+	\caption{Sequence diagram showing calls made a user requests to register with the ballot contract in the blockchain.}
+\end{figure}
+
+\cleardoublepage
+The process of allowing a voter to interact with a deployed ballot contract is quite involved and is designed to anonymize (to the system and external parties) a voterAddress while still being able to verify that the address is being supplied by a user who is allowed to vote. This verified yet anonymous status is achieved through the use of blind signatures on tokens.
+
+\begin{adjustwidth}{0.5cm}{}
+	\paragraph{Blind Signatures}
+	\hfill \break \break
+
+	A ``Blind signature'' is a signing scheme where the signer doesn't know the content of the message he/she is signing but the resulting blind signature can be verified against the original unblinded message just like a regular digital signature {\Large [64]}.
+
+	This can be analogized to an individual, Alice, placing a letter inside a carbon paper lined envelope. This is then handed to a trusted third part, Bob, who (without opening the letter) signs the outside of the document \& hands it back to Alice. Due to the carbon paper inside the envelope, Bobs signature is also transferred to the letter within. Alice can then extract the letter which now contains Bobs signature despite him never having seen the letter contents.
+
+	\begin{figure}[h]
+	\begin{adjustwidth}{0.5cm}{}
+	  	\includegraphics[width=\textwidth]{Blind_Signatures}
+		\caption{Blind signature analogy showing how Bob never sees the contents of Alice's message despite being able to sign it.}
+	\end{adjustwidth}
+	\end{figure}
+
+	Now we can try to translate this to the language of cryptography. Suppose Alice has a message \textit{m} that she wishes to have signed by Bob, and she does not want Bob to learn anything about m. Let \((n,e)\) be Bob's public key and \((n,d)\) be his private key. Alice generates a random value \(r\) such that \(gcd(r, n) = 1\) and sends \(x = (r^e m) \bmod n\) to Bob. The value \(x\) is ``blinded'' by the random value \(r\); hence Bob can derive no useful information from it. Bob returns the signed value \(t = x^d \bmod n\) to Alice. Since \(x^d \equiv (r^e m)^d \equiv rm^d \bmod n\), Alice can obtain the true signature \(s\) of \(m\) by computing \(s = r^{-1} t \bmod n\). Now Alice's message has a signature she could not have obtained on her own {\Large [65]}.
+\end{adjustwidth}
+
+I've used the concept of blind signatures in this system to send a randomized Token to the ``Online Account Verifier'' for them to sign. The singing in my system is accomplished using RSA keys and the PyCrypto library {\Large [66]} which abstracts away most of the mathematics and allows the generation of a blind message (see client implementation in ``Application Server'' \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/2_ApplicationServer/user_ballot_registration/views.py#L135}{user\_ballot\_registration/\\views.py} and the coresponding server code at ``Online Account Verifier'' at \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/3_OnlineAccountVerifier/signatures/token_request.py}{signatures/token\_request.py}). The ``Online Account verifier'' has a unique key pair for each ballot that is registered in the system, this means that any tokens signed are valid only as identification for the specific ballot they were requested for.
+
+The order of events for a user to register an Ethereum address to vote is as follows: Firstly, the ``Application Server'' generates a random token to be used in the interaction. This is then blinded with a randomly generated number (as explained in the \textit{Blind Signatures} section) and the public key of the ballot we are requesting to add the address to. Next we send this blinded token across to the ``Online Account Verifier'' to be signed.
+
+When the request to sign the blind token is received by the ``Online Account Verifier'' we initially run a few checks. First, we check to see if the voter requesting to be registered for a ballot is indeed eligible to vote. Secondly, we check that this is the first time we are seeing this user request a token signature for this particular ballot. These checks ensure that users can only register for ballots they are eligible for and each address can only register one address per ballot. If all of our checks pass then we sign this blinded token with the associated ballots private key \& return it to the ``Application Server''.
+
+The ``Application Server'' now has a signed, blinded token (the contents of which have not yet been seen by the ``Online Ballot Regulator'') which we can unblind to reveal a signature of the raw token by the ``Online Ballot Regulator''. We now generate and store an ECDSA keypair {\Large [67]} which we can use to derive the Ethereum address the voter will use to interact with the ballot in the Blockchain. The token, token signature \& voterAddress are then sent back to the ``Online Account Verifier'' to be verified before being added to the ballot contract.
+
+This is now the first time the ``Online Account Verifier'' is seeing the token and, as the message is not accompanied by any userID, is unable to link this request to register into the ballot contract to a user. The system can however verify that this request is legitimate by checking the signature of the token against the token, as only a valid voter is able to obtain a signature through the system we can verify that this request is from a genuine voter and should be allowed to proceed. First we check that this is the first time we are seeing this token \& signature (so that the same token cannot be used multiple times) before sending a request to the ``Online Ballot Regulator'' to insert the voterAddress into the ballot contracts list of eligible voters.
+
+As the ``Online Ballot Regulator'' is in control of the Ethereum address that created the ballot contract the node is the only one with the ability to add new voters to the contact (see section {\Large LINK TO BALLOT SECTION}). We create a new transaction calling the \textit{giveRightToVote()} method of the ballot contract with the voterAddress as a parameter. Once this transaction is confirmed the state change in the ballot contract will mean that, when the voter with the keys to the voterAddress sends a transaction to call the \textit{vote()} method in the ballot, they will be allowed to add their cast vote to the contract. At the same time we also fund the voterAddress with enough Ether to be able to fund their voting transactions (see \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/4_OnlineBallotRegulator/ethereum/ethereum.py#L145}{ethereum/ethereum.py} for the relevant code).
+
+In summary, this is how we are able to verify that an Ethereum address is eligible to vote without revealing the user behind the private key.
+
+\cleardoublepage
 \subsubsection{Voting}
 
 \cleardoublepage
