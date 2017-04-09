@@ -324,6 +324,15 @@ The ``Online Ballot Regulator'' manages everything to do with the voting ballots
 The ``Online Ballot Regulator'' is where the ``External Voter Registrar'' sends the available ballots for a user account to be stored. This node is the most queried in the entire system as it holds information about ballots the user account is tied to along with the address of ballots in the blockchain.
 
 \subsubsection{Blockchain Ballot Contract}
+At the heart of this system is an Ethereum Smart Contract, this is the core from which the entire system design is centered around. The smart contract is how we interact with \& store data in the blockchain \& due to its turing complete programming language we are able to express complex proporties which are guarnetted to be upheld. 
+
+{\Large explaination of smart contracts here. how data is stored in state. language to use. compiled to opcodes.}
+
+For this Ethereum voting system I have designed a single smart contract that can be modifed for each ballot that the system uses. This contract, upon creation, allows a ballot name \& set of candidates to be added so it is re-usable for any number of ballots (note that this still creates disctinct \& unique contracts in the blockchain, but their underlying code \& available functions will be the same). I believe that this contract would be suitable for the majority of ballots currently in use however, if the need arose to write differnt types of ballot contract (maybe a ballot where you can give candidates a percentage of your vote), these could be easily integrated into the system.
+
+The full code for the ballot is available in the ``Online Ballot Regulator'' node at \href{}{{\Large ethereum/ETHVoteBallot.sol}} which was written in the Solidity smart contract language. The smart contract is broken down into four distinct sections, the first of which is the global settings \& contract construtor. The constructor is called only on the initial deployment transaction when the contrat is first entered into the blockchain. Inside the constructor we set the ballots name \& end date (this is in seconds since epoch) both of which are no longer editable after this point. The constructor also sets the `owner' variable of the contract to the Ethereum address that funds the deploy transaction (in our system this address is under the33 control of the ``Ballot Regulator'') this owner variable will be used to limit the access to some internal functions further into the contract.
+
+
 
 \cleardoublepage
 \subsection{Pre-election setup}
@@ -670,10 +679,32 @@ This is now the first time the ``Online Account Verifier'' is seeing the token a
 
 As the ``Online Ballot Regulator'' is in control of the Ethereum address that created the ballot contract the node is the only one with the ability to add new voters to the contact (see section {\Large LINK TO BALLOT SECTION}). We create a new transaction calling the \textit{giveRightToVote()} method of the ballot contract with the voterAddress as a parameter. Once this transaction is confirmed the state change in the ballot contract will mean that, when the voter with the keys to the voterAddress sends a transaction to call the \textit{vote()} method in the ballot, they will be allowed to add their cast vote to the contract. At the same time we also fund the voterAddress with enough Ether to be able to fund their voting transactions (see \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/4_OnlineBallotRegulator/ethereum/ethereum.py#L145}{ethereum/ethereum.py} for the relevant code).
 
-In summary, this is how we are able to verify that an Ethereum address is eligible to vote without revealing the user behind the private key.
+In short, this is how we are able to verify that an Ethereum address is eligible to vote without revealing the user behind the private key.
 
 \cleardoublepage
 \subsubsection{Voting}
+Once a user has been registered with a deployed ballot contract they are then able to cast their vote into the blockchain. Their registered status will be reflected in the dashboard as the `register' button will change to a `vote' button allowing them to participate in the ballot.
+
+The process of casting a vote is very simple, we call the \textit{vote()} method of the ballot contract with a funded Ethereum transaction \& the voting selection. Because the Ethereum address used to call this method is the one belonging to the user (and has already gone through the `online registration' process) we are allowed to submit our vote to the contract and have it counted.
+
+The process of a user casting a vote in the system is as follows; first, the user selects which ballot they wish to cast a vote in (this is from the set of available ballots shown in the dashboard). The ``Application Server'' sends a network request to the ``Online Ballot Regulator'' requesting the blockchain address for the ballot contract.
+
+From now on all interactions with the contract are handled by the ``Application Server''. As we now have the contract address we can query the blockchain for this contract which returns the contracts definition along with the current `state' of the contract. This means we can retrieve all of the latest information about the ballot directly from the blockchain, information such as `Ballot Name', the list of candidates and the current votes for each candidate. The information available is directly related to the contract design (talked about in {\Large LINK TO SECTION}) but in my designed system this extends to the current votes for each candidate and the total number of registered voters. This means that we are able to display this information to the user (this can in fact be queried by anyone at any time) and use this to present relevent graphs directly onto the ballot page. At the top of the ballot we present the available candidates, as obtained from the ballot contract, as a radio button selection.
+
+The voter now has all the available information to make their decision, once they wish to cast their vote they choose their voting options and click ``submit''. This generates a Ethereum transaction, funded by the users Ethereum address, which calls the \textit{vote()} function in the ballot contract with the users voting choice as a parameter. The resulting transaction hash acts as a recipt for the voter, allowing them to verify that their vote was sucsessfully accepted and confirmed into the blockchain. This can be done on any blockchain explorer almost instantly due to the propagationn proporties of the Ethereum network, the system does however provide a link to view the transaction in a trusted explorer for user convinience (e.g. {\L13442arge INSERT LINK TO TRANSACTION HASHS}).
+
+\paragraph{Real time results}
+\hfill \break
+As discussed in {\Large LINK TO SECTION}, the contract design means that up to date election results can be queried from the blockchain contract at any time. This is
+
+talk about social implications
+talk about voting implications - could be used as an opinion poll before deadline
+
+
+\paragraph{Changing a cast vote}
+\hfill \break
+ If deployed for a general election, this would revolutionize the way voters 
+
 
 \cleardoublepage
 \subsection{Post Election results}
