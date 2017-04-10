@@ -15,6 +15,47 @@
 
 \usepackage{changepage}   % for the adjustwidth environment
 
+% syntax highlighting
+\usepackage{listings} 
+\usepackage{color}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+
 % Hyperlinks
 \usepackage[colorlinks,allcolors=blue]{hyperref}
 \usepackage[normalem]{ulem}
@@ -105,6 +146,21 @@ Over the past few years, container technology has become increasingly promising 
 There are several benefits to the use of Docker containers; This could substantially reduce the effort required to create and validate a new software releases, since docker containers create their own dedicated environment, testing on one OS means that the application will run the same on any OS capable of running Docker. In addition, docker containers provide a quick and easy way to install and use a software release, for our application this could mean faster patches if needed as you would simply need to swap out the docker image being used. Other benefits include faster bootup of containers (compared to just virtualization), closer development to production parity, immutable infrastructure and improved scaling (on a per-container basis) {\Large [52]}. There is also a security argument to be made for using containers, as they offer a degree of isolation for each enclosed application and only expose those services which you decide. The previous point about patching also add to security, as legacy applications often forgo patches in sensitive environments due to the possibility of breakages. When using containers, changes can be fully tested in the container which can then be swapped into the production environment {\LARGE [53]}.
 
 All of my development for this project was conducted inside of Docker containers. I decided on this because there are very distinct separations between the applications which make up my system (this is described in section {\Large LINK TO SECTION}), so running each one inside a docker container seemed the logical thing to do. It also meant that I could control the startup of the system as a whole \& expose (between containers) only those services necessary to communicate.
+
+\cleardoublepage    
+\subsection{Internal node networking}
+The design of the system requires services to be split up into separate nodes each with a specific set of functionalities. Many of these nodes require services from other nodes to operate (for example, the ``Application Sserver'' querying the ``Ballot Regulator'' for the list of ballots available to a user) and so efficient inter-node communication is vital. I ultimately decided to use the Python networking toolkit Twisted {\Large [63]} for all of the networking of this system. The main draw of Twisted was that it offers asynchronous messaging through its AMP protocol.
+
+
+I chose to use asynchronous messaging for a few reasons. First, is that ultimately there will be a human being operating this system eventually \& people are inherently impatient. By interleaving the tasks together the system can remain responsive to user input while still performing other work in the background (e.g. user can still interact with the front end while the backend is registering the user to the ballot contract). While the background tasks may not execute any faster, the system will be more responsive for the person using it.
+
+The second relates to the fundamental idea behind the asynchronous model; that it is an asynchronous program. When we hit a task that would normally block in a synchronous program, we cab instead execute some other task that can still make progress. Therefore, an asynchronous program should only block when no task can make progress. This is highly applicable to this application as, due to the standard block confirmation time of 12 seconds, we could sometimes be waiting a much longer length of time than would be acceptable to block.
+
+Twisted handles these asynchronous messages through the `Deferred' interface. Deferred is a way to define what will be done to the object once it does exist after the result of an asynchronous call. Each `Deferred' has a callback and an errback where you define what code you wish to execute once the object exists. When the object finally does exist, it 
+is passed to the callback \& similarly, if an error occurs the error is passed along to the errback. In my system, each node defines its own AMP methods, which can be called remotely and return a `Deferred', inside the \textit{network\_request.py} class (e.g. \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/4_OnlineBallotRegulator/onlineballotregulator/network_request.py}{OnlineBallotRegulator/network\_request.py}).
+
+Twisted also offers the ability to secure connections using TLS which provides some necessary security benefits. Each party can be required to initially present a certificate verifying their identity, this would ensure that an attacker cannot `man in the middle' attack this system and splice in their own node to intercept traffic. It also provides confidentiality as communication between nodes is encrypted \& some degree of integrity as the TLS protocol checks to ensure encrypted messages actually came from the party you originally authenticated to.
+
 
 \cleardoublepage
 \subsection{Ethereum}
@@ -324,13 +380,162 @@ The ``Online Ballot Regulator'' manages everything to do with the voting ballots
 The ``Online Ballot Regulator'' is where the ``External Voter Registrar'' sends the available ballots for a user account to be stored. This node is the most queried in the entire system as it holds information about ballots the user account is tied to along with the address of ballots in the blockchain.
 
 \subsubsection{Blockchain Ballot Contract}
-At the heart of this system is an Ethereum Smart Contract, this is the core from which the entire system design is centered around. The smart contract is how we interact with \& store data in the blockchain \& due to its turing complete programming language we are able to express complex proporties which are guarnetted to be upheld. 
+At the heart of this system is an Ethereum Smart Contract, this is the core from which the entire system design is centred around. The smart contract is how we interact with \& store data in the blockchain \& due to its turing complete programming language we are able to express complex properties which are guaranteed to be upheld. A more detailed explanation of the inner working of smart contracts can be found in the {\Large Ethereum/Smart Contracts} section.
 
-{\Large explaination of smart contracts here. how data is stored in state. language to use. compiled to opcodes.}
+For this Ethereum voting system I have designed a single smart contract that can be modified for each ballot that the system uses. This contract, upon creation, allows a ballot name \& set of candidates to be added so it is re-usable for any number of ballots (note that this still creates distinct \& unique contracts in the blockchain, but their underlying code \& available functions will be the same). I believe that this contract would be suitable for the majority of ballots currently in use however, if the need arose to write different types of ballot contract (maybe a ballot where you can give candidates a percentage of your vote), these could be easily integrated into the system. The full code for the ballot is available in the ``Online Ballot Regulator'' node at \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/4_OnlineBallotRegulator/ethereum/ETHVoteBallot.sol}{ethereum/ETHVoteBallot.sol} which was written in the Solidity smart contract language and a description of the systems steps for deploying a ballot contract is available in the {\Large LINK TO SECTION}. 
 
-For this Ethereum voting system I have designed a single smart contract that can be modifed for each ballot that the system uses. This contract, upon creation, allows a ballot name \& set of candidates to be added so it is re-usable for any number of ballots (note that this still creates disctinct \& unique contracts in the blockchain, but their underlying code \& available functions will be the same). I believe that this contract would be suitable for the majority of ballots currently in use however, if the need arose to write differnt types of ballot contract (maybe a ballot where you can give candidates a percentage of your vote), these could be easily integrated into the system.
+The smart contract is broken down into four distinct sections, the first of which is the global settings \& contract constructor. The constructor is called only on the initial deployment transaction when the contract is first entered into the blockchain. Inside the constructor we set the ballots name \& end date (this is in seconds since epoch) both of which are no longer editable after this point. The constructor also sets the `owner' variable of the contract to the Ethereum address that funds the deploy transaction (in our system this address is under the control of the ``Ballot Regulator'') this owner variable will be used to limit the access to some internal functions further into the contract.
 
-The full code for the ballot is available in the ``Online Ballot Regulator'' node at \href{}{{\Large ethereum/ETHVoteBallot.sol}} which was written in the Solidity smart contract language. The smart contract is broken down into four distinct sections, the first of which is the global settings \& contract construtor. The constructor is called only on the initial deployment transaction when the contrat is first entered into the blockchain. Inside the constructor we set the ballots name \& end date (this is in seconds since epoch) both of which are no longer editable after this point. The constructor also sets the `owner' variable of the contract to the Ethereum address that funds the deploy transaction (in our system this address is under the33 control of the ``Ballot Regulator'') this owner variable will be used to limit the access to some internal functions further into the contract.
+\begin{lstlisting}[caption=Contract constructor called when deploying the contract.]
+// ~~~~~~~~~~~~~~~~~~ Contract Constructor ~~~~~~~~~~~~~~~~~~~~~ //
+address owner;                // The address of the owner. 
+bool    optionsFinalized;     // If we can still add voting options
+string  ballotName;           // The ballot name.
+uint    registeredVoterCount; // Count of registered addresses.
+uint    ballotEndTime;        // seconds since 1970-01-01
+
+// Modifier to only allow the owner to call a function.
+modifier onlyOwner {
+    if( msg.sender != owner ) throw; _;
+}
+
+/*
+*  This function is called *once* at first initialization into the blockchain.
+*/
+function ETHVoteBallot(string _ballotName, uint _ballotEndTime)
+{
+    if( now > _ballotEndTime)
+        throw;
+
+    // Set the owner to the address creating the contract.
+    owner = msg.sender;
+    optionsFinalized = false; 
+    ballotName = _ballotName;
+    registeredVoterCount = 0;
+    ballotEndTime = _ballotEndTime;
+}
+\end{lstlisting}
+
+\cleardoublepage
+The next section sets the ballot options for the contract. First we define a structure for each voting option containing the candidate name \& their vote tally, these are stored in a dynamically sized array called \textit{votingOptions}. The \textit{addVotingOption} function is used to add new candidates to the contract, note the use of `throw' here will terminate the contracts running and refund spent ether. The final function, \textit{finalizeVotingOptions}, sets an internal flag which stops any further modifications to the contracts candidates \& opens up voting to those addresses added to the contract. We have added a modifier to these functions, \textit{onlyOwner} (defined above), which will only allow the address which created the contract to call these functions.
+
+
+\begin{lstlisting}[caption=Functions used for modifying the ballot during setup.]
+// ~~~~~~~~~~~~~~~~~~~~~~~ Ballot Options ~~~~~~~~~~~~~~~~~~~~~~ //
+// Structure which represents a single voting option for this ballot.
+struct VotingOption
+{
+    string name;    // Name of this voting option
+    uint voteCount; // Number of accumulated votes.
+}
+
+// dynamically sized array of 'VotingOptions'
+VotingOption[] public votingOptions;
+
+/*
+*  Add a new voting option for this ballot.
+*  NOTE: this can only be called by the ballot owner.
+*/
+function addVotingOption(string _votingOptionName) onlyOwner
+{
+    if( now > ballotEndTime) throw;
+    // Check we are allowed to add options.
+    if(optionsFinalized == true)    
+        throw;
+
+    votingOptions.push(VotingOption({
+        name: _votingOptionName,
+        voteCount: 0
+    }));
+}
+
+/*
+*  Call this once all options have been added, this will stop further changes and allow votes to be cast.
+*  NOTE: this can only be called by the ballot owner.
+*/
+function finalizeVotingOptions() onlyOwner
+{
+    if(now > ballotEndTime) throw;
+
+    if(votingOptions.length < 2) throw;
+
+    optionsFinalized = true; // Stop the addition of more options.
+}
+\end{lstlisting}
+\cleardoublepage
+
+The third section refers to `voting options', here we define another structure for voters but rather than use an array we invoke a mapping from the callee address. This means that we can cover the entire address space with the default values of the structure \& only need to change the addresses we wish to give voting eligibility (seen in the \textit{giveRightToVote()} function). The \textit{vote()} method can also be seen which amounts to checking if the voter is eligible \& incrementing the counter of their chosen candidates vote count.
+
+\begin{lstlisting}[caption=Contract code relating to voting.]
+// ~~~~~~~~~~~~~~~~~~~~~~~ Voting Options ~~~~~~~~~~~~~~~~~~~~~~ //
+// Structure which represents a single voter.
+struct Voter {
+    bool eligableToVote;    // Is this voter allowed to vote?
+    bool voted;             // State of whether this voter has voted.
+    uint votedFor;          // Index of 'votingOptions' this voter voted for.
+}
+// State variable which maps any address to a 'Voter' struct.
+mapping(address => Voter) public voters;
+
+/*
+*  Allow an address (voter) to vote on this ballot.
+*  NOTE: this can only be called by the ballot owner.
+*/
+function giveRightToVote(address _voter) onlyOwner {
+    if(now > ballotEndTime) throw;
+    voters[_voter].eligableToVote = true;
+    registeredVoterCount += 1;      // Increment registered voters.
+}
+
+/*
+*  Allow an eligable voter to vote for their chosen votingOption. If they have already voted, then remove their vote from the previous 'votingOption' and assign it to the new one.
+*
+*  NOTE: if anything fails during this call we will throw and automatically  revert all changes.
+*/
+function vote(uint _votingOptionIndex) {
+    if(now > ballotEndTime) throw;
+    if(optionsFinalized == false) throw; //Not finalized, cant vote
+    Voter voter = voters[msg.sender];   // Get senders Voter struct
+
+    if(voter.eligableToVote == false) throw;
+
+    // If the voter has already voted then we need to remove their prev vote choice.
+    if(voter.voted == true) 
+        votingOptions[voter.votedFor].voteCount -= 1;
+
+    voter.voted = true;
+    voter.votedFor = _votingOptionIndex;
+    votingOptions[_votingOptionIndex].voteCount += 1;
+}
+\end{lstlisting}
+
+Finally, we include a set of getter functions for various states of the contract. These functions can be used internally by the contract \& called remotely by anyone with the contract address. This is how we allow external verifiability of our ballots.
+
+\begin{lstlisting}[caption=Summary of getter functions.]
+// ~~~~~~~~~~~~~~~~~~~~~ Getter Functions ~~~~~~~~~~~~~~~~~~~~~~ //
+
+// Returns the ballots name string.
+function getBallotName() returns (string){ ... }
+
+// Returns the number of voting options.
+function getVotingOptionsLength() returns (uint) { ... }
+
+// Returns the count of registered voter addresses.
+function getRegisteredVoterCount() returns (uint) { ... }
+
+// Returns the name of a voting option at a specific index. Throws if index out of bounds.
+function getVotingOptionsName(uint _index) returns (string) { ... }
+
+// Returns the number of votes for a voting option at the specified index. Throws if index out of bounds.
+function getVotingOptionsVoteCount(uint _index) returns (uint){...}
+
+// Returns if the voting options have been finalized.
+function getOptionsFinalized() returns (bool) { ... }
+
+// Returns the end time of the ballot in seconds since epoch.
+function getBallotEndTime() returns (uint) { ... }
+    
+\end{lstlisting}
 
 
 
@@ -341,9 +546,12 @@ The first thing which needs to be done before any other aspect of the election c
 
 \begin{figure}[h]
 	\noindent
+	\footnotesize
   	\makebox[\textwidth]{
 
 		\begin{sequencediagram}
+			\def\unitfactor{0.65}
+			
 			
 			% External; Voter registration
     		\newthread{EVR}{\shortstack{External Voter \\Registration}}
@@ -359,24 +567,30 @@ The first thing which needs to be done before any other aspect of the election c
 			
 			% Display the calls between nodes	
 			\begin{sdblock}{Ballot contract registration}{}
-
-				\postlevel
 				\begin{call}
 					{EVR}{\shortstack{Send ballot creation details.\\{[}ballotName, ballotOptions, ballotEndDate{]} }}
 					{OBR}{Response {[}Ok{]}}
 					
 					\begin{call}
-						{OBR}{\shortstack{Create login credentials for voter\\{[}voterID, nonce{]} } }
+						{OBR}{\shortstack{Deploy ballot to the blockchain.\\{[}ballotName, ballotEndDate{]} } }
 						{B}{Response {[}ballotAddress{]}}
+					\end{call}
+					
 						\postlevel
+					\begin{call}
+						{OBR}{\shortstack{Add candidate options to the ballot\\{[}votingOptions{]} } }
+						{B}{Response {[}Ok{]}}
+					\end{call}
+					
+					\begin{call}
+						{OBR}{\shortstack{Call the contracts finalize method. } }
+						{B}{Response {[}Ok{]}}
 					\end{call}
 					
 					\postlevel
-					\postlevel
 					\begin{call}
-						{OBR}{\shortstack{Save ballot details to databse\\{[}ballotName, ballotAddress{]} } }
+						{OBR}{\shortstack{Save ballot details to database\\{[}ballotName, ballotAddress{]} } }
 						{OBR}{Response {[}Ok{]}}
-						\postlevel
 					\end{call}
 				\end{call}
   			\end{sdblock}
@@ -664,10 +878,11 @@ The process of allowing a voter to interact with a deployed ballot contract is q
 	\end{adjustwidth}
 	\end{figure}
 
+
 	Now we can try to translate this to the language of cryptography. Suppose Alice has a message \textit{m} that she wishes to have signed by Bob, and she does not want Bob to learn anything about m. Let \((n,e)\) be Bob's public key and \((n,d)\) be his private key. Alice generates a random value \(r\) such that \(gcd(r, n) = 1\) and sends \(x = (r^e m) \bmod n\) to Bob. The value \(x\) is ``blinded'' by the random value \(r\); hence Bob can derive no useful information from it. Bob returns the signed value \(t = x^d \bmod n\) to Alice. Since \(x^d \equiv (r^e m)^d \equiv rm^d \bmod n\), Alice can obtain the true signature \(s\) of \(m\) by computing \(s = r^{-1} t \bmod n\). Now Alice's message has a signature she could not have obtained on her own {\Large [65]}.
 \end{adjustwidth}
 
-I've used the concept of blind signatures in this system to send a randomized Token to the ``Online Account Verifier'' for them to sign. The singing in my system is accomplished using RSA keys and the PyCrypto library {\Large [66]} which abstracts away most of the mathematics and allows the generation of a blind message (see client implementation in ``Application Server'' \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/2_ApplicationServer/user_ballot_registration/views.py#L135}{user\_ballot\_registration/\\views.py} and the coresponding server code at ``Online Account Verifier'' at \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/3_OnlineAccountVerifier/signatures/token_request.py}{signatures/token\_request.py}). The ``Online Account verifier'' has a unique key pair for each ballot that is registered in the system, this means that any tokens signed are valid only as identification for the specific ballot they were requested for.
+I've used the concept of blind signatures in this system to send a randomized Token to the ``Online Account Verifier'' for them to sign. The singing in my system is accomplished using RSA keys and the PyCrypto library {\Large [66]} which abstracts away most of the mathematics and allows the generation of a blind message (see client implementation in ``Application Server'' \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/2_ApplicationServer/user_ballot_registration/views.py#L135}{user\_ballot\_registration/\\views.py} and the corresponding server code at ``Online Account Verifier'' at \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/3_OnlineAccountVerifier/signatures/token_request.py}{signatures/token\_request.py}). The ``Online Account verifier'' has a unique key pair for each ballot that is registered in the system, this means that any tokens signed are valid only as identification for the specific ballot they were requested for.
 
 The order of events for a user to register an Ethereum address to vote is as follows: Firstly, the ``Application Server'' generates a random token to be used in the interaction. This is then blinded with a randomly generated number (as explained in the \textit{Blind Signatures} section) and the public key of the ballot we are requesting to add the address to. Next we send this blinded token across to the ``Online Account Verifier'' to be signed.
 
@@ -689,27 +904,73 @@ The process of casting a vote is very simple, we call the \textit{vote()} method
 
 The process of a user casting a vote in the system is as follows; first, the user selects which ballot they wish to cast a vote in (this is from the set of available ballots shown in the dashboard). The ``Application Server'' sends a network request to the ``Online Ballot Regulator'' requesting the blockchain address for the ballot contract.
 
-From now on all interactions with the contract are handled by the ``Application Server''. As we now have the contract address we can query the blockchain for this contract which returns the contracts definition along with the current `state' of the contract. This means we can retrieve all of the latest information about the ballot directly from the blockchain, information such as `Ballot Name', the list of candidates and the current votes for each candidate. The information available is directly related to the contract design (talked about in {\Large LINK TO SECTION}) but in my designed system this extends to the current votes for each candidate and the total number of registered voters. This means that we are able to display this information to the user (this can in fact be queried by anyone at any time) and use this to present relevent graphs directly onto the ballot page. At the top of the ballot we present the available candidates, as obtained from the ballot contract, as a radio button selection.
 
-The voter now has all the available information to make their decision, once they wish to cast their vote they choose their voting options and click ``submit''. This generates a Ethereum transaction, funded by the users Ethereum address, which calls the \textit{vote()} function in the ballot contract with the users voting choice as a parameter. The resulting transaction hash acts as a recipt for the voter, allowing them to verify that their vote was sucsessfully accepted and confirmed into the blockchain. This can be done on any blockchain explorer almost instantly due to the propagationn proporties of the Ethereum network, the system does however provide a link to view the transaction in a trusted explorer for user convinience (e.g. {\L13442arge INSERT LINK TO TRANSACTION HASHS}).
+\begin{figure}[h]
+	\noindent
+  	\makebox[\textwidth]{\includegraphics[width=0.6\paperwidth]{vote_ballot}}%
+	\caption{Ballot screen presented to the user.}
+\end{figure}
+
+From now on all interactions with the contract are handled by the ``Application Server''. As we now have the contract address we can query the blockchain for this contract which returns the contracts definition along with the current `state' of the contract. This means we can retrieve all of the latest information about the ballot directly from the blockchain, information such as `Ballot Name', the list of candidates and the current votes for each candidate. The information available is directly related to the contract design (talked about in {\Large LINK TO SECTION}) but in my designed system this extends to the current votes for each candidate and the total number of registered voters. This means that we are able to display this information to the user (this can in fact be queried by anyone at any time) and use this to present relevant graphs directly onto the ballot page. At the top of the ballot we present the available candidates, as obtained from the ballot contract, as a radio button selection.
+
+The voter now has all the available information to make their decision, once they wish to cast their vote they choose their voting options and click ``submit''. This generates a Ethereum transaction, funded by the users Ethereum address, which calls the \textit{vote()} function in the ballot contract with the users voting choice as a parameter. The resulting transaction hash acts as a receipt for the voter, allowing them to verify that their vote was successfully accepted and confirmed into the blockchain. This can be done on any blockchain explorer almost instantly due to the propagation properties of the Ethereum network, the system does however provide a link to view the transaction in a trusted explorer for user convenience (e.g. \href{https://etherscan.io/tx/0xd7535e6b492bbcbff7c6b46ea0ce5fd3390071bd01bc9f202e1016486e333cd7}{0xd7535e6b492bbcbff7c6b46ea0ce5fd3390071bd01bc9f202e101648
+6e333cd7}).
+
+\begin{figure}[h]
+	\noindent
+  	\makebox[\textwidth]{\includegraphics[width=\textwidth]{vote_ballot_submitted}}%
+	\caption{Pop-up box on submission of a vote giving the voter the transaction hash.}
+\end{figure}
+
+\begin{figure}[h]
+	\noindent
+  	\makebox[\textwidth]{\includegraphics[width=0.85\paperwidth]{vote_ballot_transaction}}%
+	\caption{Example of a block explorer showing a confirmed vote transaction.}
+\end{figure}
+
+\cleardoublepage
 
 \paragraph{Real time results}
 \hfill \break
-As discussed in {\Large LINK TO SECTION}, the contract design means that up to date election results can be queried from the blockchain contract at any time. This is
+As discussed in {\Large LINK TO SECTION}, the contract design means that up-to-date election results can be queried from the blockchain contract by anyone at any time. This has huge potential impacts on the way elections could be fought \& would produces a more informed voting populous.
 
-talk about social implications
-talk about voting implications - could be used as an opinion poll before deadline
+Say, for example, that our our system was opened for voting around the same time as postal votes (assuming that our system is the most common way for people to vote). Candidates would be able to follow the results of their last minute campaign trail, seeing how effective their campaigning was in a certain area by the real time increase in votes.
 
+It also removes a lot of ambiguity around the speculated outcome of the election as the need to rely on opinion polls decreases \& the speculated outcome can be based on `real' votes. This could decrease the likelihood of an election wrongly being declared a `safe outcome' which could potentially cause voters to not worry about submitting their vote (e.g. the results of the UK's EU Referendum {\Large [68]}).
 
 \paragraph{Changing a cast vote}
 \hfill \break
- If deployed for a general election, this would revolutionize the way voters 
+Another innovation in the way elections could be held is the ability allow voters to change their cast votes in our smart contract. This is, in fact, allowed by my designed ballot contract. A voter can call the \textit{Vote()} method as many times as they like \& if they have previously voted, their vote is removed from the previous tally \& added to the new one.
 
+If deployed for a general election, this would revolutionize the way voters are able to interact with their government. Say for example, if new information relating to a candidate came to light late into the election, voters would not be locked into their uninformed choices. Under the current system, voters who submitted their vote before election day (e.g postal vote) could be misrepresented in their vote for a candidate which they cannot change.
+
+It would also be statistically interesting to be able to analyse the swing of votes as new information came to light. This would be possible as the transaction history of previous votes would still be accessible in the blockchain, therefore we could track how a voter (or more accurately, a voterAddress) changed their opinion over time.
+
+Alternatively this idea could be eliminated completely, we could simply have our ballot contract accept the first vote from each voter as final.
+
+\paragraph{Tentative voting}
+\hfill \break
+If we were to mix the two innovations outlined above, we could have a brand new kind of election. This would be where voters can post tentative votes, which they reserve the right to change later, but that would allow them to express their opinion for a candidate. This would allow them to see how the general populous feels about a certain ballot without locking them down to that choice.
+
+This would mean that decisions people might not have been willing to stand behind permanently, could be put out tentatively \& then change their minds later based on the sentiments of the public. This ultimately leads to a more informed choice about who has a chance of winning an election, and voters can afford to initially choose candidates based on their merits rather than because they feel they have to vote for someone.
 
 \cleardoublepage
 \subsection{Post Election results}
 \subsubsection{Retrieving results}
-anyone can, openly verifiable
+Assuming that you are running a full Ethereum node (that is, have all of the blockchain data available to you) querying any of these getter functions of a ballot contract will not cost you Ether. This is because the state of all of the variables in the contract can be calculated from all of the transactions (which you have locally) therefore the results can be computed without remote calls. The only transactions which you need to pay Ether on are those which perform operations in the blockchain, e.g. saving data or remote computation.
+
+This increases the viability for external parties to audit the ballots in their entirety as if they had an attached cost, due to the size of the election being held, it could have been prohibitively expensive. 
+
+In a general election scenario, public verification would require the publishing of the address of each ballot contract prior to the election beginning. Due to the programming of the contracts this would pose no security risks while increasing transparency during the election. It would also have the benefit of allowing voters to verify that they are interacting with the correct ballot, thus increasing trust throughout the system.
+
+In this scenario I would envisage multiple third parties creating verification systems checking the results of the election in real time through querying these ballot contracts. As the output of the election is now verifiable by anyone, we have fulfilled the ``independent verification of the output'' criterion which we set out to complete.
+
+\begin{figure}[h]
+	\noindent
+  	\makebox[\textwidth]{\includegraphics[width=1.2\textwidth]{ballot_results}}%
+	\caption{Example of an infographic generated from one ballot deployed to the blockchain.}
+\end{figure}
+
 
 
 %\printbibliography
