@@ -197,7 +197,6 @@ The difficulty of the proof-of-work mining needs to be controlled, so that an av
 
 Despite the media often suggesting that bitcoin (and the Blockchain technology behind it) is an anonymous payment system, the Blockchain is in fact a transparent record of all user transactions on the network. Blockchain transactions are in fact pseudonymous, and your transactions in the network are like writing under a pseudonym. If an author's identity is ever linked to their pseudonym then everything written under that pseudonym will be revealed \citep{28_anonymity_2016}. This is particularly poignant when considering the Blockchain as every transaction is stored forever, therefore a compromised address could lead to all transactions being linked to a person. There are however ways to reduce the amount of statistical analysis which can be done on transactions that a person is a part of which help to achieve reasonable anonymity.
 
-\cleardoublepage
 \subsubsection{Mining \& Ether}
 Ether is the fuel of the Ethereum system. It is the currency of the Ethereum network with which the payment of computation is achieved. Ethereum, like all blockchain technologies, uses an incentive-driven model of security where transaction consensus is based on a ``proof-of-work'' criterion of a given difficulty.
 
@@ -209,7 +208,6 @@ Occasionally, two miners may find a solution to the problem at the same time cre
 
 The successful miner of a block receives a reward for the 'winning' block, consisting of exactly 5.0 Ether along with all of the gas expended within the block, that is, all the gas consumed by the execution of all the transactions in the block. Over time, it's expected the gas reward will dwarf the block reward and become the main incentive for miners to continue working \citep{57_introduction_ethereum_frontier_guide_2017}.
 
-\cleardoublepage
 \subsubsection{Transaction Costs \& Gas}
 Ethereum does have a small transaction fee, just like Bitcoin, where users pay a relatively small amount to the executor of your transaction. The sender has to pay the fees at each and every step of the activated program, this includes the memory, storage and computation \citep{54_ethereum_explained_2017}. The size of the fee paid is equivalent to the complexity of the transaction, i.e. the more complex the commands you wish to execute, the more gas (and Ether) you have to pay. For example if ``Alice'' wants to send ``Bob'' 1 Ether unit, there would be a total cost of 1.00001 Ether to be paid by Alice. However if A wanted to deploy a contract or run a contract function, there would be more lines of code executable, therefore more energy consumption placed on the distributed Ether network and she would have to pay more than the 1 Gas done in the first transaction \citep{56_ethereum_2017}. Some computational steps cost more than others, either because they are more computationally expensive or because they increase the amount of data that has to be stored in the state. 
 
@@ -217,7 +215,6 @@ Gas is the internal pricing for running a transaction or contract in Ethereum. T
 
 The reason for the inclusion of a gas price per transaction or contract is to deal with the Turing Complete nature of Ethereum and its EVM essentially to guarantee that code running in the network will terminate. So for example, 0.00001 Ether or 1 Gas can execute a line of code or some command. If there is not enough Ether in the account to perform the transaction or message then it is considered invalid. This aims to stop denial of service attacks from infinite loops, encourage efficiency in the code and make any potential attacker pay for the resources they use (whether that be bandwidth, CPU calculations or storage) \citep{56_ethereum_2017}.
 
-\cleardoublepage
 \subsubsection{Smart Contracts}
 \label{sec:SmartContracts}
 Smart contracts are the key element of Ethereum. In them, any algorithm can be encoded, they can carry arbitrary state and can perform any arbitrary computations even being able to call other smart contracts. This gives the scripting capabilities of Ethereum tremendous flexibility \citep{59_peyrott_senanayaka_2017}. When run a smart contract becomes like a self-operating computer program that automatically executes when specific conditions are met and because they run on the blockchain, they run exactly as programmed without any possibility of censorship, downtime, fraud or third party interference. While all blockchains have the ability to process code, most are severely limited. Ethereum is different in this respect as rather than giving a set of limited operations, Ethereum allows developers to create whatever operations they want allowing developers to build thousands of different applications that go far beyond anything seen previously \citep{55_what_is_ethereum_a_step-by-step_beginners_guide_2017}.
@@ -226,7 +223,6 @@ The Ethereum Virtual Machine is where smart contracts are run. It provides a mor
 
 Smart contracts are run by each node as part of the block creation process and, just like in Bitcoin, this is the moment where transactions actually take place. An important part of how smart contracts work in Ethereum is that they have their own unique address in the blockchain. In other words, contract code is not carried inside each transaction that makes use of it. Instead contracts are ``deployed'' to the blockchain in a special transaction that assigns an address to a contract. This transaction can also run code at the moment of creation. After this initial transaction, the contract becomes forever a part of the blockchain and its address never changes. Whenever a node wants to call any of the methods defined by the contract, it can send a message to the address of the contract, specifying data as input and the method that must be called. The contract will then run as part of the creation of newer blocks up (subject to the gas limit or completion) and can return a value or store data \citep{59_peyrott_senanayaka_2017}.
 
-\cleardoublepage
 \subsubsection{Why Choose Ethereum}
 Ultimately the decision to use Ethereum for this project was an easy one. Ethereum is not just a digital currency, it is a blockchain based platform with many aspects desirable when designing and creating distributed applications. There simply is no other technology (at the time of writing) that can offer the same level of customization of decentralized programming and has a similarly substantial user base.
 
@@ -355,6 +351,7 @@ The ``Online Ballot Regulator'' manages everything to do with the voting ballots
   	
 	\begin{center}
 		\hfill \break
+		\hfill \break
 		Database table holding information about each ballot in the system.
 	\end{center}
 
@@ -402,9 +399,7 @@ modifier onlyOwner {
     if( msg.sender != owner ) throw; _;
 }
 
-/*
-*  This function is called *once* at first initialization into the blockchain.
-*/
+// This function is called *once* at first initialization into the blockchain.
 function ETHVoteBallot(string _ballotName, uint _ballotEndTime)
 {
     if( now > _ballotEndTime)
@@ -952,6 +947,7 @@ It would also be statistically interesting to be able to analyse the swing of vo
 
 Alternatively this idea could be eliminated completely, we could simply have our ballot contract accept the first vote from each voter as final.
 
+\cleardoublepage
 \paragraph{Tentative voting}
 \hfill \break
 If we were to mix the two innovations outlined above, we could have a brand new kind of election. This would be where voters can post tentative votes, which they reserve the right to change later, but that would allow them to express their opinion for a candidate. This would allow them to see how the general populous feels about a certain ballot without locking them down to that choice.

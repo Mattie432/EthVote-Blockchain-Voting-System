@@ -1,32 +1,81 @@
-\documentclass[]{article}
-\usepackage{standalone}
-\usepackage[a4paper]{geometry}
-\usepackage{longtable}
-
-\usepackage{enumitem}
-\usepackage{textcomp}
-\usepackage{gensymb}
-\usepackage[normalem]{ulem}
-\usepackage{color}
-\usepackage[hidelinks]{hyperref}
+\documentclass{article}
 \usepackage{graphicx}
+\usepackage{standalone}
 \usepackage{multicol}
-\usepackage{float}
-\usepackage{wrapfig}
-\usepackage{csquotes}
-
-\usepackage{array}
-\usepackage{ragged2e}
-\newcolumntype{P}[1]{>{\RaggedRight\hspace{0pt}}p{#1}}
-
 \usepackage[parfill]{parskip}
-\usepackage{supertabular,booktabs}
-\usepackage{listings}
-\usepackage{booktabs}
-\newcommand{\bftab}{\fontseries{b}\selectfont}
+
+% Used for sequence diagram
+\usepackage{pgf-umlsd}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+%used for subsubsubsections
+\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{5}
+
+\usepackage{changepage}   % for the adjustwidth environment
+
+% for currency
+\usepackage{siunitx}
+
+% syntax highlighting
+\usepackage{listings} 
+\usepackage{color}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+
+% Hyperlinks
+\usepackage[colorlinks,allcolors=blue]{hyperref}
+\usepackage[normalem]{ulem}
+\usepackage{xcolor}
+\makeatletter
+\begingroup
+  \catcode`\$=6 %
+  \catcode`\#=12 %
+  \gdef\href@split$1#$2#$3\\$4{%
+    \hyper@@link{$1}{$2}{\uline{$4}}% or \underline
+    \endgroup
+  }%
+\endgroup
+
 
 %Paths for graphics locations
-\graphicspath{ {./}{../../}{../}{TitlePage/}{LiteratureReview/}{ExperimentalResults/}}
+\graphicspath{ {./}{../../}{../}{TitlePage/}{Abstract/}{Introduction/}{Design/}{Analysis/}{Conclusion/}}
 \usepackage{caption}
 
 %Used for bibliography
@@ -59,7 +108,7 @@
     \setcounter{page}{2}
 	
 	%table of contents
-%	\newgeometry{bottom=2cm}
+	\hypersetup{linkcolor=black}
 	\tableofcontents
 	\newpage
 
@@ -71,7 +120,13 @@
 
 	\input{Design/Design}	
 	\cleardoublepage
-
+	
+	\input{Analysis/Analysis}	
+	\cleardoublepage
+	
+	\input{Conclusion/Conclusion}	
+	\cleardoublepage
+	
 	\cleardoublepage
 	\printbibliography
 \end{document}

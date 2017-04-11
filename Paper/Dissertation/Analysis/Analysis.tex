@@ -72,6 +72,7 @@
     \endgroup
   }%
 \endgroup
+
 %Used for bibliography
 \usepackage[british]{babel}
 \usepackage[%
@@ -96,12 +97,11 @@
     \subsection{Overview}
 	With this project I intended to create a proof-of-concept system for an `end-to-end' verifiable voting platform. While previous sections discussed the rationale, design \& implementation, I now intend to analyse the projects success \& viability.
 
-	we are end to end verifiable
+	The project succeeds in presenting the protocol for an `end-to-end verifiable system' through use of Blockchain technology. The system is \textit{individually verifiable}, voters can check that their vote was successfully included in the Blockchain \& can ensure that their vote was cast as intended (the stored result matches what the voter wanted). It is also \textit{universally verifiable} as anyone, whether they are participating in the election or not, can verify the results of the election \&, due to the systems design, be assured that each voter was only able to vote once per ballot.
 	
-	costs look good
+	The associated costs with deploying a similar system on the scale of a general election look, not only feasible, but substantially less than current means. As this estimate is tied to the traded price of Ethereum we can expect some fluctuations in the actual cost but even with an exponential increase the costs should be less than a traditional election.
 	
-	scalability promising in the future
-	
+	Finally the scalability of the system, while not currently being able to process the vast number of transactions a general election would generate, does look like it will acquire the necessary throughput in the near future.
 
     \cleardoublepage
     \subsection{Financial Feasibility}
@@ -112,7 +112,7 @@
 	Each transaction has a fixed cost of gas which depends on several factors, such as the amount of computational steps it requires, this number cannot be adjusted as it depends on the transaction code being executed. Each transaction can also set a `gas limit' \& a `gas price'. The `gas limit' is used to specify the upper bound of gas you are willing to pay for a transaction (unused gas is returned to the sender anyway) but is essentially used to ensure `buggy code' does not deplete your Ethereum account balance \citep{57_introduction_ethereum_frontier_guide_2017}. The gas cost of the transaction will be bought by the ether you have in your account at a price you specified with `gas price' Higher prices for each unit of gas means miners are more likely to run your contract or that you may overpay. 
 	
 	\subsubsection{Ballot Deployment}
-	Creating a new ballot requires three things (as discussed in {\Large \hyperref[sec:CreatingANewBallotContract]{Creating A New Ballot Contract \ref*{sec:CreatingANewBallotContract}}}) deploying the contract, adding the ballot options \& finalizing the contract. More specifically, we are storing the following information into the Blockchain:
+	Creating a new ballot requires three things (as discussed in \hyperref[sec:CreatingANewBallotContract]{Creating A New Ballot Contract \ref*{sec:CreatingANewBallotContract}}) deploying the contract, adding the ballot options \& finalizing the contract. More specifically, we are storing the following information into the Blockchain:
 	\begin{itemize}
 		\item \textbf{owner} - The address (20 bytes) of the ballot creator.
 		\item \textbf{optionsFinalized} - Boolean value of whether the poll is set up.
@@ -150,7 +150,7 @@
 
 	\begin{figure}[h]
 		\noindent
-  		\makebox[\textwidth]{\includegraphics[width=1.08\textwidth]{cost_voter_addition}}%
+  		\makebox[\textwidth]{\includegraphics[width=1.07\textwidth]{cost_voter_addition}}%
 		\vspace*{-0.3cm}
 		\caption{Cost of registering a voter address over time tracking the inflation of Ethereum.}
 	\end{figure}	
@@ -269,6 +269,21 @@
 	
 	\cleardoublepage
 	\subsection{System security}
+	\subsubsection{The Ethereum Network}
+	 With the scope of this project aiming to design a secure voting system, possibly usable in a general election, it's essential to confirm the level of security and to understand the risks involved with the Etherum network.
+
+Ethereum while not branded as a cryptocurrency, is often traded on cryptocurrency exchanges \& as the name suggests, cryptography is a central part of the protocol. Ethereum makes use of the KECCAK-256 cryptographic hashing function (essentially SHA-3 before standardization).
+
+Signatures in bitcoin are performed exactly the same as in conventional public-key cryptography. We can verify that Alice is the owner of a transaction because she has signed it with her private key, which can then be verified with her public key. Ethereum uses the ECDSA elliptic curve for generating the key pairs which appears to have been chosen for possible speed optimizations in the future \citep{41_yang_2011}. Attacks here could involve breaking the underlying elliptic curve cryptography either by solving the discrete logarithm problem (which could be possible with quantum computers, but there is currently no efficient non-quantum algorithm), or by finding vulnerabilities in the specific curve chosen.
+
+As with most public-key cryptography, Ethereum does not sign the entirety of the transaction as this would be too expensive. Instead, it signs a hash which can then be checked against the transaction to verify its integrity. If we could break the hash function, it could be possible to generate a secondary input transaction to hash to the same value as an original. This could then be used to perform a signature replay attack to forge a transaction.
+
+The likelihood of either of these two scenarios being immediate threats is however, relatively low. Ethereum uses industry standard technology and a breach in any of the underlying cryptography would undermine a large proportion of the security we enjoy on the internet. 
+
+Despite the underlying cryptography being secure, there are still a number of possible attacks which could be utilised against the network. While a dishonest miner cannot generate Ether (illegitimately), steal Ether from an account or make payments on your behalf (pretend to be you), they could delay or refuse the relaying of valid transactions to other nodes, attempt to create blocks which exclude specific transactions of their choosing or attempt to create a longer blockchain that would render previously accepted blocks invalid \citep{22_brave_new_coin_2016}. However all of the above require the attacker to have sufficient block creation power, effectively a 51\% attack on the network. When an individual or group owns more than half of the network they could produce enough ``computational work'' to convince others that their blockchain is the best choice \citep{41_yang_2011}.
+
+This became a real threat on the Bitcoin in January of 2014 as the mining group \textit{Gash.io} started to approach 50\% of the mining power of the entire network. At one point the group had collectively solved 42\% of the blocks in a 24 hour period \citep{42_liu_2014}. The situation was resolved without incident, due to miners leaving \textit{Ghash.io} for smaller pools, as well as the pool’s own decision to stop accepting new miners \citep{41_yang_2011}.
+	
 	\subsubsection{Voter key management}
 	As with the various types of Bitcoin \& Ethereum wallet software available there is always a trade-off between user managing their own keys \& online services doing it for them. Storing private keys on behalf of users is a very dangerous thing to do, especially if we are talking about a general election which would be of great interest to hackers. However, the truth of the matter is that the vast majority of people lack the skills needed to properly protect such information by themselves.
 	
@@ -278,7 +293,8 @@
 		
 	A potential alternative could be to enforce the user to print out their private key (similarly to a paper wallet) in the form of a QR code. This could then be scanned in when necessary to unlock the account \& authorize a transaction. Although this approach might reduce the chances of keys on a voters computer being compromised, it still places the security of the voters ballot in the voters hands.
 
-	\subsubsection{Loss of Ether}	
+	\subsubsection{Loss of Ether}
+	\label{sub:LossOfEther}
 	Because we fund each users account with enough Ether to submit a transaction vote, there is potential for a large scale loss of Ether either through over supplying ether to accounts or users attempting to gaining the system. 
 	
 	For the proof-of-concept, the system currently supplied 0.005 Ether to each registered account so that they may perform around 4 to 5 transactions. This is obviously not the best way to implement this when scaling to the level of a general election as, say for example the user only votes once then the remaining Ether goes unspent at cost to the system. It also incentives people to attempt to gain the system as they see this as free money (albeit a very small denomination) which they may attempt to transfer into a private account.
@@ -299,4 +315,21 @@
 	
 	It may be possible to move more of the inner workings of the system on to the blockchain its self. Although some form of verification will still need to happen, users could interact with a smart contract in order to have their private addresses added to the list of allowed voters. Having more of the system become transparent would be beneficial not only to these more sceptical individuals but increase trust in the system as a whole.
     
+\cleardoublepage
+\subsection{Improvements}
+Reflecting upon the project, there are a number of design decisions which I would consider doing differently next time.
+
+\subsubsection{Implementation}
+Firstly, I would run Geth (the Ethereum software) in its own Docker container. Currently it is being run inside the ``Online Ballot Regulator'' \& could be easily extracted for a more modular system. Running it in its own container would further segregate the various sections of the application providing increased security \& decouple the files of the ``Ballot Regulator'' from any files generated by Geth.
+
+I would also serve the web application over Apache (or a similarly established software). Currently the system is running off of Django's built in webserver which, while fine for development, it is a stripped-down, very basic, single-threaded server for the purposes of development \& has not gone through the required security audits or performance tests for production deployment. Transferring the server over to Apache would be trivial to setup with the WSGI interface.
+
+\subsubsection{Protocol}
+There is a glaring omission in the design of the ballot contract, the opportunity for voters to practice their right to suffrage. Currently the ballot contract template does not add any option for a `non-vote' which should be included to maintain voter rights.
+
+This could be easily implemented with minimal change to the solidity contract. We could add an extra ballot option titled `non-vote' or similar during the finalization state of ballot creation meaning it would be automatically applied to all ballots.
+
+I would also re-implement the way voter accounts receive funding to allow them to vote (also discussed in the \hyperref[sub:LossOfEther]{Loss of Ether \ref*{sub:LossOfEther}} section). Essentially I would change it to a top-up system where more Ether is allocated to your account when you vote rather than giving it all to you in one go. This reduces unnecessary allocation of funds to voters who will only use their initial vote \& reduces the likelihood of an individual attempting to gain the system.
+
+
 \end{document}
