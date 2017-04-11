@@ -856,7 +856,7 @@ When the user clicks the button to register on a ballot contract we begin the pr
   	}%
   	
     \vspace*{-0.5cm}
-	\caption{Sequence diagram showing calls made a user requests to register with the ballot contract in the blockchain.}
+	\caption{Sequence diagram showing calls made when a user requests to register with the ballot contract in the blockchain.}
 \end{figure}
 
 \cleardoublepage
@@ -864,6 +864,7 @@ The process of allowing a voter to interact with a deployed ballot contract is q
 
 \begin{adjustwidth}{0.5cm}{}
 	\paragraph{Blind Signatures}
+	\label{sec:BlindSignatures}
 	\hfill \break \break
 
 	A ``Blind signature'' is a signing scheme where the signer doesn't know the content of the message he/she is signing but the resulting blind signature can be verified against the original unblinded message just like a regular digital signature \citep{64_ryan_2017}.
@@ -883,7 +884,7 @@ The process of allowing a voter to interact with a deployed ballot contract is q
 
 I've used the concept of blind signatures in this system to send a randomized Token to the ``Online Account Verifier'' for them to sign. The singing in my system is accomplished using RSA keys and the PyCrypto library \citep{66_pycrypto_the_python_cryptography_toolkit_2017} which abstracts away most of the mathematics and allows the generation of a blind message (see client implementation in ``Application Server'' \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/2_ApplicationServer/user_ballot_registration/views.py#L135}{user\_ballot\_registration/\\views.py} and the corresponding server code at ``Online Account Verifier'' at \href{https://github.com/Mattie432/Blockchain-Voting-System/blob/master/Programming/3_OnlineAccountVerifier/signatures/token_request.py}{signatures/token\_request.py}). The ``Online Account verifier'' has a unique key pair for each ballot that is registered in the system, this means that any tokens signed are valid only as identification for the specific ballot they were requested for.
 
-The order of events for a user to register an Ethereum address to vote is as follows: Firstly, the ``Application Server'' generates a random token to be used in the interaction. This is then blinded with a randomly generated number (as explained in the \textit{Blind Signatures} section) and the public key of the ballot we are requesting to add the address to. Next we send this blinded token across to the ``Online Account Verifier'' to be signed.
+The order of events for a user to register an Ethereum address to vote is as follows: Firstly, the ``Application Server'' generates a random token to be used in the interaction. This is then blinded with a randomly generated number (as explained in the \hyperref[sec:BlindSignatures]{Blind Signatures \ref*{sec:BlindSignatures}} section) and the public key of the ballot we are requesting to add the address to. Next we send this blinded token across to the ``Online Account Verifier'' to be signed.
 
 When the request to sign the blind token is received by the ``Online Account Verifier'' we initially run a few checks. First, we check to see if the voter requesting to be registered for a ballot is indeed eligible to vote. Secondly, we check that this is the first time we are seeing this user request a token signature for this particular ballot. These checks ensure that users can only register for ballots they are eligible for and each address can only register one address per ballot. If all of our checks pass then we sign this blinded token with the associated ballots private key \& return it to the ``Application Server''.
 
