@@ -162,6 +162,31 @@ is passed to the callback \& similarly, if an error occurs the error is passed a
 
 Twisted also offers the ability to secure connections using TLS which provides some necessary security benefits. Each party can be required to initially present a certificate verifying their identity, this would ensure that an attacker cannot `man in the middle' attack this system and splice in their own node to intercept traffic. It also provides confidentiality as communication between nodes is encrypted \& some degree of integrity as the TLS protocol checks to ensure encrypted messages actually came from the party you originally authenticated to.
 
+\cleardoublepage
+\subsection{Testing}
+As my project is written in Python \& I am heavily using Django to present the frontened to the user, I have access to a wealth of test management functionality built into the platform. I have written a mixture of Unit \& Integration tests which I believe provide good coverage of the features \& actions of the system. As all interactions with the system initially start from the ``Application Server'', my testing reflects this \& tests actions as if they were being called by an end user.
+
+\subsubsection{Tests}
+My system uses the NoseTests framework which makes the process of testing the project easier due to its test discovery \& automated running. In nose, each test is a function whose name begins with the letters `test\_'. We can group tests together in files whose names also begin with the letters `test\_'. To execute our tests we run the command \textit{nosetests} which automatically searches the current directory and its subdirectories for test files, and runs the tests they contain.
+
+My written tests cover two areas, the first being Django specific interactions. This includes tests to ensure that defined urls remain accessible (such as the login \& registration pages) along with form entry validation checks (such as registering with an invalid email address) ensuring that only validated data enters the system. The second area includes user interaction, there are checks to ensure that actions started by the user complete successfully. This includes initial setup such as entering the `initial information request' data through to being able to successfully register for a ballot (along with all of the networking calls involved).
+
+\subsubsection{Coverage}
+The NoseTests framework also offers the ability to produce a `code coverage' report. This is useful to ensure that the written tests are actually testing your code as the report returns how much of your code is exercised by running the tests. While this does not guarantee the effectiveness of the testing, it can be useful to identify areas of weakness for further improvement of test coverage.
+
+While I have not achieved total code coverage, I believe the main areas which provide heavy service to the application are adequately covered.
+
+\cleardoublepage
+\begin{figure}[h]
+	\noindent
+  	\makebox[\textwidth]{\includegraphics[width=1\textwidth]{code_coverage}}%
+	\caption{Test coverage results from the ``Application Server''}
+\end{figure}
+
+\subsubsection{Pylint}
+Pylint is a Python tool that checks a module for coding standards with a range of checks run from Python errors, missing docstrings, unused imports, unintended redefinition of built-ins, to bad naming and more. By default Pylint offers an overwhelming amount of information \& errors relating to extremely minor, often stylistic, differences (e.g. \textit{W:675, 0: Class has no \_\_init\_\_ method (no-init)}). This error is not only unuseful, it masks any potential larger problems due to the scale of output Pylint produces (initially for my project over 5,000 lines). To make Pylint more usable I had to configure Pylint to only check areas I specified, this included only displaying detected Errors (rather than information \& warnings) along with certain warnings which I switched on (such as `too many arguments'). I started with a very basic configuration and steadily increased it over the duration of my project. 
+
+
 
 \cleardoublepage
 \subsection{Ethereum}
@@ -957,7 +982,6 @@ This would mean that decisions people might not have been willing to stand behin
 
 \cleardoublepage
 \subsection{Post Election results}
-\subsubsection{Retrieving results}
 Assuming that you are running a full Ethereum node (that is, have all of the blockchain data available to you) querying any of these getter functions of a ballot contract will not cost you Ether. This is because the state of all of the variables in the contract can be calculated from all of the transactions (which you have locally) therefore the results can be computed without remote calls. The only transactions which you need to pay Ether on are those which perform operations in the blockchain, e.g. saving data or remote computation.
 
 This increases the viability for external parties to audit the ballots in their entirety as if they had an attached cost, due to the size of the election being held, it could have been prohibitively expensive. 
