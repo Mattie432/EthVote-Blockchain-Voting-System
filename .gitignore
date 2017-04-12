@@ -197,6 +197,17 @@ keys/
 # Ignore pem files
 *.pem
 
+#ignore compiled python
+*.pyc
+
 # Ignore ethererum database
 ethereumDB/
 web3_test.py
+
+# Ignore migration folder
+migrations/
+
+# ignore coverage settings
+.coveragerc
+coverage/
+

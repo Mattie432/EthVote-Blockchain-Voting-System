@@ -21,8 +21,8 @@ from user_ballot_registration.views import (RegisterForBallot)
 
 urlpatterns = [
 
-    url(r'^dashboard/$',    Dashboard.as_view(),  name="applicationserver"),
-    url(r'^$',    HomepageRedirect.as_view(), name="applicationserver"),
-    url(r'^register_for_ballot/(\d{2,5})/$',    RegisterForBallot.as_view(), name="applicationserver"),
+    url(r'^dashboard/$',    Dashboard.as_view(),  name="dashboard"),
+    url(r'^$',    HomepageRedirect.as_view(), name="index"),
+    url(r'^register_for_ballot/(\d{2,5})/$',    RegisterForBallot.as_view(), name="register_for_ballot"),
     #url(r'^accounts/', include('accounts.urls', namespace='accounts')),
 ]

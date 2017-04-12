@@ -154,7 +154,10 @@ class Ethereum():
         print("[ethereum - interact_give_right_to_vote] Giving address '%s' the right to vote at '%s'" % (voter_address, contract_address))
 
         ContractFactory = self.web3.eth.contract(address=contract_address, abi=abi)
-        add_voter_tx_hash = ContractFactory.transact().giveRightToVote(str(voter_address))
+
+        gasEstimate = ContractFactory.estimateGas().giveRightToVote(str(voter_address)) * 1.1
+
+        add_voter_tx_hash = ContractFactory.transact( {'gas': int(gasEstimate)  } ).giveRightToVote(str(voter_address))
         print("                        add_voter_tx_hash: %s" % add_voter_tx_hash)
 
         # 0.005 == $0.20

@@ -20,6 +20,6 @@ from website.views import (Dashboard, HomepageRedirect)
 from user_ballot_registration.views import (RegisterForBallot, Vote)
 
 urlpatterns = [
-    url(r'^register_for_ballot/(\d{2,5})/$',    RegisterForBallot.as_view(),    name="applicationserver"),
-    url(r'^vote/(\d{2,5})/$',                   Vote.as_view(),                 name="applicationserver"),
+    url(r'^register_for_ballot/(\d{2,5})/$',    RegisterForBallot.as_view(),    name="register_for_ballot"),
+    url(r'^vote/(\d{2,5})/$',                   Vote.as_view(),                 name="vote"),
 ]
