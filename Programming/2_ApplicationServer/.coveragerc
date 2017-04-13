@@ -1,0 +1,17 @@
+[run]
+branch = True
+source =
+    accounts
+    applicationserver
+    network
+    website
+omit =
+    applicationserver/settings.py
+    applicationserver/wsgi.py
+    accounts/apps.py
+    user_ballot_registration/apps.py
+    website/apps.py
+[report]
+precision = 2
+[html]
+directory = coverage

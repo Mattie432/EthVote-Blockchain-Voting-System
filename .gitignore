@@ -208,6 +208,6 @@ web3_test.py
 migrations/
 
 # ignore coverage settings
-.coveragerc
+.coverage
 coverage/
 
