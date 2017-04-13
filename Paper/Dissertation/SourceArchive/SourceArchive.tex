@@ -1,0 +1,115 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{standalone}
+\usepackage{multicol}
+\usepackage[parfill]{parskip}
+
+% Used for sequence diagram
+\usepackage{pgf-umlsd}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+%used for subsubsubsections
+\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{5}
+
+\usepackage{changepage}   % for the adjustwidth environment
+
+% syntax highlighting
+\usepackage{listings} 
+\usepackage{color}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+
+% Hyperlinks
+\usepackage[colorlinks,allcolors=blue]{hyperref}
+\usepackage[normalem]{ulem}
+\usepackage{xcolor}
+\makeatletter
+\begingroup
+  \catcode`\$=6 %
+  \catcode`\#=12 %
+  \gdef\href@split$1#$2#$3\\$4{%
+    \hyper@@link{$1}{$2}{\uline{$4}}% or \underline
+    \endgroup
+  }%
+\endgroup
+%Used for bibliography
+\usepackage[british]{babel}
+\usepackage[%
+  autolang=other,
+  backend=bibtex      % biber or bibtex
+%,style=authoryear    % Alphabeticalsch
+ ,style=numeric-comp  % numerical-compressed
+ ,sorting=none        % no sorting
+ ,sortcites=true      % some other example options ...
+ ,block=none
+ ,indexing=false
+ ,citereset=none
+ ,isbn=true
+ ,url=true
+ ,doi=true            % prints doi
+ ,natbib=true         % if you need natbib functions
+]{biblatex}
+\addbibresource{../Bibliography/Bibliography}
+
+\begin{document}
+    \subsection{Source Archive}
+Alongside this report is the \href{https://github.com/Mattie432/Blockchain-Voting-System}{accompanying code} for this proof-of-concept system containing everything needed for deployment. Project layout closely follows the \hyperref[sec:SystemDesign]{system design \ref*{sec:SystemDesign}} with the code for each node being contained in its own folder.
+
+\subsubsection{Building}
+As I have used Python for each node in my project, I was able to create a \textit{setup} file to create the correct Python environment which can be called using \textit{`pip3 install .'} while in the nodes' root directory.
+
+As I am using docker, building manually is not recommended as there is a lot of environmental setup which must be done. Each nodes' project contains a \textit{Dockerfile} which is used to setup, build and run each application. Each node folder contains a \textit{bin} directory inside which are various executables one of which, \textit{docker\_entrypoint}, is ultimately where we start the systems but the recommended way to start an individual node is to use the \textit{build\_and\_run} executable which combines these steps for ease of use.
+
+\subsubsection{Running}
+You can independently start each node through Docker with the \textit{`docker run'} command (conveniently you can run \textit{build\_and\_run} with the parameter \textit{runme}).
+
+This is unnecessary however as Docker provides a tool, Compose, which is used for defining and running multi-container Docker applications. This means I can define a \textit{docker-compose.yml} file in the root directory which will start all of the nodes, with the correct parameters, in the correct order.
+
+This is the recommended way to run this application so calling \textit{`docker-compose up'} while in the root directory should be the most hassle free.
+
+\subsubsection{Notes}
+
+\begin{itemize}
+
+	\item \textbf{Helper Files} - There are a number of helper scripts located in the \textit{HelperScripts} folder which allow for easy interaction with the Docker nodes while running.
+	
+	\item \textbf{Blockchain download} - As this runs a full Ethereum node and must download the full blockchain before it can push transactions, an initial download of around 20GB will occur on first run.
+\end{itemize}
+\end{document}

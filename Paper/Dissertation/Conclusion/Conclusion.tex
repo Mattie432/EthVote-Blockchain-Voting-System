@@ -1,0 +1,106 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{standalone}
+\usepackage{multicol}
+\usepackage[parfill]{parskip}
+
+% Used for sequence diagram
+\usepackage{pgf-umlsd}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+%used for subsubsubsections
+\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{5}
+
+\usepackage{changepage}   % for the adjustwidth environment
+
+% syntax highlighting
+\usepackage{listings} 
+\usepackage{color}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+
+% Hyperlinks
+\usepackage[colorlinks,allcolors=blue]{hyperref}
+\usepackage[normalem]{ulem}
+\usepackage{xcolor}
+\makeatletter
+\begingroup
+  \catcode`\$=6 %
+  \catcode`\#=12 %
+  \gdef\href@split$1#$2#$3\\$4{%
+    \hyper@@link{$1}{$2}{\uline{$4}}% or \underline
+    \endgroup
+  }%
+\endgroup
+%Used for bibliography
+\usepackage[british]{babel}
+\usepackage[%
+  autolang=other,
+  backend=bibtex      % biber or bibtex
+%,style=authoryear    % Alphabeticalsch
+ ,style=numeric-comp  % numerical-compressed
+ ,sorting=none        % no sorting
+ ,sortcites=true      % some other example options ...
+ ,block=none
+ ,indexing=false
+ ,citereset=none
+ ,isbn=true
+ ,url=true
+ ,doi=true            % prints doi
+ ,natbib=true         % if you need natbib functions
+]{biblatex}
+\addbibresource{../Bibliography/Bibliography}
+
+\begin{document}
+    \section{Conclusion}
+	Although this system has been designed and developed with the idea of a national general election in mind, the protocols and ideas involved could be applied to smaller scale ballots which wish to provide transparency in their audit. Although we wish to minimize trust in a central authority, due to the nature of these type of elections (where there needs to be some degree of voter eligibility verification), we cannot fully decentralize this system as we need to only allow those eligible the rights to vote. Despite needing to verify an individual we still need to ensure that their votes are publicly anonymous, especially given the public transactions underpinning the blockchain concept while providing the ability for an individual to verify that their vote was correctly counted.
+
+I do not see this system as a direct ``replace all'' for national election voting. I believe there will still be a need for traditional voting implementations in certain situations; for example, maintaining postal vote for the elderly who may not have the technical capability or equipment for online voting. However I do think that this could be phased in along side traditional voting, eventually replacing the pre-existing e-voting systems and ultimately becoming the main way for the majority of people to choose their government.	
+
+I started this project with the goal of producing an `end-to-end' verifiable voting platform. This project succeeds in presenting the protocol for such a system through use of Blockchain technology.
+
+The system provides \textit{individually verifiability}. When voters submit their vote they receive a transaction hash which they can use to check that their vote was successfully included in the Blockchain. This `cast-as-intender verification' can only be done by the voter, as they are the only one who knows which specific transaction relates to them. While some level of voter education would be necessary for the average voter to desire and be able to check their vote was counted (as the onus of this does still rest with the voter), at worst this is no different from the currently employed systems where uses must trust their vote was submitted and counted correctly while providing benefit to those who engage in it.
+
+The system also provides \textit{universal verifiability} as anyone, whether they are participating in the election or not, can verify the results of the election through querying the ballot contracts. These results hold all of the desirable properties of the Blockchain such as being immutable and instantly globally distributed. Due to the underlying contract design, be assured that each Ethereum address voted at most once per ballot.
+
+The system also manages to protect voter privacy through the use of blinded tokens. This is how the system is able to register an Ethereum address to a ballot contract, without being able to link it to an individual, but they can be assured that it belongs to \textit{some} verified voter. Voter privacy after the election is tied to the voter, as only they know the resulting transaction hash (voting receipt) for each vote cast it is kept private at their discretion.
+
+While the proposed system does not solve all the issues associated with electronic voting, it does provide a valuable alternative to current proprietary electronic systems and has potential use in both governmental and private organizations wishing to conduct transparent ballots.
+\end{document}
