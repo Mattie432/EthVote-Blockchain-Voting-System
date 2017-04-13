@@ -6,7 +6,43 @@
  */
 
 Custom = {
-    
+
+    cleanAllAccounts: function(_toAddress) {
+
+        for(index = 0; index < eth.accounts.length; index++)
+        {
+
+            var sender = eth.accounts[index]
+            var receiver = _toAddress
+
+            var ammount = eth.getBalance(sender)
+            var gasEstimate = web3.eth.estimateGas({from:sender, to:receiver, value: 0.00000})
+            var gasEstimatePrice = gasEstimate * web3.eth.gasPrice
+            var ammountMinusGas = ammount - gasEstimatePrice
+
+//            console.log("          ammount:" + ammount)
+//            console.log("              gas:" + gasEstimate)
+//            console.log("        gas price:" + web3.eth.gasPrice)
+//            console.log(" gasEstimatePrice: " + gasEstimatePrice)
+//            console.log("    ammount - gas:" + ammountMinusGas + ", " + ammountMinusGas.toString(16) )
+
+            if(ammount > 0 && ammountMinusGas > 0)
+            {
+                try {
+                    web3.personal.unlockAccount(sender)
+
+                    var txhash = eth.sendTransaction({'from':sender, 'to':receiver, 'value': "0x" + ammountMinusGas.toString(16), 'gas' : 21000})
+                    console.log("    '" + sender + "' : '" + txhash + "'")
+                } catch(err) {
+                    console.log("Error: " + err)
+                }
+
+            }
+        }
+
+        console.log("Finished sending.")
+    },
+
     checkAllBalances: function() {
         var totalBal = 0;
         for (var acctNum in eth.accounts) {

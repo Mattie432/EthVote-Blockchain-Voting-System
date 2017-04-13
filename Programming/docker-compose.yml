@@ -10,6 +10,13 @@
 #############################################################
 version: '2'
 
+networks:
+    my_net:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 10.5.1.0/24
+
 services:
 
     onlineballotregulator:
@@ -18,7 +25,7 @@ services:
             context: 4_OnlineBallotRegulator/
             dockerfile: Dockerfile
         ports:
-            - "5434:5434"
+            - "127.0.0.1:5434:5434"
         env_file:
             - 4_OnlineBallotRegulator/bin/Variables.env
         working_dir:
@@ -29,6 +36,9 @@ services:
             # Create local volume so we dont have to download blockchain every time.
             - ./ethereumDB/:/usr/src/ethereumDB/
             - ./4_OnlineBallotRegulator/:/usr/src/onlineballotregulator/
+        networks:
+            my_net:
+                ipv4_address: 10.5.1.5
 
     onlineaccountverifier:
         build:
@@ -36,7 +46,7 @@ services:
             context: 3_OnlineAccountVerifier/
             dockerfile: Dockerfile
         ports:
-            - "5435:5435"
+            - "127.0.0.1:5435:5435"
         env_file:
             - 3_OnlineAccountVerifier/bin/Variables.env
         environment:
@@ -51,20 +61,23 @@ services:
             - ./3_OnlineAccountVerifier/:/usr/src/onlineaccountverifier/
         depends_on:
             - onlineballotregulator
+        networks:
+            my_net:
+                ipv4_address: 10.5.1.4
 
-    applicaitonserver:
+    applicationserver:
         build:
             # Where to look for the dockerfile to build the applicaitonserver image.
             context: 2_ApplicationServer/
             dockerfile: Dockerfile
         ports:
             - "80:80"
-            - "5436:5436"
+            - "127.0.0.1:5436:5436"
         env_file:
             - 2_ApplicationServer/bin/Variables.env
         environment:
-            - TWISTED_BALLOTREGULATOR_IP=onlineballotregulator
-            - TWISTED_ACCOUNTVERIFIER_IP=onlineaccountverifier
+            - TWISTED_BALLOTREGULATOR_IP=10.5.1.5
+            - TWISTED_ACCOUNTVERIFIER_IP=10.5.1.4
         working_dir:
               /usr/src/applicationserver/
         command:
@@ -72,10 +85,13 @@ services:
         volumes:
             # Create local volume so we dont have to download blockchain every time.
             - ./ethereumDB/:/usr/src/ethereumDB/
-            - ./2_ApplicationServer/:/usr/src/applicaitonserver/
+            - ./2_ApplicationServer/:/usr/src/applicationserver/
         depends_on:
             - onlineballotregulator
             - onlineaccountverifier
+        networks:
+            my_net:
+                ipv4_address: 10.5.1.3
 
     externalvoterregistration:
         build:
@@ -87,9 +103,9 @@ services:
         env_file:
             - 1_ExternalVoterRegistration/bin/Variables.env
         environment:
-            - TWISTED_BALLOTREGULATOR_IP=onlineballotregulator
-            - TWISTED_ACCOUNTVERIFIER_IP=onlineaccountverifier
-            - TWISTED_APPLICATIONSERVER_IP=applicaitonserver
+            - TWISTED_BALLOTREGULATOR_IP=10.5.1.5
+            - TWISTED_ACCOUNTVERIFIER_IP=10.5.1.4
+            - TWISTED_APPLICATIONSERVER_IP=10.5.1.3
         working_dir:
               /usr/src/externalvoterregistration/
         command:
@@ -100,4 +116,7 @@ services:
             - ./1_ExternalVoterRegistration/:/usr/src/externalvoterregistration/
         depends_on:
             - onlineballotregulator
-            - applicaitonserver
+            - applicationserver
+        networks:
+            my_net:
+                ipv4_address: 10.5.1.2
