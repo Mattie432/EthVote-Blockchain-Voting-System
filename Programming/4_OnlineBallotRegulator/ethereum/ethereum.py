@@ -11,7 +11,7 @@ class Ethereum():
     def __init__(self):
         self.work_dir = os.environ[ 'WORK_DIR' ]
 
-        self.web3 = Web3(IPCProvider("/usr/src/ethereumDB/geth.ipc"))
+        self.web3 = Web3(IPCProvider("/usr/src/ethereumDB/testnet/geth.ipc"))
         # self.web3 = Web3(KeepAliveRPCProvider())
         contract_path = self.work_dir + "ethereum/ETHVoteBallot.sol"
         compiled_contract = compile_files( [contract_path] )
@@ -92,7 +92,10 @@ class Ethereum():
         ballot_options_transactions = []
         ContractFactory = self.web3.eth.contract(address=contract_address, abi=abi)
         for new_option in ballot_options_array:
-            tx_hash = ContractFactory.transact().addVotingOption(str(new_option))
+
+            gasEstimate = ContractFactory.estimateGas().addVotingOption(str(new_option)) * 1.4
+
+            tx_hash = ContractFactory.transact( {'gas': int(gasEstimate)  } ).addVotingOption(str(new_option))
             ballot_options_transactions.append(tx_hash)
             print("                                  tx_hash: %s" % tx_hash)
 
@@ -127,7 +130,11 @@ class Ethereum():
         print("[ethereum - interact_finalize_ballot] Finalizing ballot at address '%s'" % (contract_address))
 
         ContractFactory = self.web3.eth.contract(address=contract_address, abi=abi)
-        finalize_tx_hash = ContractFactory.transact().finalizeVotingOptions()
+
+
+        gasEstimate = ContractFactory.estimateGas().finalizeVotingOptions() * 1.4
+
+        finalize_tx_hash = ContractFactory.transact({'gas': int(gasEstimate)  } ).finalizeVotingOptions()
         print("                         finalize_tx_hash: %s" % finalize_tx_hash)
 
         # Wait 'n' mins for transaction to process.
@@ -155,7 +162,7 @@ class Ethereum():
 
         ContractFactory = self.web3.eth.contract(address=contract_address, abi=abi)
 
-        gasEstimate = ContractFactory.estimateGas().giveRightToVote(str(voter_address)) * 1.1
+        gasEstimate = ContractFactory.estimateGas().giveRightToVote(str(voter_address)) * 1.4
 
         add_voter_tx_hash = ContractFactory.transact( {'gas': int(gasEstimate)  } ).giveRightToVote(str(voter_address))
         print("                        add_voter_tx_hash: %s" % add_voter_tx_hash)

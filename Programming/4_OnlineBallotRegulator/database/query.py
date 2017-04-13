@@ -192,7 +192,10 @@ class DatabaseQuery:
             raise failure.raiseException()
 
         def _insert(cursor, ballot_name, ballot_address, ballot_interface, ballot_end_date):
-            statement = "INSERT INTO available_ballots (ballot_name, ballot_address, ballot_interface, ballot_end_date) VALUES (%s, %s, %s, %s);", ( ballot_name, ballot_address, ballot_interface, ballot_end_date)
+
+
+            statement = "INSERT INTO available_ballots (ballot_name, ballot_address, ballot_interface, ballot_end_date) VALUES (%s, %s, %s, %s);" % ( ballot_name, ballot_address, ballot_interface, ballot_end_date)
+            print(statement)
             cursor.execute(statement)
 
         print("\nballot_name\n",ballot_name,"\nballot_address\n",ballot_address,"\nballot_interface\n",ballot_interface,"\nballot_end_date\n",ballot_end_date)
