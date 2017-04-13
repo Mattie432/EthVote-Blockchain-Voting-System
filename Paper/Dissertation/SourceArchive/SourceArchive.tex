@@ -15,9 +15,6 @@
 
 \usepackage{changepage}   % for the adjustwidth environment
 
-% for currency
-\usepackage{siunitx}
-
 % syntax highlighting
 \usepackage{listings} 
 \usepackage{color}
@@ -72,18 +69,6 @@
     \endgroup
   }%
 \endgroup
-
-\newcommand{\blankpage}{
-\newpage
-\thispagestyle{empty}
-\mbox{}
-\newpage
-}
-
-%Paths for graphics locations
-\graphicspath{ {./}{../../}{../}{TitlePage/}{Abstract/}{Introduction/}{Design/}{Analysis/}{Conclusion/}}
-\usepackage{caption}
-
 %Used for bibliography
 \usepackage[british]{babel}
 \usepackage[%
@@ -101,55 +86,30 @@
  ,doi=true            % prints doi
  ,natbib=true         % if you need natbib functions
 ]{biblatex}
-\addbibresource{Bibliography/Bibliography}
-
+\addbibresource{../Bibliography/Bibliography}
 
 \begin{document}
+    \subsection{Source Archive}
+Alongside this report is the \href{https://github.com/Mattie432/Blockchain-Voting-System}{accompanying code} for this proof-of-concept system containing everything needed for deployment. Project layout closely follows the \hyperref[sec:SystemDesign]{system design \ref*{sec:SystemDesign}} with the code for each node being contained in its own folder.
 
-	%Insert title page
-	\input{TitlePage/TitlePage}
+\subsubsection{Building}
+As I have used Python for each node in my project, I was able to create a \textit{setup} file to create the correct Python environment which can be called using \textit{`pip3 install .'} while in the nodes' root directory.
 
-\blankpage
+As I am using docker, building manually is not recommended as there is a lot of environmental setup which must be done. Each nodes' project contains a \textit{Dockerfile} which is used to setup, build and run each application. Each node folder contains a \textit{bin} directory inside which are various executables one of which, \textit{docker\_entrypoint}, is ultimately where we start the systems but the recommended way to start an individual node is to use the \textit{build\_and\_run} executable which combines these steps for ease of use.
+
+\subsubsection{Running}
+You can independently start each node through Docker with the \textit{`docker run'} command (conveniently you can run \textit{build\_and\_run} with the parameter \textit{runme}).
+
+This is unnecessary however as Docker provides a tool, Compose, which is used for defining and running multi-container Docker applications. This means I can define a \textit{docker-compose.yml} file in the root directory which will start all of the nodes, with the correct parameters, in the correct order.
+
+This is the recommended way to run this application so calling \textit{`docker-compose up'} while in the root directory should be the most hassle free.
+
+\subsubsection{Notes}
+
+\begin{itemize}
+
+	\item \textbf{Helper Files} - There are a number of helper scripts located in the \textit{HelperScripts} folder which allow for easy interaction with the Docker nodes while running.
 	
-	%Insert the abstract
-    \pagenumbering{arabic}
-	
-	%table of contents
-	\cleardoublepage
-	\hypersetup{linkcolor=black}
-	\tableofcontents
-	\newpage
-
-	\input{Abstract/Abstract}	
-	\cleardoublepage
-
-\blankpage
-
-	\input{Introduction/Introduction}	
-	\cleardoublepage
-
-\blankpage
-
-	\input{Background/Background}	
-	\cleardoublepage
-
-	\input{Design/Design}	
-	\cleardoublepage
-	
-\blankpage
-
-	\input{Analysis/Analysis}	
-	\cleardoublepage
-	
-\blankpage
-
-	\input{Conclusion/Conclusion}	
-	\cleardoublepage
-	
-	\section{Appendix}
-	\input{SourceArchive/SourceArchive}
-	
-	\cleardoublepage
-	\subsection{Bibliography}
-	\printbibliography[heading=none]
+	\item \textbf{Blockchain download} - As this runs a full Ethereum node and must download the full blockchain before it can push transactions, an initial download of around 20GB will occur on first run.
+\end{itemize}
 \end{document}
