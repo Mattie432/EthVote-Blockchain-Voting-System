@@ -1,0 +1,103 @@
+#############################################################
+# Docker compose file for our webapp. Here we specify how
+# to run all of our Docker containers.
+#
+# NOTE: We are using version 2 of the docker-compose file.
+#       docker-compose version >= 1.6 & docker engine
+#       version >= 1.10.0 is required to run.
+#
+# Example usage: 'docker-compose up'
+#############################################################
+version: '2'
+
+services:
+
+    onlineballotregulator:
+        build:
+            # Where to look for the dockerfile to build the onlineballotregulator image.
+            context: 4_OnlineBallotRegulator/
+            dockerfile: Dockerfile
+        ports:
+            - "5434:5434"
+        env_file:
+            - 4_OnlineBallotRegulator/bin/Variables.env
+        working_dir:
+              /usr/src/onlineballotregulator/
+        command:
+              bin/docker_entrypoint
+        volumes:
+            # Create local volume so we dont have to download blockchain every time.
+            - ./ethereumDB/:/usr/src/ethereumDB/
+            - ./4_OnlineBallotRegulator/:/usr/src/onlineballotregulator/
+
+    onlineaccountverifier:
+        build:
+            # Where to look for the dockerfile to build the onlineaccountverifier image.
+            context: 3_OnlineAccountVerifier/
+            dockerfile: Dockerfile
+        ports:
+            - "5435:5435"
+        env_file:
+            - 3_OnlineAccountVerifier/bin/Variables.env
+        environment:
+            - TWISTED_BALLOTREGULATOR_IP=onlineballotregulator
+        working_dir:
+              /usr/src/onlineaccountverifier/
+        command:
+              wait-for-it.sh onlineballotregulator:5434 -- bin/docker_entrypoint
+        volumes:
+            # Create local volume so we dont have to download blockchain every time.
+            - ./ethereumDB/:/usr/src/ethereumDB/
+            - ./3_OnlineAccountVerifier/:/usr/src/onlineaccountverifier/
+        depends_on:
+            - onlineballotregulator
+
+    applicaitonserver:
+        build:
+            # Where to look for the dockerfile to build the applicaitonserver image.
+            context: 2_ApplicationServer/
+            dockerfile: Dockerfile
+        ports:
+            - "80:80"
+            - "5436:5436"
+        env_file:
+            - 2_ApplicationServer/bin/Variables.env
+        environment:
+            - TWISTED_BALLOTREGULATOR_IP=onlineballotregulator
+            - TWISTED_ACCOUNTVERIFIER_IP=onlineaccountverifier
+        working_dir:
+              /usr/src/applicationserver/
+        command:
+              wait-for-it.sh onlineballotregulator:5434 -- wait-for-it.sh onlineaccountverifier:5435 -- bin/docker_entrypoint
+        volumes:
+            # Create local volume so we dont have to download blockchain every time.
+            - ./ethereumDB/:/usr/src/ethereumDB/
+            - ./2_ApplicationServer/:/usr/src/applicaitonserver/
+        depends_on:
+            - onlineballotregulator
+            - onlineaccountverifier
+
+    externalvoterregistration:
+        build:
+            # Where to look for the dockerfile to build the externalvoterregistration image.
+            context: 1_ExternalVoterRegistration/
+            dockerfile: Dockerfile
+        ports:
+            - "8080:8080"
+        env_file:
+            - 1_ExternalVoterRegistration/bin/Variables.env
+        environment:
+            - TWISTED_BALLOTREGULATOR_IP=onlineballotregulator
+            - TWISTED_ACCOUNTVERIFIER_IP=onlineaccountverifier
+            - TWISTED_APPLICATIONSERVER_IP=applicaitonserver
+        working_dir:
+              /usr/src/externalvoterregistration/
+        command:
+              wait-for-it.sh onlineballotregulator:5434 -- wait-for-it.sh onlineaccountverifier:5435 -- wait-for-it.sh applicaitonserver:5436 -- bin/docker_entrypoint
+        volumes:
+            # Create local volume so we dont have to download blockchain every time.
+            - ./ethereumDB/:/usr/src/ethereumDB/
+            - ./1_ExternalVoterRegistration/:/usr/src/externalvoterregistration/
+        depends_on:
+            - onlineballotregulator
+            - applicaitonserver

@@ -16,7 +16,7 @@ if [ ! -s /usr/src/onlineballotregulator/postgresDB ]; then
 
     # Create the database folder in the docker container
     mkdir /usr/src/onlineballotregulator/postgresDB
-    chown postgres:postgres /usr/src/onlineballotregulator/postgresDB
+    chown -R postgres:postgres /usr/src/onlineballotregulator/postgresDB
 
     # Create the new database.
     su postgres --command "/usr/lib/postgresql/$postgres_version/bin/initdb -D /usr/src/onlineballotregulator/postgresDB/"
@@ -30,7 +30,7 @@ if [ ! -s /usr/src/onlineballotregulator/postgresDB ]; then
 
 else
     echo "[docker_entrypoint] Database folder already exists... skipping creation..."
-    sleep 5
+    chown -R postgres:postgres /usr/src/onlineballotregulator/postgresDB
     su postgres --command "/usr/lib/postgresql/$postgres_version/bin/postgres -D /usr/src/onlineballotregulator/postgresDB/" &
 fi
 

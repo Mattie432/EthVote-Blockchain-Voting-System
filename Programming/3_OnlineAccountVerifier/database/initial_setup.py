@@ -32,6 +32,11 @@ def getAllBallots():
     """
 
     # NOTE: using inline callbacks here so we dont have to write/wait for callbacks.
+
+
+    print("twisted_ballotregulator_ip:", twisted_ballotregulator_ip)
+
+
     destination_deferred = yield TCP4ClientEndpoint(reactor, twisted_ballotregulator_ip, twisted_ballotregulator_port)
     connection_deferred = yield connectProtocol(destination_deferred, AMP())
     result_deferred = yield connection_deferred.callRemote(OnlineBallotRegulator_SearchBallotsAvailableForAllBallots)

@@ -28,6 +28,7 @@ if [ ! -s /usr/src/onlineaccountverifier/postgresDB ]; then
 
 else
     echo "[docker_entrypoint] Database folder already exists... skipping creation..."
+    chown -R postgres:postgres /usr/src/onlineaccountverifier/postgresDB
     su postgres --command "/usr/lib/postgresql/9.4/bin/postgres -D /usr/src/onlineaccountverifier/postgresDB/" &
 fi
 
