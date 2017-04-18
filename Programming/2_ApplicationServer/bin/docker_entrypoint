@@ -14,5 +14,6 @@ python3 manage.py migrate
 
 # Run the Django server.
 echo "[docker_entrypoint] Starting server.."
-python3 manage.py runserver 0.0.0.0:80
-
+#python3 manage.py runserver 0.0.0.0:81
+mkdir -p /run/uwsgi
+uwsgi wsgi.ini

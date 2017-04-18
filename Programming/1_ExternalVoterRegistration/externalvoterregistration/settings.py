@@ -25,7 +25,7 @@ SECRET_KEY = '+_!9ft0tqqm3jbu&m$s(h6c+w!m2y70@6n36$##x6+!8ms!o3n'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [ '139.59.179.128', 'localhost', '127.0.0.1', 'ethvote.online' ]
+ALLOWED_HOSTS = [ '139.59.179.128', 'localhost', '127.0.0.1', 'ethvote.online', 'register.ethvote.online' ]
 
 
 # Application definition

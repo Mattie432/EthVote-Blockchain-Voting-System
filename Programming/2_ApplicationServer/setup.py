@@ -24,5 +24,6 @@ setup(
         'web3',
         'coverage',
         'pylint-django',
+        'uwsgi'
     ]
 )

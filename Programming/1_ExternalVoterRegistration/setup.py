@@ -14,6 +14,7 @@ setup(
         'Django>=1.10.0',
         'psycopg2',
         'crochet',
-        'twisted'
+        'twisted',
+        'uwsgi'
     ]
 )
