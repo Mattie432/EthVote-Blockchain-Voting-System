@@ -15,7 +15,7 @@ setup(
         'ethereum'
     ],
     install_requires=[
-        'Django==1.10.0',
+        'Django==2.2.24',
         'psycopg2',
         'crochet',
         'pycrypto',
